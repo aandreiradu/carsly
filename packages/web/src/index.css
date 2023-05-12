@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    background-color: #373737;
+}
 
 *{
     margin: 0;

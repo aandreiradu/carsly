@@ -1,66 +1,56 @@
-import MainLayout from "../../components/Layouts/Main/main.layout";
-import { Heart, Star } from "phosphor-react";
+import Carousel from '../../components/Carousel/carousel.component';
+import MainLayout from '../../components/Layouts/Main/main.layout';
+import { Heart, Star } from 'phosphor-react';
 
-const categories = [
-  "All Cars",
-  "Electric",
-  "Gasoline",
-  "Hybrids",
-  "Oldest",
-  "Newest",
-];
+const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Newest'];
 
 const Home = () => {
   return (
     <MainLayout>
-      <section className="h-screen bg-red-400 flex items-center">
-        <div className="h-full max-h-[700px] my-auto flex md:m-8 md:py-5 md:px-6 w-full">
-          <div className="flex flex-col bg-green-400">
-            <h1 className="mb-4 font-kanit text-xl md:text-4xl font-bold tracking-widest">
+      <section className="h-screen flex items-center w-full overflow-hidden space-x-3 2xl:space-x-7">
+        {/* LEFT */}
+        <div className="shadow-xl bg-default-gray rounded-2xl h-full max-h-[800px] my-auto flex md:m-8 md:py-5 md:px-6 md:max-w-[1000px]">
+          <div className="flex flex-col overflow-hidden">
+            <h1 className="text-white mb-4 font-kanit text-xl md:text-4xl font-bold tracking-widest">
               Find your perfect car
             </h1>
 
             <div className="flex w-full space-x-4 overflow-hidden overflow-x-auto">
               {categories.map((cat) => (
-                <p className="font-kanit text-lg bg-yellow-300 py-2 px-6 rounded-xl">
-                  {cat}
-                </p>
+                <p className="font-kanit text-lg bg-yellow-300 py-2 px-6 rounded-xl">{cat}</p>
               ))}
             </div>
 
-            <div className="p-4 relative mt-10 md:max-h-64 h-full w-full rounded-lg flex items-start justify-center flex-col">
+            <div className=" relative p-4 mt-10 md:max-h-80 h-full w-full rounded-lg flex items-start justify-center flex-col">
               <img
-                className="z-0 absolute top-0 left-0 w-full h-full object-cover items-center justify-center rounded-lg brightness-75"
-                src={"./landing-1.jpg"}
+                className="z-0 absolute top-0 left-0 w-full h-full object-cover object-bottom rounded-lg brightness-75"
+                src={'./landing-1.jpg'}
               />
 
               <div className="z-10 text-white">
                 <h2 className="font-kanit text-3xl">Top Safety Pick</h2>
                 <p className="pt-3 font-kanit text-base capitalize">
-                  Awarded the most 2021 <br />{" "}
-                  <span className="text-sm uppercase">
-                    IIHS TOP SAFETY PICK
-                  </span>
+                  Awarded the most 2021 <br /> <span className="text-sm uppercase">IIHS TOP SAFETY PICK</span>
                 </p>
               </div>
             </div>
 
-            <div className="bg-purple-500 mt-4 flex items-center space-x-3 max-w-xl overflow-hidden overflow-x-auto">
+            <Carousel className="cursor-grab mt-10 pl-1 pr-4 flex items-center space-x-3 overflow-x-auto overflow-y-hidden">
               {categories.map((_) => (
-                <div className="flex flex-col flex-shrink-0 relative w-44 h-64 bg-slate-500 rounded-lg">
-                  <span className="absolute top-2 left-2 p-1 bg-gray-500 rounded-lg">
+                <div className="flex flex-col flex-shrink-0 relative w-52 h-64 bg-[#2f2e2e] text-white rounded-lg">
+                  <span className="absolute cursor-pointer top-2 left-2 p-1 bg-[#2f2e2e] rounded-lg">
                     <Heart className="h-5 w-6" />
                   </span>
 
                   <img
-                    className=" rounded-lg h-full w-full bg-cover bg-center max-h-[70%]"
-                    src={"./landing-2.jpg"}
+                    className="select-none pointer-events-none rounded-lg h-full w-full bg-cover bg-center max-h-[70%]"
+                    src={'./landing-2.jpg'}
                   />
 
-                  <div className="px-1 py-1">
-                    <p className="text-sm">Mercedes Benz E300 4matic +</p>
+                  <div className="px-2 py-1 select-none ">
+                    <p className="text-sm">Mercedes Benz AMG GTR PRO +</p>
                     <div className="flex justify-between items-center">
-                      <span>petrol</span>
+                      <span className="text-base capitalize">petrol</span>
                       <div className="flex items-center">
                         <Star />
                         <span>4.8</span>
@@ -69,6 +59,51 @@ const Home = () => {
                   </div>
                 </div>
               ))}
+            </Carousel>
+          </div>
+        </div>
+
+        {/* RIGHT */}
+        <div className="shadow-xl bg-default-gray relative w-full h-full max-w-md max-h-[800px] flex flex-col rounded-2xl">
+          <img
+            className="z-0 top-0 left-0 w-full h-full max-h-[40%] object-cover object-bottom rounded-lg brightness-75"
+            src={'./amg.jpg'}
+          />
+          <div className="my-4 p-2 px-4 flex flex-col text-white">
+            <h2 className="font-kanit text-2xl font-bold tracking-wider">Mercedes AMG GTR</h2>
+            <p className="my-1 tracking-wide">Petrol</p>
+
+            <div className="flex items-center my-3 space-x-4">
+              <div className="bg-[#2f2e2e] flex flex-col p-3 rounded-lg">
+                <span>396 mi</span>
+                <span>Range (EPA est.)</span>
+              </div>
+              <div className="bg-[#2f2e2e] flex flex-col p-3 rounded-lg">
+                <span>1.99s</span>
+                <span>0 - 60 mph*</span>
+              </div>
+              <div className="bg-[#2f2e2e] flex flex-col p-3 rounded-lg">
+                <span>200mph</span>
+                <span>Top Speed*</span>
+              </div>
+            </div>
+
+            <p className="my-2 text-base leading-loose">
+              The Mercedes-AMG GT (C190 / R190) is a grand tourer produced in coupé and roadster bodystyles by German
+              automobile manufacturer Mercedes-AMG. The car was introduced on 9 September 2014 and was officially unveiled to
+              the public in October 2014 at the Paris Motor Show.
+            </p>
+
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="font-kanit text-lg font-light">Price</span>
+                <span className="text-2xl font-kanit font-bold">
+                  <small className="text-sm mr-1">$</small>199 99
+                </span>
+              </div>
+              <button className="cursor-pointer bg-yellow-400 p-4 w-36 rounded-3xl text-xl text-black font-kanit active:outline-none focus:outline-none">
+                Buy
+              </button>
             </div>
           </div>
         </div>
