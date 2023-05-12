@@ -1,5 +1,5 @@
-import { FC, ReactNode, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { FC, ReactNode, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export type SidebarLinkProps = {
   icon: ReactNode;
@@ -10,13 +10,7 @@ export type SidebarLinkProps = {
   isActive: boolean;
 };
 
-const SidebarLink: FC<SidebarLinkProps> = ({
-  icon,
-  href,
-  isLink,
-  onClick,
-  isActive,
-}) => {
+const SidebarLink: FC<SidebarLinkProps> = ({ icon, href, isLink, onClick, isActive }) => {
   const navigate = useNavigate();
 
   const clickHandler = useCallback(() => {
@@ -38,8 +32,8 @@ const SidebarLink: FC<SidebarLinkProps> = ({
   return (
     <li
       className={`cursor-pointer p-2 ${
-        isActive ? "bg-white" : "bg-transparent"
-      } rounded-md hover:bg-default-yellow`}
+        isActive ? 'bg-yellow-400' : 'bg-transparent'
+      } rounded-md hover:bg-default-yellow hover:text-black`}
       onClick={clickHandler}
     >
       {icon}

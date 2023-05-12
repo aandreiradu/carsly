@@ -1,36 +1,34 @@
-import { useCallback, useState } from "react";
-import SidebarLink, {
-  SidebarLinkProps,
-} from "../SidebarLink/sidebarlink.component";
-import { House, User, Heart, SignOut } from "phosphor-react";
+import { useCallback, useState } from 'react';
+import SidebarLink, { SidebarLinkProps } from '../SidebarLink/sidebarlink.component';
+import { House, User, Heart, SignOut } from 'phosphor-react';
 
 const sidebarLinks: SidebarLinkProps[] = [
   {
-    icon: <House className="w-6 h-6" />,
-    label: "Home",
+    icon: <House className="w-6 h-6 text-white hover:text-black" />,
+    label: 'Home',
     isLink: true,
-    href: "/",
+    href: '/',
     isActive: true,
   },
   {
-    icon: <User className="w-6 h-6" />,
-    label: "My Profile",
+    icon: <User className="w-6 h-6 text-white hover:text-black" />,
+    label: 'My Profile',
     isLink: true,
-    href: "/me",
+    href: '/me',
     isActive: false,
   },
   {
-    icon: <Heart className="w-6 h-6" />,
-    label: "My Favorites",
+    icon: <Heart className="w-6 h-6 text-white hover:text-black" />,
+    label: 'My Favorites',
     isLink: true,
-    href: "/favorites",
+    href: '/favorites',
     isActive: false,
   },
   {
-    icon: <SignOut className="w-6 h-6" />,
-    label: "Sign Out",
+    icon: <SignOut className="w-6 h-6 text-white hover:text-black" />,
+    label: 'Sign Out',
     isLink: false,
-    href: "/sign-in",
+    href: '/sign-in',
     isActive: false,
   },
 ];
@@ -43,7 +41,7 @@ const Sidebar = () => {
   }, []);
 
   return (
-    <div className="h-full w-full md:max-w-[150px] bg-default-gray flex flex-col items-center justify-center">
+    <div className="h-full w-full md:max-w-[150px] bg-[#1f1f1f] flex flex-col items-center justify-center">
       <ul className="flex flex-col space-y-10">
         {sidebarLinks.map((link) => (
           <SidebarLink
