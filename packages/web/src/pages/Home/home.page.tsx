@@ -1,15 +1,17 @@
 import Carousel from '../../components/Carousel/carousel.component';
 import MainLayout from '../../components/Layouts/Main/main.layout';
 import { Heart, Star } from 'phosphor-react';
+import Nav from '../../components/Nav/nav.component';
 
 const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Newest'];
 
 const Home = () => {
   return (
     <MainLayout>
-      <section className="px-1 md:px-0 my-6 md:my-0 h-full max-h-[98%] flex flex-wrap items-center w-full overflow-auto md:space-x-3 2xl:space-x-7">
+      <Nav />
+      <section className="px-2 md:px-0 my-6 md:my-0 h-full max-h-[98%] flex flex-wrap items-center w-full overflow-auto md:space-x-3 2xl:space-x-7">
         {/* LEFT */}
-        <div className="flex  md:h-full w-full shadow-xl bg-default-gray rounded-2xl md:max-h-[800px] md:my-auto py-3 px-4 md:m-8 md:py-5 md:px-6 md:max-w-[1000px]">
+        <div className="flex md:h-full w-full shadow-xl bg-default-gray rounded-2xl md:max-h-[800px] md:my-auto py-3 px-1 md:m-8 md:py-5 md:px-6 md:max-w-[1000px]">
           <div className="w-full h-full flex flex-col overflow-hidden">
             <h1 className="text-white mb-4 font-kanit text-xl md:text-4xl font-bold tracking-widest">
               Find your perfect car
@@ -36,7 +38,7 @@ const Home = () => {
               </div>
             </div>
 
-            <Carousel className="cursor-grab mt-10 pl-1 pr-4 flex items-center space-x-3 overflow-x-auto overflow-y-hidden">
+            <Carousel className="cursor-grab mt-10 px-1 md:pl-1 md:pr-4 flex items-center space-x-3 overflow-x-auto overflow-y-hidden">
               {categories.map((_) => (
                 <div className="flex flex-col flex-shrink-0 relative w-52 h-64 bg-[#2f2e2e] text-white rounded-lg">
                   <span className="absolute cursor-pointer top-2 left-2 p-1 bg-[#2f2e2e] rounded-lg">
