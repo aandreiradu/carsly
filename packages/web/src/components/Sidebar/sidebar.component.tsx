@@ -41,7 +41,7 @@ const Sidebar = () => {
   }, []);
 
   return (
-    <div className="h-full w-full md:max-w-[150px] bg-[#1f1f1f] flex flex-col items-center justify-center">
+    <div className="hidden md:flex h-full w-full md:max-w-[150px] bg-[#1f1f1f] flex-col items-center justify-center">
       <ul className="flex flex-col space-y-10">
         {sidebarLinks.map((link) => (
           <SidebarLink

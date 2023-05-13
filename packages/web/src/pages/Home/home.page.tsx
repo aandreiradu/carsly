@@ -7,21 +7,22 @@ const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Ne
 const Home = () => {
   return (
     <MainLayout>
-      <section className="h-screen flex items-center w-full overflow-hidden space-x-3 2xl:space-x-7">
+      <section className="px-1 md:px-0 my-6 md:my-0 h-full max-h-[98%] flex flex-wrap items-center w-full overflow-auto md:space-x-3 2xl:space-x-7">
         {/* LEFT */}
-        <div className="shadow-xl bg-default-gray rounded-2xl h-full max-h-[800px] my-auto flex md:m-8 md:py-5 md:px-6 md:max-w-[1000px]">
-          <div className="flex flex-col overflow-hidden">
+        <div className="flex  md:h-full w-full shadow-xl bg-default-gray rounded-2xl md:max-h-[800px] md:my-auto py-3 px-4 md:m-8 md:py-5 md:px-6 md:max-w-[1000px]">
+          <div className="w-full h-full flex flex-col overflow-hidden">
             <h1 className="text-white mb-4 font-kanit text-xl md:text-4xl font-bold tracking-widest">
               Find your perfect car
             </h1>
-
-            <div className="flex w-full space-x-4 overflow-hidden overflow-x-auto">
+            <Carousel className="flex text-center items-center w-full space-x-4 overflow-hidden overflow-x-auto">
               {categories.map((cat) => (
-                <p className="font-kanit text-lg bg-yellow-300 py-2 px-6 rounded-xl">{cat}</p>
+                <div className="select-none cursor-pointer flex flex-shrink-0 justify-center items-center w-24 h-12 md:w-36  font-kanit text-base md:text-lg bg-yellow-300 py-2 rounded-xl">
+                  {cat}
+                </div>
               ))}
-            </div>
+            </Carousel>
 
-            <div className=" relative p-4 mt-10 md:max-h-80 h-full w-full rounded-lg flex items-start justify-center flex-col">
+            <div className=" relative p-4 mt-10 h-72 w-full md:h-full md:max-h-80 rounded-lg flex items-start justify-center flex-col">
               <img
                 className="z-0 absolute top-0 left-0 w-full h-full object-cover object-bottom rounded-lg brightness-75"
                 src={'./landing-1.jpg'}
@@ -64,7 +65,7 @@ const Home = () => {
         </div>
 
         {/* RIGHT */}
-        <div className="shadow-xl bg-default-gray relative w-full h-full max-w-md max-h-[800px] flex flex-col rounded-2xl">
+        <div className="my-8 md:my-0 shadow-xl bg-default-gray relative w-full h-fit md:h-full md:max-w-md md:max-h-[800px] flex flex-col rounded-2xl">
           <img
             className="z-0 top-0 left-0 w-full h-full max-h-[40%] object-cover object-bottom rounded-lg brightness-75"
             src={'./amg.jpg'}
