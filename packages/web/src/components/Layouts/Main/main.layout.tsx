@@ -7,7 +7,7 @@ export interface MainLayoutProps {
 
 const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   return (
-    <main className="h-screen md:overflow-hidden flex bg-[#2f2e2e]">
+    <main className="h-screen md:overflow-hidden flex flex-col md:flex-row bg-[#2f2e2e]">
       <Sidebar />
       {children}
     </main>
