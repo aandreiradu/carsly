@@ -1,6 +1,6 @@
 import Carousel from '../../components/Carousel/carousel.component';
 import MainLayout from '../../components/Layouts/Main/main.layout';
-import { Heart, Star } from 'phosphor-react';
+import { Heart, Star, ShoppingCart } from 'phosphor-react';
 import Nav from '../../components/Nav/nav.component';
 
 const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Newest'];
@@ -9,9 +9,9 @@ const Home = () => {
   return (
     <MainLayout>
       <Nav />
-      <section className="px-2 md:px-0 my-6 md:my-0 h-full max-h-[98%] flex flex-wrap items-center w-full overflow-auto md:space-x-3 2xl:space-x-7">
+      <section className="px-2 gap-4 lg:gap-0 md:px-0 my-6 md:my-0 h-full max-h-[98%] flex flex-wrap items-center w-full overflow-auto  xl:space-x-5 2xl:space-x-7">
         {/* LEFT */}
-        <div className="flex md:h-full w-full shadow-xl bg-default-gray rounded-2xl md:max-h-[800px] md:my-auto py-3 px-1 md:m-8 md:py-5 md:px-6 md:max-w-[1000px]">
+        <div className="flex md:h-full w-full shadow-xl bg-default-gray rounded-2xl md:max-h-[800px] md:my-auto py-3 px-2 m-0 lg:m-5 lg:py-5 lg:px-6 md:max-w-[600px] xl:max-w-[1000px]">
           <div className="w-full h-full flex flex-col overflow-hidden">
             <h1 className="text-white mb-4 font-kanit text-xl md:text-4xl font-bold tracking-widest">
               Find your perfect car
@@ -67,9 +67,9 @@ const Home = () => {
         </div>
 
         {/* RIGHT */}
-        <div className="my-8 md:my-0 shadow-xl bg-default-gray relative w-full h-fit md:h-full md:max-w-md md:max-h-[800px] flex flex-col rounded-2xl">
+        <div className="relative m-0 lg:m-5 my-8 md:my-0 shadow-xl bg-default-gray w-full h-full overflow-y-auto max-h-[420px] md:h-full md:max-w-md md:max-h-[800px] flex flex-col rounded-2xl">
           <img
-            className="z-0 top-0 left-0 w-full h-full max-h-[40%] object-cover object-bottom rounded-lg brightness-75"
+            className="z-0 w-full h-fit md:h-full md:max-h-[40%] object-cover object-bottom rounded-lg brightness-75"
             src={'./amg.jpg'}
           />
           <div className="my-4 p-2 px-4 flex flex-col text-white">
@@ -97,15 +97,22 @@ const Home = () => {
               the public in October 2014 at the Paris Motor Show.
             </p>
 
-            <div className="flex items-center justify-between">
+            <div className="w-full flex items-center">
+              <span className="flex-1 h-[1px] bg-default-yellow"></span>
+              <span className="px-4 transform rotate-90 text-2xl">〈 〉</span>
+              <span className="flex-1 h-[1px] bg-default-yellow"></span>
+            </div>
+
+            <div className="sticky w-full py-4 bottom-0 left-0 bg-default-gray flex items-center justify-between">
               <div className="flex flex-col">
                 <span className="font-kanit text-lg font-light">Price</span>
                 <span className="text-2xl font-kanit font-bold">
                   <small className="text-sm mr-1">$</small>199 99
                 </span>
               </div>
-              <button className="cursor-pointer bg-yellow-400 p-4 w-36 rounded-3xl text-xl text-black font-kanit active:outline-none focus:outline-none">
+              <button className="flex items-center justify-center gap-2 first-letter:cursor-pointer bg-yellow-400 p-2 w-36 rounded-3xl text-xl text-black font-kanit active:outline-none focus:outline-none">
                 Buy
+                <ShoppingCart className="h-6 w-6" />
               </button>
             </div>
           </div>
