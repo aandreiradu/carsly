@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email     String  @unique
+  password  String
+  firstName String?
+  lastName  String?
+  Ad        Ad[]
+
+  @@map("users")
+}
+
+model CarTransmision {
+  id   String @id @default(uuid())
+  name String @unique
+
+  @@map("cars_transmision")
+}
+
+model CarBrand {
+  id          String     @id @default(uuid())
+  name        String     @unique
+  description String?
+  logoUrl     String?
+  yearOfEst   DateTime?
+  CarModel    CarModel[]
+
+  @@map("cars_brand")
+}
+
+model CarModel {
+  id   String @id @default(uuid())
+  name String
+
+  vehicleCategory VehicleCategory
+
+  brand   CarBrand @relation(fields: [brandId], references: [id])
+  brandId String
+
+  bodyType VehicleBodyType
+
+  Ad Ad[]
+}
+
+model Ad {
+  id   String @id @default(uuid())
+  name String
+
+  year          DateTime
+  price         Float
+  mileage       Float
+  fuelType      FuelType
+  powerCategory PowerCategory
+  power         Float
+  engineSize    Float
+  color         String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  carModel   CarModel @relation(fields: [carModelId], references: [id])
+  carModelId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum VehicleBodyType {
+  cabriolet
+  roadster
+  estate
+  saloon
+  small
+  sport
+  coupe
+  suv
+  off_road
+  pickup_truck
+  van
+  minibus
+}
+
+enum VehicleCategory {
+  car
+  motorbike
+  motorhome
+  truck
+}
+
+enum PowerCategory {
+  hp
+  kw
+}
+
+enum FuelType {
+  petrol
+  electric
+  LPG
+  CNG
+  hybrid
+  diesel
+  hydrogen
+}
