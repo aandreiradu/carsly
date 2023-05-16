@@ -42,7 +42,7 @@ const Home = () => {
               {categories.map((_) => (
                 <div className="flex flex-col flex-shrink-0 relative w-52 h-64 bg-[#2f2e2e] text-white rounded-lg">
                   <span className="absolute cursor-pointer top-2 left-2 p-1 bg-[#2f2e2e] rounded-lg">
-                    <Heart className="h-5 w-6" />
+                    <Heart className="h-5 w-6" onClick={() => console.log('matamare')} />
                   </span>
 
                   <img
