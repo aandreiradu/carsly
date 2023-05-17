@@ -17,7 +17,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <>
         {label && (
-          <Label htmlFor={id} className={classNames(error ? '!text-red-500' : '')}>
+          <Label htmlFor={id} className={`text-sm ${classNames(error ? '!text-red-500' : '')}`}>
             {label}
           </Label>
         )}
