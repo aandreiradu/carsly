@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { useCallback, useState } from 'react';
+import _axios from '../../api/axios/axios';
 
 export interface HttpReqRes<T> {
   data: T | null;
@@ -15,7 +16,7 @@ const useHttpRequest = <T,>(): HttpReqRes<T> => {
 
   const sendRequest = useCallback(async (url: string, options: AxiosRequestConfig = {}) => {
     try {
-      const response: AxiosResponse<T> = await axios(url, options);
+      const response: AxiosResponse<T> = await _axios(url, options);
       setData(response.data);
       return response;
     } catch (error: unknown) {
