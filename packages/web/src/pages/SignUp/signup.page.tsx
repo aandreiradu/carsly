@@ -6,11 +6,12 @@ import { Input } from '../../components/UI/Input/input.component';
 import useHttpRequest, { HttpReqRes } from '../../hooks/useHttpRequest/useHttp.hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { registerSchema, RegisterProps } from '../../schema/register.schema';
+import { registerSchema, RegisterProps } from '../../schema/signup.schema';
 import { AuthAccountCreated } from '../../types/auth.types';
 import TopLevelNotification from '../../components/UI/TopLevelNotification/topLevelNotification.component';
 import statsAndMaps from '../../config/mappedstats.config';
 import { PulseLoader } from 'react-spinners';
+import { showPassword } from '../SignIn/signin.page';
 
 const SignUp = () => {
   const [topLevelNotification, setTopLevelNotification] = useState({
@@ -32,18 +33,6 @@ const SignUp = () => {
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
 
-  const showPassword = (type: 'PASSWORD' | 'CONFIRM PASSWORD') => {
-    let reference = type === 'PASSWORD' ? passwordRef : confirmPasswordRef;
-
-    if (reference.current) {
-      if (reference.current.type === 'text') {
-        reference.current.type = 'password';
-      } else {
-        reference.current.type = 'text';
-      }
-    }
-  };
-
   useEffect(() => {
     if (data) {
       submitButtonRef.current && (submitButtonRef.current.disabled = false);
@@ -56,7 +45,7 @@ const SignUp = () => {
         });
 
         setTimeout(() => {
-          navigate('/login');
+          navigate('/signin');
         }, 5500);
       }
     }
@@ -90,8 +79,8 @@ const SignUp = () => {
           {' '}
           <p className="text-white capitalize text-base font-kanit">
             already a member?{' '}
-            <Link className="text-yellow-300" to="/">
-              Log in
+            <Link className="text-yellow-300" to="/signin">
+              Sign In
             </Link>
           </p>
         </>
@@ -197,10 +186,11 @@ const SignUp = () => {
               label="Password"
               error={errors.password?.message}
               required
+              ref={passwordRef}
             />
           </div>
           <div className="flex h-full items-center justify-end w-1/5">
-            <Eye className="cursor-pointer w-6 h-10" color="#000" onClick={showPassword.bind(this, 'PASSWORD')} />
+            <Eye className="cursor-pointer w-6 h-10" color="#000" onClick={showPassword.bind(this, passwordRef)} />
           </div>
         </div>
 
@@ -217,13 +207,14 @@ const SignUp = () => {
               placeholder=" "
               autoComplete="false"
               spellCheck="false"
-              label="Password"
+              label="Confirm Password"
               error={errors.confirmPassword?.message}
               required
+              ref={confirmPasswordRef}
             />
           </div>
           <div className="flex h-full items-center justify-end w-1/5">
-            <Eye className="cursor-pointer w-6 h-10" color="#000" onClick={showPassword.bind(this, 'CONFIRM PASSWORD')} />
+            <Eye className="cursor-pointer w-6 h-10" color="#000" onClick={showPassword.bind(this, confirmPasswordRef)} />
           </div>
         </div>
 

@@ -38,7 +38,9 @@ export class AuthService {
     } catch (error) {
       if (error.constructor.name === PrismaClientKnownRequestError.name) {
         if (error.code === 'P2002') {
-          throw new ForbiddenException('Credentials incorrect');
+          throw new ForbiddenException(
+            'Another account is using the same email',
+          );
         }
       }
 
