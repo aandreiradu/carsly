@@ -27,7 +27,8 @@ const SignUp = () => {
     resolver: zodResolver(registerSchema),
     mode: 'onSubmit',
   });
-  const { data, error, loading, sendRequest }: HttpReqRes<AuthAccountCreated> = useHttpRequest<AuthAccountCreated>();
+  const { data, error, loading, sendRequest, setError }: HttpReqRes<AuthAccountCreated> =
+    useHttpRequest<AuthAccountCreated>();
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
@@ -63,7 +64,7 @@ const SignUp = () => {
 
   const onSubmit: SubmitHandler<RegisterProps> = async (data) => {
     submitButtonRef.current && (submitButtonRef.current.disabled = true);
-    await sendRequest('auth/local/signup', {
+    await sendRequest('/auth/local/signup', {
       method: 'POST',
       data: data,
       withCredentials: false,
@@ -92,13 +93,16 @@ const SignUp = () => {
           dismissAfterXMs={5500}
           message={topLevelNotification.message}
           show={topLevelNotification.show}
-          onClose={() =>
+          onClose={() => {
+            if (typeof setError !== 'undefined') {
+              setError(null);
+            }
             setTopLevelNotification({
               show: false,
               message: '',
               icon: <></>,
-            })
-          }
+            });
+          }}
           icon={topLevelNotification.icon}
         />
       )}
@@ -186,7 +190,7 @@ const SignUp = () => {
               label="Password"
               error={errors.password?.message}
               required
-              ref={passwordRef}
+              // ref={passwordRef}
             />
           </div>
           <div className="flex h-full items-center justify-end w-1/5">
@@ -210,7 +214,7 @@ const SignUp = () => {
               label="Confirm Password"
               error={errors.confirmPassword?.message}
               required
-              ref={confirmPasswordRef}
+              // ref={confirmPasswordRef}
             />
           </div>
           <div className="flex h-full items-center justify-end w-1/5">

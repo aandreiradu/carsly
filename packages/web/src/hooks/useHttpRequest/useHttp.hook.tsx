@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { useCallback, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import _axios from '../../api/axios/axios';
 
 export interface HttpReqRes<T> {
@@ -7,6 +7,7 @@ export interface HttpReqRes<T> {
   loading: boolean;
   error: Error | null;
   sendRequest: (url: string, options: AxiosRequestConfig) => Promise<void | AxiosResponse>;
+  setError?: Dispatch<SetStateAction<Error | null>>;
 }
 
 const useHttpRequest = <T,>(): HttpReqRes<T> => {
@@ -16,6 +17,11 @@ const useHttpRequest = <T,>(): HttpReqRes<T> => {
 
   const sendRequest = useCallback(async (url: string, options: AxiosRequestConfig = {}) => {
     try {
+      if (data || error) {
+        setData(null);
+        setError(null);
+      }
+
       setIsLoading(true);
       const response: AxiosResponse<T> = await _axios(url, options);
       setData(response.data);
@@ -37,6 +43,7 @@ const useHttpRequest = <T,>(): HttpReqRes<T> => {
     error,
     loading,
     sendRequest,
+    setError,
   };
 };
 

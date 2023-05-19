@@ -45,6 +45,7 @@ const SignIn = () => {
 
   useEffect(() => {
     if (data) {
+      console.log('data received back', data);
       submitButtonRef.current && (submitButtonRef.current.disabled = false);
       const { isSuccess, message } = data;
       if (isSuccess && message === statsAndMaps['accountCreatedSuccessfully'].message) {
@@ -74,11 +75,13 @@ const SignIn = () => {
   const onSubmit: SubmitHandler<SignInProps> = async (data) => {
     console.log('data', data);
     submitButtonRef.current && (submitButtonRef.current.disabled = true);
-    await sendRequest('auth/local/signup', {
+    const response = await sendRequest('/auth/local/signin', {
       method: 'POST',
       data: data,
       withCredentials: false,
     });
+
+    console.log('responseresponse', response);
   };
 
   return (
@@ -155,7 +158,7 @@ const SignIn = () => {
               label="Password"
               error={errors.password?.message}
               required
-              ref={passwordRef}
+              // ref={passwordRef}
             />
           </div>
           <div className="flex h-full items-center justify-end w-1/5">
