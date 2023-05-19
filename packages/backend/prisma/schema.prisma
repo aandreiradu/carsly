@@ -11,14 +11,15 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String   @unique
-  password  String
-  firstName String?
-  lastName  String?
-  Ad        Ad[]
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  refreshToken String?  @db.Text
+  email        String   @unique
+  password     String
+  firstName    String?
+  lastName     String?
+  Ad           Ad[]
 
   @@map("users")
 }

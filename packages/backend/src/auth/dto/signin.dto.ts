@@ -3,8 +3,9 @@ import {
   IsEmail,
   IsNotEmpty,
   Min,
-  isEmail,
   Max,
+  MinLength,
+  MaxLength,
 } from 'class-validator';
 
 export class SignInDTO {
@@ -15,8 +16,10 @@ export class SignInDTO {
 
   @IsNotEmpty()
   @IsString()
-  @Min(1, { message: 'Password must be longer than or equal to 4 characters' })
-  @Max(35, {
+  @MinLength(1, {
+    message: 'Password must be longer than or equal to 4 characters',
+  })
+  @MaxLength(35, {
     message: 'Password must be shorter than or equal to 35 characters',
   })
   password: string;
