@@ -4,7 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:gen": "dotenv -e ./docker/.env -- pnpm --filter backend db:gen",
+    "db:push": "dotenv -e ./docker/.env -- pnpm --filter backend db:push",
+    "backend:start": "pnpm db:push && node ./packages/backend/dist/index.js",
+    "dev:web": "pnpm --filter web dev",
+    "dev:backend": "pnpm --filter backend start:dev",
+    "dev:db:up": "pnpm --filter backend db:dev:up",
+    "dev": "concurrently -c green.bold,blue.bold 'pnpm dev:web' 'pnpm dev:backend'",
+    "compose": "docker compose -f ./docker/docker-compose.yaml up -d --build"
   },
   "keywords": [],
   "author": "",
@@ -18,5 +26,8 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^2.8.3",
     "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "concurrently": "^8.0.1"
   }
 }
