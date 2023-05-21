@@ -1,18 +1,24 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
-  Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SignInDTO, SignUpDTO } from './dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { AuthAccountCreated, AuthTokens, JWTPayload } from './types/auth.types';
+import {
+  AuthAccountCreated,
+  AuthTokens,
+  CheckTokenValidity,
+  GetSessionByToken,
+  JWTPayload,
+} from './types/auth.types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { Response } from 'express';
-
+import { TokenExpiredError } from 'jsonwebtoken';
 @Injectable()
 export class AuthService {
   constructor(
@@ -46,7 +52,7 @@ export class AuthService {
     } catch (error) {
       if (error.constructor.name === PrismaClientKnownRequestError.name) {
         if (error.code === 'P2002') {
-          throw new ForbiddenException(
+          throw new ConflictException(
             'Another account is using the same email',
           );
         }
@@ -63,6 +69,11 @@ export class AuthService {
       where: {
         email: dto.email,
       },
+      select: {
+        id: true,
+        password: true,
+        email: true,
+      },
     });
 
     if (!user) {
@@ -75,52 +86,125 @@ export class AuthService {
       throw new ForbiddenException('Invalid Credentials');
     }
 
-    const tokens = await this.getTokens(user.id, user.email);
+    const tokens = await this.getTokens(user.id, user.email, 'ALL');
+    console.log('generated tokens', tokens);
 
-    await this.updateHashRT(user.id, tokens.refreshToken);
+    /* hash the rt before updating in the db */
 
-    console.log('return this', tokens);
+    const hashRT = await this.hashData(tokens.refreshToken);
+
+    console.log('did tokens changed??', tokens);
+
+    console.log('hashRT', hashRT);
+
+    await this.updateRT(hashRT, user.id);
 
     return tokens;
   }
 
-  async getTokens(userId: string, email: string): Promise<AuthTokens> {
+  async logout(refreshToken: string) {}
+
+  async getTokens(
+    userId: string,
+    email: string,
+    type: 'ALL' | 'RT' | 'AT',
+  ): Promise<AuthTokens> {
     const jwtPayload: JWTPayload = {
-      email,
-      userId,
+      email: email,
+      sub: userId,
     };
 
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(jwtPayload, {
-        secret: this.config.getOrThrow<string>('__AT_SECRET'),
-        expiresIn: '15m',
-      }),
-      this.jwtService.signAsync(jwtPayload, {
-        secret: this.config.getOrThrow<string>('__RT_SECRET'),
-        expiresIn: '1d',
-      }),
-    ]);
+    switch (type) {
+      case 'ALL': {
+        console.log('case all reached');
+        const [at, rt] = await Promise.all([
+          this.jwtService.signAsync(jwtPayload, {
+            expiresIn: '15m',
+            secret: this.config.getOrThrow<string>('__AT_SECRET'),
+          }),
+          this.jwtService.signAsync(jwtPayload, {
+            expiresIn: '1d',
+            secret: this.config.getOrThrow<string>('__RT_SECRET'),
+          }),
+        ]);
 
-    return {
-      accessToken,
-      refreshToken,
-    };
+        return {
+          accessToken: at,
+          refreshToken: rt,
+        };
+      }
+
+      case 'AT': {
+        const accessToken = await this.jwtService.signAsync(jwtPayload, {
+          expiresIn: '15m',
+          secret: this.config.getOrThrow<string>('__AT_SECRET'),
+        });
+
+        return {
+          accessToken,
+        };
+      }
+
+      case 'RT': {
+        const refreshToken = await this.jwtService.signAsync(jwtPayload, {
+          expiresIn: '1d',
+          secret: this.config.getOrThrow<string>('__RT_SECRET'),
+        });
+
+        return {
+          refreshToken: refreshToken,
+        };
+      }
+
+      default: {
+        throw new Error(`Unhandled getToken type ${type}`);
+      }
+    }
   }
 
-  async hashData(data: string) {
-    return await argon.hash(data);
-  }
-
-  async updateHashRT(userId: string, refreshToken: string): Promise<void> {
-    const hash = await this.hashData(refreshToken);
-
+  async updateRT(refreshToken: string, userId: string) {
     await this.prisma.user.update({
       where: {
         id: userId,
       },
       data: {
-        refreshToken: hash,
+        refreshToken: refreshToken,
       },
     });
+  }
+
+  async checkRTHashing(
+    userdId: string,
+    refreshToken: string,
+  ): Promise<boolean> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id: userdId,
+      },
+      select: {
+        refreshToken: true,
+      },
+    });
+
+    if (!user) {
+      console.log('checkRTHashing user not found');
+      /* if no user was found in the db based on the provided RT, will throw exception */
+      throw new UnauthorizedException();
+    }
+
+    /* check hashed tokens */
+    const matchRTHash = await argon.verify(user.refreshToken, refreshToken);
+
+    if (!matchRTHash) {
+      console.log('checkRTHashing RT hash dont match');
+      /* If the tokens dont match, will throw exception */
+      throw new UnauthorizedException();
+    }
+
+    return true;
+  }
+
+  async hashData(data: string) {
+    return await argon.hash(data);
   }
 }
