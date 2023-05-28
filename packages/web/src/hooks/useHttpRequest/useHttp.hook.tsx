@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import _axios from '../../api/axios/axios';
+import useAxiosInterceptors from '../useAxiosInterceptors/useAxiosInterceptors.hook';
 
 export interface HttpReqRes<T> {
   data: T | null;
@@ -11,6 +12,7 @@ export interface HttpReqRes<T> {
 }
 
 const useHttpRequest = <T,>(): HttpReqRes<T> => {
+  const axiosInterceptors = useAxiosInterceptors();
   const [data, setData] = useState<T | null>(null);
   const [loading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -23,11 +25,13 @@ const useHttpRequest = <T,>(): HttpReqRes<T> => {
       }
 
       setIsLoading(true);
-      const response: AxiosResponse<T> = await _axios(url, options);
+      const response = await axiosInterceptors<T>(url, options);
       setData(response.data);
       return response;
     } catch (error: unknown) {
-      console.log('error axios', error);
+      if (error) {
+        console.log('error axios', error);
+      }
       if (axios.isAxiosError(error)) {
         setError(new Error(error.response?.data.message || error.response?.data.error || 'Something went wrong'));
       } else {
