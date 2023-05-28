@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import AuthLayout from '../../components/Layouts/Auth/auth.layout';
 import { Link, useNavigate } from 'react-router-dom';
-import { Check, Envelope, Eye, Warning } from 'phosphor-react';
+import { Envelope, Eye, Warning } from 'phosphor-react';
 import { Input } from '../../components/UI/Input/input.component';
 import useHttpRequest, { HttpReqRes } from '../../hooks/useHttpRequest/useHttp.hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { AuthAccountCreated } from '../../types/auth.types';
 import TopLevelNotification from '../../components/UI/TopLevelNotification/topLevelNotification.component';
-import statsAndMaps from '../../config/mappedstats.config';
 import { PulseLoader } from 'react-spinners';
 import { SignInProps, signinSchema } from '../../schema/signin.schema';
+import { useDispatch } from 'react-redux';
+import { setAuthData } from '../../store/user/user.slice';
+import { SignInResponse } from './types';
 
 export const showPassword = (ref: React.RefObject<HTMLInputElement>) => {
   if (ref) {
@@ -25,6 +26,7 @@ export const showPassword = (ref: React.RefObject<HTMLInputElement>) => {
 };
 
 const SignIn = () => {
+  const dispatch = useDispatch();
   const [topLevelNotification, setTopLevelNotification] = useState({
     show: false,
     message: '',
@@ -38,7 +40,7 @@ const SignIn = () => {
     resolver: zodResolver(signinSchema),
     mode: 'onSubmit',
   });
-  const { data, error, loading, sendRequest }: HttpReqRes<AuthAccountCreated> = useHttpRequest<AuthAccountCreated>();
+  const { data, error, loading, sendRequest }: HttpReqRes<SignInResponse> = useHttpRequest<SignInResponse>();
   const passwordRef = useRef<HTMLInputElement>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
@@ -47,17 +49,10 @@ const SignIn = () => {
     if (data) {
       console.log('data received back', data);
       submitButtonRef.current && (submitButtonRef.current.disabled = false);
-      const { isSuccess, message } = data;
-      if (isSuccess && message === statsAndMaps['accountCreatedSuccessfully'].message) {
-        setTopLevelNotification({
-          show: true,
-          message: 'Account created successfully',
-          icon: <Check className="w-14 h-8 text-green-400" />,
-        });
-
-        setTimeout(() => {
-          navigate('/');
-        }, 5500);
+      const { accessToken, firstName } = data;
+      if (accessToken) {
+        dispatch(setAuthData({ accessToken, firstName }));
+        navigate('/');
       }
     }
 
@@ -75,13 +70,11 @@ const SignIn = () => {
   const onSubmit: SubmitHandler<SignInProps> = async (data) => {
     console.log('data', data);
     submitButtonRef.current && (submitButtonRef.current.disabled = true);
-    const response = await sendRequest('/auth/local/signin', {
+    await sendRequest('/auth/local/signin', {
       method: 'POST',
       data: data,
-      withCredentials: false,
+      withCredentials: true,
     });
-
-    console.log('responseresponse', response);
   };
 
   return (
@@ -172,7 +165,7 @@ const SignIn = () => {
           form="register"
           className="my-3 bg-default-yellow text-black border-none px-2 py-4 rounded-lg shadow-sm shadow-yellow-300/50 hover:bg-default-gray hover:text-white ease-in hover:shadow-none"
         >
-          {loading ? <PulseLoader color="#1f1f1f" /> : 'Create account'}
+          {loading ? <PulseLoader color="#1f1f1f" /> : 'Sign In'}
         </button>
       </form>
     </AuthLayout>
