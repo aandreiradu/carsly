@@ -52,7 +52,7 @@ export class AtGuard extends AuthGuard('jwt') {
 
     if (!token) {
       console.log('no token provided in authorization header');
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     }
     try {
       const tokenPayload = await this.jwtService.verifyAsync(token, {
