@@ -35,9 +35,28 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (data) {
+    if (error) {
       submitButtonRef.current && (submitButtonRef.current.disabled = false);
-      const { isSuccess, message } = data;
+      const { message } = error;
+      setTopLevelNotification({
+        show: true,
+        message: message,
+        icon: <Warning className="w-14 h-8 text-red-500" />,
+      });
+    }
+  }, [error]);
+
+  const onSubmit: SubmitHandler<RegisterProps> = async (data) => {
+    submitButtonRef.current && (submitButtonRef.current.disabled = true);
+    const response = await sendRequest('/auth/local/signup', {
+      method: 'POST',
+      data: data,
+      withCredentials: false,
+    });
+
+    if (response) {
+      submitButtonRef.current && (submitButtonRef.current.disabled = false);
+      const { isSuccess, message } = response.data;
       if (isSuccess && message === statsAndMaps['accountCreatedSuccessfully'].message) {
         setTopLevelNotification({
           show: true,
@@ -50,25 +69,6 @@ const SignUp = () => {
         }, 5500);
       }
     }
-
-    if (error) {
-      submitButtonRef.current && (submitButtonRef.current.disabled = false);
-      const { message } = error;
-      setTopLevelNotification({
-        show: true,
-        message: message,
-        icon: <Warning className="w-14 h-8 text-red-500" />,
-      });
-    }
-  }, [error, data]);
-
-  const onSubmit: SubmitHandler<RegisterProps> = async (data) => {
-    submitButtonRef.current && (submitButtonRef.current.disabled = true);
-    await sendRequest('/auth/local/signup', {
-      method: 'POST',
-      data: data,
-      withCredentials: false,
-    });
   };
 
   return (
