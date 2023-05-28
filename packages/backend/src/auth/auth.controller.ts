@@ -98,9 +98,7 @@ export class AuthController {
     const accessToken = await this.authService.getTokens(userId, email, 'AT');
     console.log('new access token generated', accessToken);
 
-    return res.json({
-      accessToken,
-    });
+    return res.json(accessToken);
   }
 
   @Post('/logout')
