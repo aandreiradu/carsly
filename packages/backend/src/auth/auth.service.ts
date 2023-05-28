@@ -64,7 +64,9 @@ export class AuthService {
     }
   }
 
-  async signInLocal(dto: SignInDTO): Promise<AuthTokens> {
+  async signInLocal(
+    dto: SignInDTO,
+  ): Promise<AuthTokens & { firstName: string }> {
     const user = await this.prisma.user.findFirst({
       where: {
         email: dto.email,
@@ -73,6 +75,7 @@ export class AuthService {
         id: true,
         password: true,
         email: true,
+        firstName: true,
       },
     });
 
@@ -99,7 +102,10 @@ export class AuthService {
 
     await this.updateRT(hashRT, user.id);
 
-    return tokens;
+    return {
+      ...tokens,
+      firstName: user.firstName,
+    };
   }
 
   async logout(refreshToken: string) {}

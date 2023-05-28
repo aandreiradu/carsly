@@ -48,10 +48,9 @@ export class AuthController {
   async signInLocal(
     @Body() dto: SignInDTO,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<{ accessToken: string }> {
-    const { accessToken, refreshToken } = await this.authService.signInLocal(
-      dto,
-    );
+  ): Promise<{ accessToken: string; firstName: string }> {
+    const { accessToken, refreshToken, firstName } =
+      await this.authService.signInLocal(dto);
 
     if (refreshToken) {
       response.cookie('CARSLY_REFRESH_TOKEN', refreshToken, {
@@ -63,16 +62,16 @@ export class AuthController {
 
     return {
       accessToken,
+      firstName,
     };
   }
 
   @Public()
   @UseGuards(RtGuard)
   @Get('/refresh')
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   async refresh(@Req() req: RequestMetadata, @Res() res: Response) {
     console.log('req metadata in controller', req['user']);
-    console.log('req lalala in controller', req['lalala']);
 
     const { email, refreshToken, userId } = req['user'];
 
@@ -99,7 +98,7 @@ export class AuthController {
     const accessToken = await this.authService.getTokens(userId, email, 'AT');
     console.log('new access token generated', accessToken);
 
-    return res.status(201).json({
+    return res.json({
       accessToken,
     });
   }
@@ -118,12 +117,15 @@ export class AuthController {
 
   @Post('/encrypt')
   encrypt(@Body() data) {
-    console.log('data received', data);
+    console.log('data received', data.test);
     const encrypted = this.crypto.encrypt(
-      data.data,
+      data.test,
       this.config.getOrThrow<string>('_RT_ENCRYPT'),
     );
 
-    return `Encrypted token: ${encrypted}`;
+    return {
+      isSuccess: true,
+      encrypted,
+    };
   }
 }
