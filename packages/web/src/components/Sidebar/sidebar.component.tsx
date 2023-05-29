@@ -57,9 +57,6 @@ const Sidebar = () => {
   }, []);
 
   useEffect(() => {
-    console.log('error', error);
-    console.log('data', data);
-
     if (data) {
       const { message, status } = data;
 

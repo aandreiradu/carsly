@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 
 const useAxiosInterceptors = () => {
   const { accessToken } = useSelector(selectAccessToken);
-  console.log('accessToken from selector', accessToken);
   const refresh = useRefreshToken();
   const navigate = useNavigate();
 

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import _axios from '../../api/axios/axios';
 import { useDispatch } from 'react-redux';
 import { AxiosError } from 'axios';
@@ -10,7 +10,6 @@ export type RTResponse = {
 };
 
 const useRefreshToken = () => {
-  console.log('useRefreshToken called');
   const dispatch = useDispatch();
 
   const refresh = useCallback(async (): Promise<RTResponse> => {
