@@ -75,8 +75,6 @@ export class AuthController {
 
     const { email, refreshToken, userId } = req['user'];
 
-    console.log({ userId, refreshToken, email });
-
     if (!userId || !refreshToken) {
       console.log(
         'could not extract the userId or refreshToken from request metadata',
@@ -101,29 +99,27 @@ export class AuthController {
     return res.json(accessToken);
   }
 
-  @Post('/logout')
+  @Public()
+  @Get('/logout')
+  @UseGuards(RtGuard)
   @HttpCode(HttpStatus.OK)
   async logout(@GetCurrentUserId() userId: string) {
-    // const rtToken = req.cookies['CARSLY_REFRESH_TOKEN'];
-    // console.log('logout _rtToken', rtToken);
-    // if (!rtToken) {
-    //   return res.status(204).send();
-    // }
-    // await this.authService.logout(rtToken);
-    // return res.status(204).send();
-  }
+    try {
+      console.log('userId received in controller', userId);
 
-  @Post('/encrypt')
-  encrypt(@Body() data) {
-    console.log('data received', data.test);
-    const encrypted = this.crypto.encrypt(
-      data.test,
-      this.config.getOrThrow<string>('_RT_ENCRYPT'),
-    );
+      await this.authService.logout(userId);
 
-    return {
-      isSuccess: true,
-      encrypted,
-    };
+      return {
+        message: 'ok',
+        status: 200,
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        return {
+          message: error.message,
+          status: 500,
+        };
+      }
+    }
   }
 }

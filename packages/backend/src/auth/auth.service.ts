@@ -9,16 +9,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { SignInDTO, SignUpDTO } from './dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import {
-  AuthAccountCreated,
-  AuthTokens,
-  CheckTokenValidity,
-  GetSessionByToken,
-  JWTPayload,
-} from './types/auth.types';
+import { AuthAccountCreated, AuthTokens, JWTPayload } from './types/auth.types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { TokenExpiredError } from 'jsonwebtoken';
 @Injectable()
 export class AuthService {
   constructor(
@@ -108,7 +101,16 @@ export class AuthService {
     };
   }
 
-  async logout(refreshToken: string) {}
+  async logout(userId: string): Promise<void> {
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        refreshToken: '',
+      },
+    });
+  }
 
   async getTokens(
     userId: string,
@@ -183,31 +185,41 @@ export class AuthService {
     userdId: string,
     refreshToken: string,
   ): Promise<boolean> {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        id: userdId,
-      },
-      select: {
-        refreshToken: true,
-      },
-    });
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          id: userdId,
+        },
+        select: {
+          refreshToken: true,
+        },
+      });
 
-    if (!user) {
-      console.log('checkRTHashing user not found');
-      /* if no user was found in the db based on the provided RT, will throw exception */
-      throw new UnauthorizedException();
+      if (!user) {
+        console.log('checkRTHashing user not found');
+        /* if no user was found in the db based on the provided RT, will throw exception */
+        throw new UnauthorizedException();
+      }
+
+      /* check hashed tokens */
+      const matchRTHash = await argon.verify(user.refreshToken, refreshToken);
+
+      if (!matchRTHash) {
+        console.log('checkRTHashing RT hash dont match');
+        /* If the tokens dont match, will throw exception */
+        throw new UnauthorizedException();
+      }
+
+      return true;
+    } catch (error) {
+      console.log('error checkRTHashing', error);
+
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+
+      throw new Error('Something went wrong');
     }
-
-    /* check hashed tokens */
-    const matchRTHash = await argon.verify(user.refreshToken, refreshToken);
-
-    if (!matchRTHash) {
-      console.log('checkRTHashing RT hash dont match');
-      /* If the tokens dont match, will throw exception */
-      throw new UnauthorizedException();
-    }
-
-    return true;
   }
 
   async hashData(data: string) {

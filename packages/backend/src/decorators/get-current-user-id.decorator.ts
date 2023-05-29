@@ -1,8 +1,22 @@
-import { ExecutionContext, createParamDecorator } from '@nestjs/common';
+import {
+  ExecutionContext,
+  UnauthorizedException,
+  createParamDecorator,
+} from '@nestjs/common';
 
 export const GetCurrentUserId = createParamDecorator(
   (data: undefined, context: ExecutionContext) => {
     const request = context.switchToHttp().getRequest();
-    return request.user['sub'];
+    const userId = request.user['userId'];
+
+    if (!userId) {
+      console.log(
+        'GetCurrentUserId could extract userId from request',
+        request?.user,
+      );
+      throw new UnauthorizedException();
+    }
+
+    return userId;
   },
 );

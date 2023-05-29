@@ -2,10 +2,19 @@ import Carousel from '../../components/Carousel/carousel.component';
 import MainLayout from '../../components/Layouts/Main/main.layout';
 import { Heart, Star, ShoppingCart } from 'phosphor-react';
 import Nav from '../../components/Nav/nav.component';
+import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
+import _axios from '../../api/axios/axios';
+import { useEffect } from 'react';
 
 const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Newest'];
 
 const Home = () => {
+  const { sendRequest, data, error, loading } = useHttpRequest();
+
+  if (error) {
+    console.log('errorerrorerror', error);
+  }
+
   return (
     <MainLayout>
       <Nav />
@@ -17,8 +26,11 @@ const Home = () => {
               Find your perfect car
             </h1>
             <Carousel className="flex text-center items-center w-full space-x-4 overflow-hidden overflow-x-auto">
-              {categories.map((cat) => (
-                <div className="select-none cursor-pointer flex flex-shrink-0 justify-center items-center w-24 h-12 md:w-36  font-kanit text-base md:text-lg bg-yellow-300 py-2 rounded-xl">
+              {categories.map((cat, index) => (
+                <div
+                  key={'a' + index}
+                  className="select-none cursor-pointer flex flex-shrink-0 justify-center items-center w-24 h-12 md:w-36  font-kanit text-base md:text-lg bg-yellow-300 py-2 rounded-xl"
+                >
                   {cat}
                 </div>
               ))}
@@ -39,8 +51,11 @@ const Home = () => {
             </div>
 
             <Carousel className="cursor-grab mt-10 px-1 md:pl-1 md:pr-4 flex items-center space-x-3 overflow-x-auto overflow-y-hidden">
-              {categories.map((_) => (
-                <div className="flex flex-col flex-shrink-0 relative w-52 h-64 bg-[#2f2e2e] text-white rounded-lg">
+              {categories.map((_, index) => (
+                <div
+                  key={'b' + index}
+                  className="flex flex-col flex-shrink-0 relative w-52 h-64 bg-[#2f2e2e] text-white rounded-lg"
+                >
                   <span className="absolute cursor-pointer top-2 left-2 p-1 bg-[#2f2e2e] rounded-lg">
                     <Heart className="h-5 w-6" onClick={() => console.log('matamare')} />
                   </span>
