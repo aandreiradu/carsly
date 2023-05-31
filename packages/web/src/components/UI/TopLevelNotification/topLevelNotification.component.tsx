@@ -1,65 +1,75 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { FC, Fragment, ReactNode, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { Fragment, ReactNode, forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
-export type TopLevelNotificationRef = {
-  display: () => void;
+type HandlersProps = {
+  message: string;
+  icon: ReactNode;
 };
 
-interface ITopLevelNotification {
-  message: string;
+export type TopLevelNotificationHandlers = {
+  display: (args: HandlersProps) => void;
+  hide: () => void;
+};
+
+type ITopLevelNotification = {
   dismissAfterXMs: number;
   hasCloseButton: boolean;
   closeBtnMessage?: string;
-  show: boolean;
-  onClose(): void;
-  icon?: ReactNode;
-}
+};
 
-// const TopLevelNotification: FC<ITopLevelNotification> = ({
-//   dismissAfterXMs,
-//   message,
-//   hasCloseButton,
-//   onClose,
-//   show = false,
-//   icon = null,
-// }) => {
-const TopLevelNotification = forwardRef<TopLevelNotificationRef, ITopLevelNotification>(
-  ({ dismissAfterXMs, hasCloseButton, message, show, onClose, closeBtnMessage, icon }, ref) => {
-    const [isOpen, setIsOpen] = useState(false);
-    useEffect(() => {
-      console.log('isOpen is', isOpen);
-    }, [isOpen]);
+const TopLevelNotification = forwardRef<TopLevelNotificationHandlers, ITopLevelNotification>(
+  ({ dismissAfterXMs, hasCloseButton }, ref) => {
+    const [notificationData, setNotificationData] = useState<{
+      isOpen: boolean;
+      message: string;
+      icon: ReactNode;
+    }>({
+      isOpen: false,
+      message: '',
+      icon: <></>,
+    });
 
-    const display = (): void => setIsOpen(true);
+    const display = (args: HandlersProps): void => {
+      console.log('called dislpay with', args);
+      setNotificationData((prev) => ({
+        ...prev,
+        isOpen: true,
+        icon: args.icon,
+        message: args.message,
+      }));
+    };
+
+    const hide = (): void =>
+      setNotificationData((prev) => ({
+        ...prev,
+        isOpen: false,
+        icon: <></>,
+        message: '',
+      }));
 
     useImperativeHandle(ref, () => ({
       display,
+      hide,
     }));
 
-    console.log('render child');
-
     useEffect(() => {
-      console.log('running effect for hideAfterXMs');
-
       const timeout = setTimeout(() => {
-        onClose();
+        console.log('timeout running', dismissAfterXMs);
+        hide();
       }, dismissAfterXMs);
 
       return () => {
         clearTimeout(timeout);
       };
-    }, [dismissAfterXMs]);
+    }, [notificationData.isOpen]);
 
-    if (!isOpen) {
-      console.log('hide');
+    if (!notificationData.isOpen) {
       return null;
     }
 
-    console.log('dont hide');
-
     return (
-      <Transition appear show={show} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={onClose}>
+      <Transition appear show={notificationData.isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={hide}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -91,11 +101,9 @@ const TopLevelNotification = forwardRef<TopLevelNotificationRef, ITopLevelNotifi
                 >
                   <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                     <div className="flex gap-2">
-                      {icon && icon}
+                      {notificationData.icon}
                       {/* <p className="flex-1 text-base">{message}</p> */}
-                      <p className="flex-1 text-base">
-                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Laboriosam, earum?
-                      </p>
+                      <p className="flex-1 text-base">{notificationData.message}</p>
                     </div>
                   </Dialog.Title>
                   {hasCloseButton && (
@@ -103,7 +111,7 @@ const TopLevelNotification = forwardRef<TopLevelNotificationRef, ITopLevelNotifi
                       <button
                         type="button"
                         className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                        onClick={onClose}
+                        onClick={hide}
                       >
                         Close
                       </button>
