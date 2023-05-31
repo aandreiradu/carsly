@@ -35,8 +35,8 @@ export class SignUpDTO {
   email: string;
 
   @IsString()
-  @MinLength(1, {
-    message: 'Password must be longer than or equal to 4 characters',
+  @MinLength(6, {
+    message: 'Password must be longer than or equal to 6 characters',
   })
   @MaxLength(35, {
     message: 'Password must be shorter than or equal to 35 characters',
@@ -45,8 +45,8 @@ export class SignUpDTO {
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(1, {
-    message: 'Confirm Password must be longer than or equal to 4 characters',
+  @MinLength(6, {
+    message: 'Confirm Password must be longer than or equal to 6 characters',
   })
   @MaxLength(35, {
     message: 'Confirm Password must be shorter than or equal to 35 characters',
