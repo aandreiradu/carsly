@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -24,7 +25,7 @@ export class AuthService {
     const { confirmPassword, password } = dto;
 
     if (confirmPassword !== password) {
-      throw new ForbiddenException('Passwords dont match');
+      throw new BadRequestException('Passwords dont match');
     }
 
     try {
@@ -73,13 +74,13 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new ForbiddenException('Invalid Credentials');
+      throw new BadRequestException('Invalid Credentials');
     }
 
     const pwMatch = await argon.verify(user.password, dto.password);
 
     if (!pwMatch) {
-      throw new ForbiddenException('Invalid Credentials');
+      throw new BadRequestException('Invalid Credentials');
     }
 
     const tokens = await this.getTokens(user.id, user.email, 'ALL');
