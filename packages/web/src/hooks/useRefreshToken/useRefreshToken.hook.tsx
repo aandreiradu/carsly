@@ -18,7 +18,7 @@ const useRefreshToken = () => {
         withCredentials: true,
       });
 
-      if (response.status === 200) {
+      if (response?.status === 200) {
         const accessToken = response.data.accessToken;
         console.log('accessToken received in useRefreshTOken', accessToken);
 
@@ -46,7 +46,7 @@ const useRefreshToken = () => {
       }
 
       if (error instanceof Error) {
-        console.log('error', error);
+        console.log('error', error.message);
         return { accessToken: '', errorMessage: error.message };
       }
 

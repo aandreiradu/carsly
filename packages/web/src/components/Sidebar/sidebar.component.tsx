@@ -1,36 +1,44 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import SidebarLink, { SidebarLinkProps } from '../SidebarLink/sidebarlink.component';
-import { House, User, Heart, SignOut } from 'phosphor-react';
+import { House, User, Heart, SignOut, PlusCircle } from 'phosphor-react';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { LogoutSuccessResponse } from '../../types/auth.types';
 import { useDispatch } from 'react-redux';
 import { setAccessToken } from '../../store/user/user.slice';
 import { useNavigate } from 'react-router-dom';
+import { SideBarProps } from '../../types/index.types';
 
 const sidebarLinks: SidebarLinkProps[] = [
   {
-    icon: <House className="w-6 h-6 text-white hover:text-black" />,
     label: 'Home',
     isLink: true,
     href: '/',
+    icon: <House className="w-6 h-6 text-white group-hover:text-black" />,
     isActive: true,
   },
   {
-    icon: <User className="w-6 h-6 text-white hover:text-black" />,
+    label: 'Sell Now',
+    isLink: false,
+    isActive: false,
+    icon: <PlusCircle className="w-6 h-6 text-white group-hover:text-black" />,
+    setShowComponent: () => {},
+  },
+  {
+    icon: <User className="w-6 h-6 text-white group-hover:text-black" />,
     label: 'My Profile',
     isLink: true,
     href: '/me',
     isActive: false,
   },
   {
-    icon: <Heart className="w-6 h-6 text-white hover:text-black" />,
+    icon: <Heart className="w-6 h-6 text-white group-hover:text-black" />,
     label: 'My Favorites',
     isLink: true,
     href: '/favorites',
     isActive: false,
   },
   {
-    icon: <SignOut className="w-6 h-6 text-white hover:text-black" />,
+    icon: <SignOut className="w-6 h-6 text-white group-hover:text-black" />,
     label: 'Sign Out',
     isLink: false,
     href: '/sign-in',
@@ -38,7 +46,7 @@ const sidebarLinks: SidebarLinkProps[] = [
   },
 ];
 
-const Sidebar = () => {
+const Sidebar = ({ setShowComponent }: SideBarProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data, error, sendRequest } = useHttpRequest<LogoutSuccessResponse>();
@@ -90,7 +98,9 @@ const Sidebar = () => {
                 link.label === 'Sign Out' && handleLogoutRequest();
               }
             }
+            // ref={sellNowRef}
             isActive={activeLink === link.label ? true : false}
+            setShowComponent={setShowComponent}
           />
         ))}
       </ul>

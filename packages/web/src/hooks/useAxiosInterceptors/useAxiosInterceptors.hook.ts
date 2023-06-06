@@ -25,11 +25,7 @@ const useAxiosInterceptors = () => {
     });
 
     const responseInterceptor = _axios.interceptors.response.use(
-      (response: AxiosResponse) => {
-        console.log('response is', response);
-
-        return response;
-      },
+      (response: AxiosResponse) => response,
       async (error: AxiosError) => {
         const previousReq = error.config;
         if (error.response?.status === 403 && previousReq) {

@@ -2,6 +2,7 @@ import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { List, X, User } from 'phosphor-react';
 import { SidebarLinkProps } from '../SidebarLink/sidebarlink.component';
+import { SideBarProps } from '../../types/index.types';
 
 const navigationLinks: Omit<SidebarLinkProps, 'icon'>[] = [
   {
@@ -9,6 +10,12 @@ const navigationLinks: Omit<SidebarLinkProps, 'icon'>[] = [
     isLink: true,
     href: '/',
     isActive: true,
+  },
+  {
+    label: 'Sell Now',
+    isLink: false,
+    isActive: false,
+    setShowComponent: () => {},
   },
   {
     label: 'My Profile',
@@ -28,7 +35,7 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-const Nav = () => {
+const Nav = ({ setShowComponent }: SideBarProps) => {
   return (
     <Disclosure as="nav" className="z-50 md:hidden bg-[#1f1f1f] w-full h-16">
       {({ open }) => (
@@ -116,6 +123,7 @@ const Nav = () => {
                     'block rounded-md px-3 py-2 text-base font-medium',
                   )}
                   aria-current={item.isActive ? 'page' : undefined}
+                  onClick={() => setShowComponent({ show: true, componentName: item.label })}
                 >
                   {item.label}
                 </Disclosure.Button>
