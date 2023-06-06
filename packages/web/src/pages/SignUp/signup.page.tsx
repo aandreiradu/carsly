@@ -8,17 +8,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { registerSchema, RegisterProps } from '../../schema/signup.schema';
 import { AuthAccountCreated } from '../../types/auth.types';
-import TopLevelNotification from '../../components/UI/TopLevelNotification/topLevelNotification.component';
+import TopLevelNotification, {
+  TopLevelNotificationHandlers,
+} from '../../components/UI/TopLevelNotification/topLevelNotification.component';
 import statsAndMaps from '../../config/mappedstats.config';
 import { PulseLoader } from 'react-spinners';
 import { showPassword } from '../SignIn/signin.page';
 
 const SignUp = () => {
-  const [topLevelNotification, setTopLevelNotification] = useState({
-    show: false,
-    message: '',
-    icon: <></>,
-  });
+  const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const {
     formState: { errors },
     register,
@@ -27,8 +25,7 @@ const SignUp = () => {
     resolver: zodResolver(registerSchema),
     mode: 'onSubmit',
   });
-  const { data, error, loading, sendRequest, setError }: HttpReqRes<AuthAccountCreated> =
-    useHttpRequest<AuthAccountCreated>();
+  const { error, loading, sendRequest }: HttpReqRes<AuthAccountCreated> = useHttpRequest<AuthAccountCreated>();
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
@@ -38,10 +35,10 @@ const SignUp = () => {
     if (error) {
       submitButtonRef.current && (submitButtonRef.current.disabled = false);
       const { message } = error;
-      setTopLevelNotification({
-        show: true,
-        message: message,
+      console.log('message is', message);
+      topLevelNotificationRef.current?.display({
         icon: <Warning className="w-14 h-8 text-red-500" />,
+        message: message,
       });
     }
   }, [error]);
@@ -58,8 +55,7 @@ const SignUp = () => {
       submitButtonRef.current && (submitButtonRef.current.disabled = false);
       const { isSuccess, message } = response.data;
       if (isSuccess && message === statsAndMaps['accountCreatedSuccessfully'].message) {
-        setTopLevelNotification({
-          show: true,
+        topLevelNotificationRef.current?.display({
           message: 'Account created successfully',
           icon: <Check className="w-14 h-8 text-green-400" />,
         });
@@ -87,26 +83,7 @@ const SignUp = () => {
         </>
       }
     >
-      {(data || error) && topLevelNotification.show && (
-        <TopLevelNotification
-          hasCloseButton={false}
-          dismissAfterXMs={5500}
-          message={topLevelNotification.message}
-          show={topLevelNotification.show}
-          onClose={() => {
-            if (typeof setError !== 'undefined') {
-              setError(null);
-            }
-            setTopLevelNotification({
-              show: false,
-              message: '',
-              icon: <></>,
-            });
-          }}
-          icon={topLevelNotification.icon}
-        />
-      )}
-
+      <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />)
       <form
         id="register"
         className="mt-8 flex flex-col w-full  md:max-w-lg overflow-hidden"
