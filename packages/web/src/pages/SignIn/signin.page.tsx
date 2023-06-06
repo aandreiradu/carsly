@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import AuthLayout from '../../components/Layouts/Auth/auth.layout';
 import { Link, useNavigate } from 'react-router-dom';
 import { Envelope, Eye, Warning } from 'phosphor-react';
@@ -6,7 +6,9 @@ import { Input } from '../../components/UI/Input/input.component';
 import useHttpRequest, { HttpReqRes } from '../../hooks/useHttpRequest/useHttp.hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import TopLevelNotification from '../../components/UI/TopLevelNotification/topLevelNotification.component';
+import TopLevelNotification, {
+  TopLevelNotificationHandlers,
+} from '../../components/UI/TopLevelNotification/topLevelNotification.component';
 import { PulseLoader } from 'react-spinners';
 import { SignInProps, signinSchema } from '../../schema/signin.schema';
 import { useDispatch } from 'react-redux';
@@ -27,11 +29,7 @@ export const showPassword = (ref: React.RefObject<HTMLInputElement>) => {
 
 const SignIn = () => {
   const dispatch = useDispatch();
-  const [topLevelNotification, setTopLevelNotification] = useState({
-    show: false,
-    message: '',
-    icon: <></>,
-  });
+  const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const {
     formState: { errors },
     register,
@@ -59,11 +57,13 @@ const SignIn = () => {
     if (error) {
       submitButtonRef.current && (submitButtonRef.current.disabled = false);
       const { message } = error;
-      setTopLevelNotification({
-        show: true,
-        message: message,
-        icon: <Warning className="w-14 h-8 text-red-500" />,
-      });
+
+      if (topLevelNotificationRef) {
+        topLevelNotificationRef.current?.display({
+          icon: <Warning className="w-14 h-8 text-red-500" />,
+          message: message,
+        });
+      }
     }
   }, [error, data]);
 
@@ -93,22 +93,7 @@ const SignIn = () => {
         </>
       }
     >
-      {(data || error) && topLevelNotification.show && (
-        <TopLevelNotification
-          hasCloseButton={false}
-          dismissAfterXMs={5500}
-          message={topLevelNotification.message}
-          show={topLevelNotification.show}
-          onClose={() =>
-            setTopLevelNotification({
-              show: false,
-              message: '',
-              icon: <></>,
-            })
-          }
-          icon={topLevelNotification.icon}
-        />
-      )}
+      <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
 
       <form
         id="register"
