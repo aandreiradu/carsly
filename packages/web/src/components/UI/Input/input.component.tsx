@@ -17,7 +17,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <>
         {label && (
-          <Label htmlFor={id} className={`text-sm ${classNames(error ? '!text-red-500' : '')}`}>
+          <Label htmlFor={id} className={`text-sm ${className} ${classNames(error ? '!text-red-500' : '')}`}>
             {label}
           </Label>
         )}
@@ -29,10 +29,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           spellCheck="false"
           {...props}
         />
-        {error && (
-          // peer-focus:hidden
-          <span className="text-red-500 text-sm ">{error}</span>
-        )}
+        {error && <span className="text-red-500 text-sm ">{error}</span>}
       </>
     );
   },
