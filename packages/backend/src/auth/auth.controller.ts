@@ -56,7 +56,7 @@ export class AuthController {
       response.cookie('CARSLY_REFRESH_TOKEN', refreshToken, {
         sameSite: 'none',
         secure: true,
-        maxAge: Number(this.config.get('__RT_EXPIRATION_SECONDS')),
+        maxAge: 24 * 60 * 60 * 1000,
       });
     }
 
