@@ -15,3 +15,10 @@ export type ModalProps = {
   hasCloseButton: boolean;
   title: string;
 };
+
+export type CarsBrandsSuccess = {
+  description: string;
+  name: string;
+  yearOfEST: string;
+  logoUrl: string;
+}[];
