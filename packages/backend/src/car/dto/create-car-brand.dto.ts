@@ -21,6 +21,6 @@ export class CreateCarBrandDTO {
   logoUrl?: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsString()
   yearOfEst?: string;
 }

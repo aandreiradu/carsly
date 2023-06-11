@@ -1,7 +1,9 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   ForbiddenException,
+  Get,
   InternalServerErrorException,
   Post,
 } from '@nestjs/common';
@@ -14,7 +16,7 @@ import { SuccessResponse } from 'config/types';
 export class CarController {
   constructor(private carsService: CarService) {}
 
-  @Post('/brand')
+  @Post('/brands')
   async createCarBrand(
     @Body() dto: CreateCarBrandDTO,
   ): Promise<SuccessResponse> {
@@ -25,7 +27,7 @@ export class CarController {
       }
       await this.carsService.createCarBrand(dto);
       return {
-        status: 200,
+        status: 201,
         message: 'Car Brand created successfully',
       };
     } catch (error) {
@@ -39,6 +41,25 @@ export class CarController {
       throw new InternalServerErrorException(
         'Something went wrong, please try agin later',
       );
+    }
+  }
+
+  @Get('/brands')
+  async getCarsBrands() {
+    try {
+      const carsBrands = await this.carsService.getCarsBrands();
+      return {
+        carsBrands,
+      };
+    } catch (error) {
+      console.error('__ERROR getCarsBrands controller', error);
+      if (error instanceof Error) {
+        console.log('sunt aici arunc');
+        throw new BadRequestException(error.message);
+        console.log('sunt aici nu mai arunc');
+      }
+
+      throw new InternalServerErrorException('Internal server error');
     }
   }
 

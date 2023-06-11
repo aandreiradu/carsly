@@ -5,8 +5,14 @@ import { ConfigModule } from '@nestjs/config';
 import { AtGuard } from './guards';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { CarModule } from './car/car.module';
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, PrismaModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    AuthModule,
+    PrismaModule,
+    CarModule,
+  ],
   providers: [
     {
       provide: APP_GUARD,

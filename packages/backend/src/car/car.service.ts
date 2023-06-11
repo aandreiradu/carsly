@@ -16,5 +16,16 @@ export class CarService {
     return carBrand;
   }
 
+  async getCarsBrands() {
+    return await this.prisma.carBrand.findMany({
+      select: {
+        name: true,
+        description: true,
+        yearOfEst: true,
+        logoUrl: true,
+      },
+    });
+  }
+
   async createCar(dto: CreateCarDTO) {}
 }
