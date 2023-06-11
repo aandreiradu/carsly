@@ -1,25 +1,62 @@
 import Carousel from '../../components/Carousel/carousel.component';
 import MainLayout from '../../components/Layouts/Main/main.layout';
-import { Heart, Star, ShoppingCart } from 'phosphor-react';
+import { Heart, Star, ShoppingCart, Warning } from 'phosphor-react';
 import Nav from '../../components/Nav/nav.component';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import _axios from '../../api/axios/axios';
 import { useEffect, useRef, useState } from 'react';
-import { ShowComponentProps } from '../../types/index.types';
+import { CarsBrandsSuccess, ShowComponentProps } from '../../types/index.types';
 import Sidebar from '../../components/Sidebar/sidebar.component';
 import SellNow from '../SellNow/sellNow.page';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCarsBrands } from '../../store/cars/cars.slice';
+import TopLevelNotification, {
+  TopLevelNotificationHandlers,
+} from '../../components/UI/TopLevelNotification/topLevelNotification.component';
+import { selectCarsBrands } from '../../store/cars/cars.selector';
 
 const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Newest'];
 
 const Home = () => {
+  const carsBrands = useSelector(selectCarsBrands);
+  const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
+  const dispatch = useDispatch();
+  const { sendRequest, error } = useHttpRequest<CarsBrandsSuccess>();
   const [showComponet, setShowComponent] = useState<ShowComponentProps>({ show: false, componentName: '' });
 
   useEffect(() => {
-    console.log('showComponet', showComponet);
-  }, [showComponet]);
+    const getCarsBrands = async () => {
+      const brandsResponse = await sendRequest('/api/car/brands', {
+        method: 'GET',
+        withCredentials: true,
+      });
+
+      if (brandsResponse) {
+        const { status, data } = brandsResponse;
+
+        if (status === 200 && data?.carsBrands) {
+          dispatch(setCarsBrands({ carsBrands: data.carsBrands }));
+        }
+      }
+    };
+
+    //cached
+    carsBrands?.length === 0 && getCarsBrands();
+  }, []);
+
+  if (error) {
+    console.log('error', error);
+    if (topLevelNotificationRef) {
+      topLevelNotificationRef.current?.display({
+        message: error.message,
+        icon: <Warning className="w-14 h-8 text-red-500" />,
+      });
+    }
+  }
 
   return (
     <MainLayout>
+      <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
       <Nav setShowComponent={setShowComponent} />
       <Sidebar setShowComponent={setShowComponent} />
       <SellNow show={showComponet.show} componentName={showComponet.componentName} setShowComponent={setShowComponent} />

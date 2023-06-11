@@ -1,33 +1,76 @@
-import React, { useRef } from 'react';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { SellNowProps } from '../../types/index.types';
 import Modal from '../../components/Modal/modal.component';
 import { Input } from '../../components/UI/Input/input.component';
-import { Envelope } from 'phosphor-react';
+import { sellNow__getYears } from '../../config/settings';
+import Select from '../../components/Select/select.component';
+import Label from '../../components/UI/Label/label.component';
+import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
+import { useSelector } from 'react-redux';
+import { selectCarsBrands } from '../../store/cars/cars.selector';
+
+const maxStageLevel = +import.meta.env.VITE_MAX_STAGE_LEVEL_SELLNOW;
+export type SellNowHandlers = {
+  display: () => void;
+  hide: () => void;
+};
+
+const sellNowYears = sellNow__getYears()
+  .map((data) => ({ name: data }))
+  .reverse();
 
 const SellNow = ({ setShowComponent, componentName, show }: SellNowProps) => {
-  type DisplayHandle = React.ElementRef<typeof SellNow>;
-  const sellNowRef = useRef<DisplayHandle>(null);
+  // const { data, sendRequest, error } = useHttpRequest();
+  const [stageLevel, setStageLevel] = useState(1);
+  const carsBrands = useSelector(selectCarsBrands);
+
+  const changeStageLevel = useCallback(async () => {
+    if (stageLevel === maxStageLevel || stageLevel > maxStageLevel) {
+      setStageLevel(1);
+      return;
+    }
+    if (stageLevel < maxStageLevel) {
+      setStageLevel((prev) => prev + 1);
+    }
+  }, [stageLevel]);
+
   return (
     <>
       {show && componentName === 'Sell Now' && (
         <>
-          <Modal setShowComponent={setShowComponent} hasCloseButton={true} title="Sell Your Car Now">
-            <form id="sellNow" className="mt-8 flex flex-col w-full lg:w-96 md:max-w-2xl overflow-hidden">
-              <div className="flex-1 my-3 mt-5 py-1 px-1 bg-yellow-300 flex rounded-xl h-14">
-                <div className="pl-1 flex flex-col w-4/5">
-                  <Input
-                    label="Email"
-                    id="email"
-                    type="text"
-                    className={`text-black border-none focus:outline-none active:outline-none bg-transparent px-1`}
-                    required
-                  />
+          <Modal
+            setShowComponent={setShowComponent}
+            hasCloseButton={true}
+            title="Sell Your Car Now"
+            onClose={() => setStageLevel(1)}
+          >
+            <form id="sellNow" className="mt-8 w-full flex flex-col /*lg:w-96 md:max-w-2xl*/ ">
+              <div className="w-full grid grid-cols-2 gap-5">
+                <div className="relative border border-black w-full py-1 px-1 bg-yellow-300 flex flex-col flex-1 rounded-xl max-h-16">
+                  <Label className="text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+                    Year*
+                  </Label>
+                  <Select dataSource={sellNowYears} />
                 </div>
-                <div className="flex h-full items-center justify-end w-1/5">
-                  <Envelope className="w-6 h-10" color="#000" />
+                <div className="relative border border-black w-full py-1 px-1 bg-yellow-300 flex flex-col flex-1 rounded-xl max-h-16">
+                  <Label className="text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+                    Model*
+                  </Label>
+                  <Select dataSource={carsBrands} />
                 </div>
               </div>
             </form>
+            <button
+              disabled={carsBrands?.length === 0 || sellNowYears?.length === 0}
+              onClick={changeStageLevel}
+              className="w-32 text-black text-base mx-auto mt-10  border  border-black p-2 rounded-lg disabled:bg-gray-500/25 disabled:border-none disabled:text-white disabled:cursor-not-allowed"
+            >
+              Continue
+            </button>
+
+            <span className="mx-auto text-black mt-3 text-xs">
+              Step {stageLevel} / {maxStageLevel}
+            </span>
           </Modal>
         </>
       )}
