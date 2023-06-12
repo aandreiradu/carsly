@@ -1,10 +1,9 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, forwardRef, useEffect, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CaretUp, CaretDown, Check } from 'phosphor-react';
 
 export type SelectProps = {
   dataSource: Record<'name', string>[];
-  // onChange(e: any): () => void;
   onChange: any;
 };
 
@@ -12,7 +11,7 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-const Select = ({ dataSource, onChange }: SelectProps) => {
+const Select = forwardRef<HTMLDivElement, SelectProps>(({ dataSource, onChange }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState({ name: '' });
 
@@ -21,6 +20,7 @@ const Select = ({ dataSource, onChange }: SelectProps) => {
   return (
     <div className="relative h-full" onClick={handleOpen}>
       <Listbox
+        ref={ref}
         value={selected}
         onChange={(e) => {
           console.log('e', e);
@@ -69,6 +69,6 @@ const Select = ({ dataSource, onChange }: SelectProps) => {
       </Listbox>
     </div>
   );
-};
+});
 
 export default Select;

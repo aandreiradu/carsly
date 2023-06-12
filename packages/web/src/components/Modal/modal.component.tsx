@@ -17,10 +17,11 @@ type ModalProps = {
   setShowComponent: ({ componentName, show }: ShowComponentProps) => void;
   children?: ReactNode;
   onClose?: () => void;
+  className?: string;
 };
 
 const Modal: React.ForwardRefRenderFunction<ModalHandlers, ModalProps> = (
-  { setShowComponent, hasCloseButton, title, children, onClose },
+  { setShowComponent, hasCloseButton, title, children, onClose, className },
   ref,
 ) => {
   const [isOpen, setIsOpen] = useState(true);
@@ -46,7 +47,7 @@ const Modal: React.ForwardRefRenderFunction<ModalHandlers, ModalProps> = (
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="bg-neutral-900/20 backdrop-blur p-8 fixed inset-0 z-50 grid place-items-center overflow-y-auto"
+            className={`${className}bg-neutral-900/20 backdrop-blur p-8 fixed inset-0 z-50 grid place-items-center overflow-y-auto`}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0, translateX: '-100%' }}
