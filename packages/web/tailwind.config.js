@@ -15,6 +15,9 @@ export default {
         'landing-2': "url('/landing-2.jpg')",
         'login-pattern': "url('./landing-1.jpg'), linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(252,252,252,1) 100%))",
       },
+      transitionProperty: {
+        width: 'width',
+      },
     },
   },
   plugins: [],

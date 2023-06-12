@@ -10,6 +10,7 @@ import { selectCarsBrands } from '../../store/cars/cars.selector';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { SellNowStageOneProps, sellNowStageOne } from './types';
 import { zodResolver } from '@hookform/resolvers/zod';
+import ProgressBar from '../../components/ProgressBar/progressbar.component';
 
 const maxStageLevel = +import.meta.env.VITE_MAX_STAGE_LEVEL_SELLNOW;
 export type SellNowHandlers = {
@@ -60,7 +61,9 @@ const SellNow = ({ setShowComponent, componentName, show }: SellNowProps) => {
             hasCloseButton={true}
             title="Sell Your Car Now"
             onClose={() => setStageLevel(1)}
+            className="relative"
           >
+            <ProgressBar className="" currentLevel={stageLevel} maxLevel={maxStageLevel} />
             <form
               id="sellNow"
               className="mt-8 w-full flex flex-col /*lg:w-96 md:max-w-2xl*/ "
