@@ -3,28 +3,33 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CaretUp, CaretDown, Check } from 'phosphor-react';
 
 export type SelectProps = {
-  dataSource: Record<string, any>[];
+  dataSource: Record<'name', string>[];
+  // onChange(e: any): () => void;
+  onChange: any;
 };
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-const Select = ({ dataSource }: SelectProps) => {
+const Select = ({ dataSource, onChange }: SelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState(dataSource[0]);
-
-  useEffect(() => {
-    console.log('selectedselected', selected);
-  }, [selected]);
+  const [selected, setSelected] = useState({ name: '' });
 
   const handleOpen = () => setIsOpen((prev) => !prev);
 
   return (
     <div className="relative h-full" onClick={handleOpen}>
-      <Listbox value={selected} onChange={setSelected}>
+      <Listbox
+        value={selected}
+        onChange={(e) => {
+          console.log('e', e);
+          setSelected(e);
+          onChange(e);
+        }}
+      >
         <div className="relative w-full">
-          <Listbox.Button className="relative text-black w-full cursor-default rounded-lg bg-transparent py-2 pl-1 pr-10 text-left  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
+          <Listbox.Button className="relative mb-2 text-black w-full cursor-default rounded-lg bg-transparent py-2 pl-1 pr-10 text-left  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
             <span className="block truncate">{selected.name}</span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
               {isOpen ? (
@@ -44,7 +49,7 @@ const Select = ({ dataSource }: SelectProps) => {
                       active ? 'bg-amber-100 text-amber-900' : 'text-gray-900'
                     }`
                   }
-                  value={data}
+                  value={{ name: data.name }}
                 >
                   {({ selected }) => (
                     <>
