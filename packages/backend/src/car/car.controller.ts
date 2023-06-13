@@ -75,7 +75,7 @@ export class CarController {
 
       return {
         status: 201,
-        message: 'cardmodel added',
+        message: 'car model added',
       };
     } catch (error) {
       console.error('__ERROR createCar controller', error);
