@@ -142,3 +142,7 @@ packages/backend/src/routes/test.ts
 packages/web/src/car-brands.ts
 
 dbml
+
+seed.ts
+seed.js
+data.ts
