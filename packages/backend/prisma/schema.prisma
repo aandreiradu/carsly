@@ -47,14 +47,14 @@ model CarModel {
   id   String @id @default(uuid())
   name String
 
-  vehicleCategory VehicleCategory
-
   brand   CarBrand @relation(fields: [brandId], references: [id])
   brandId String
 
   bodyType VehicleBodyType
 
   Ad Ad[]
+
+  @@map("cars_model")
 }
 
 model Ad {
@@ -78,6 +78,8 @@ model Ad {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("ad")
 }
 
 enum VehicleBodyType {
