@@ -3,6 +3,7 @@ import { CreateCarBrandDTO, CreateCarDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCarModelDTO } from './dto/create-car-model.dto';
 import { VehicleBodyType } from './types';
+import { capitalizeAll } from 'src/utils/helpers';
 
 @Injectable()
 export class CarService {
@@ -19,7 +20,7 @@ export class CarService {
   }
 
   async getCarsBrands() {
-    return await this.prisma.carBrand.findMany({
+    const queryData = await this.prisma.carBrand.findMany({
       select: {
         name: true,
         description: true,
@@ -27,6 +28,11 @@ export class CarService {
         logoUrl: true,
       },
     });
+
+    return queryData.map((d) => ({
+      ...d,
+      name: capitalizeAll(d.name),
+    }));
   }
 
   async getBrandByName(name: string): Promise<string> {
@@ -65,7 +71,7 @@ export class CarService {
       },
     });
 
-    return existingModelQuery.id ?? null;
+    return existingModelQuery?.id ?? null;
   }
 
   async createModelByBrand(dto: CreateCarModelDTO) {
@@ -109,7 +115,7 @@ export class CarService {
       },
     });
 
-    const modelsMap = models.map((mod) => mod.name);
+    const modelsMap = models.map((mod) => mod.name.toUpperCase());
 
     return {
       brand: brandName,

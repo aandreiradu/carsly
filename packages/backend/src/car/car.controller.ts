@@ -14,6 +14,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { SuccessResponse } from 'config/types';
 import { CreateCarModelDTO } from './dto/create-car-model.dto';
 import { Public } from 'src/decorators';
+import { STATUS_CODES } from 'http';
 
 @Controller('/api/car')
 export class CarController {
@@ -90,19 +91,26 @@ export class CarController {
   @Public()
   @Get('/carmodel/:name')
   async getModelsByBrand(@Param() params: { name: string }) {
-    console.log('name', params.name);
-
     if (!params.name) {
       throw new BadRequestException('Expected request params: name');
     }
 
-    const models = await this.carsService.getModelsByBrands(
+    const dataModels = await this.carsService.getModelsByBrands(
       params.name.toLowerCase(),
     );
 
+    const { models } = dataModels;
+
+    let mapFormat = {};
+    mapFormat = {
+      ...mapFormat,
+      [params.name]: models,
+    };
+
     return {
       status: 200,
-      brand: models,
+      brandModels: mapFormat,
+      brand: params.name,
     };
   }
 }

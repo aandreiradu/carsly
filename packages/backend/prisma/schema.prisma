@@ -95,6 +95,10 @@ enum VehicleBodyType {
   pickup_truck
   van
   minibus
+  sedan
+  muscle_car
+  convertible
+  hatchback
 }
 
 enum VehicleCategory {

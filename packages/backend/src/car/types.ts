@@ -1,3 +1,5 @@
+export { VehicleBodyType } from '@prisma/client';
+
 export enum VehicleCategory {
   car,
   motorbike,
@@ -20,17 +22,19 @@ export enum FuelType {
   hydrogen = 'hydrogen',
 }
 
-export enum VehicleBodyType {
-  cabriolet = 'cabriolet',
-  roadster = 'roadster',
-  estate = 'estate',
-  saloon = 'saloon',
-  small = 'small',
-  sport = 'sport',
-  coupe = 'coupe',
-  suv = 'suv',
-  off_road = 'off_road',
-  pickup_truck = 'pickup_truck',
-  van = 'van',
-  minibus = 'minibus',
-}
+// export enum VehicleBodyType = PrismaVehicleType
+
+// {
+//   cabriolet = 'cabriolet',
+//   roadster = 'roadster',
+//   estate = 'estate',
+//   saloon = 'saloon',
+//   small = 'small',
+//   sport = 'sport',
+//   coupe = 'coupe',
+//   suv = 'suv',
+//   off_road = 'off_road',
+//   pickup_truck = 'pickup_truck',
+//   van = 'van',
+//   minibus = 'minibus',
+// }
