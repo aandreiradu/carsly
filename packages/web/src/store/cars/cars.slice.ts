@@ -9,10 +9,12 @@ type CarBrand = {
 
 export interface CarsState {
   brands: CarBrand[];
+  models: Record<string, string[]>;
 }
 
 const initialState: CarsState = {
   brands: [],
+  models: {},
 };
 
 export const carsSlice = createSlice({
@@ -23,8 +25,13 @@ export const carsSlice = createSlice({
       const { carsBrands } = action.payload;
       state.brands = carsBrands;
     },
+
+    setModelsByBrand: (state: CarsState, action: PayloadAction<{ brand: string; models: string[] }>) => {
+      const { brand, models } = action.payload;
+      state.models[brand] = models;
+    },
   },
 });
 
-export const { setCarsBrands } = carsSlice.actions;
+export const { setCarsBrands, setModelsByBrand } = carsSlice.actions;
 export default carsSlice.reducer;
