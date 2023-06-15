@@ -69,7 +69,7 @@ const TopLevelNotification = forwardRef<TopLevelNotificationHandlers, ITopLevelN
 
     return (
       <Transition appear show={notificationData.isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={hide}>
+        <Dialog as="div" className="relative z-[99]" onClose={hide}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"

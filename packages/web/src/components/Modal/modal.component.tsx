@@ -4,7 +4,7 @@ import { useImperativeHandle } from 'react';
 import { useState } from 'react';
 import { forwardRef } from 'react';
 import { ShowComponentProps } from '../../types/index.types';
-import { XCircle } from 'phosphor-react';
+import { ArrowLeft, XCircle } from 'phosphor-react';
 // import { ModalProps } from "../../types/index.types";
 
 export type ModalHandlers = {
@@ -13,15 +13,17 @@ export type ModalHandlers = {
 
 type ModalProps = {
   hasCloseButton: boolean;
+  hasPrevButton?: boolean;
   title: string;
   setShowComponent: ({ componentName, show }: ShowComponentProps) => void;
   children?: ReactNode;
   onClose?: () => void;
   className?: string;
+  onPrev?: () => void;
 };
 
 const Modal: React.ForwardRefRenderFunction<ModalHandlers, ModalProps> = (
-  { setShowComponent, hasCloseButton, title, children, onClose, className },
+  { setShowComponent, hasCloseButton, title, children, onClose, className, hasPrevButton, onPrev },
   ref,
 ) => {
   const [isOpen, setIsOpen] = useState(true);
@@ -38,6 +40,13 @@ const Modal: React.ForwardRefRenderFunction<ModalHandlers, ModalProps> = (
     }
   }, []);
 
+  const handlePrevButton = useCallback(() => {
+    if (typeof onPrev === 'function') {
+      console.log('am apelat asta');
+      onPrev();
+    }
+  }, []);
+
   return (
     <>
       {isOpen && (
@@ -47,7 +56,7 @@ const Modal: React.ForwardRefRenderFunction<ModalHandlers, ModalProps> = (
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className={`${className}bg-neutral-900/20 backdrop-blur p-8 fixed inset-0 z-50 grid place-items-center overflow-y-auto`}
+            className={`${className}bg-neutral-900/20 backdrop-blur p-3 lg:p-8 fixed inset-0 z-50 grid place-items-center overflow-y-auto`}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0, translateX: '-100%' }}
@@ -63,6 +72,14 @@ const Modal: React.ForwardRefRenderFunction<ModalHandlers, ModalProps> = (
                   width={32}
                   height={28}
                   className="absolute top-1 right-1 text-black cursor-pointer"
+                />
+              )}
+              {hasPrevButton && (
+                <ArrowLeft
+                  onClick={handlePrevButton}
+                  width={32}
+                  height={28}
+                  className="absolute top-1 left-1 text-black cursor-pointer"
                 />
               )}
 

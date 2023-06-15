@@ -5,17 +5,20 @@ import { CaretUp, CaretDown, Check } from 'phosphor-react';
 export type SelectProps = {
   dataSource: Record<'name', string>[];
   onChange: any;
+  cachedValue?: string;
 };
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-const Select = forwardRef<HTMLDivElement, SelectProps>(({ dataSource, onChange }, ref) => {
+const Select = forwardRef<HTMLDivElement, SelectProps>(({ dataSource, onChange, cachedValue }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState({ name: '' });
+  const [selected, setSelected] = useState({ name: cachedValue || '' });
 
   const handleOpen = () => setIsOpen((prev) => !prev);
+
+  console.log('selected.name este', selected.name);
 
   return (
     <div className="relative h-full" onClick={handleOpen}>
@@ -45,7 +48,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({ dataSource, onChange }
                 <Listbox.Option
                   key={dataIdx}
                   className={({ active }) =>
-                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                    `relative cursor-default select-none py-2 lg:pl-10 pl-2 lg:pr-4 pr-1 ${
                       active ? 'bg-amber-100 text-amber-900' : 'text-gray-900'
                     }`
                   }
