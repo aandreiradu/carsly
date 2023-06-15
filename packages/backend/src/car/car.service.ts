@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCarBrandDTO, CreateCarDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCarModelDTO } from './dto/create-car-model.dto';
+import { VehicleBodyType } from './types';
 
 @Injectable()
 export class CarService {
@@ -39,14 +40,49 @@ export class CarService {
     });
 
     if (!brandId) {
-      throw new BadRequestException('Could not identify brand by model');
+      throw new BadRequestException('Could not identify the brand');
     }
 
     return brandId.id;
   }
 
+  async existingBrandModel(
+    brandId: string,
+    model: string,
+    bodyType: VehicleBodyType,
+  ) {
+    /* 
+      Based on the brandId & model & bodyType, this will check if an existing model is already inserted
+    */
+    const existingModelQuery = await this.prisma.carModel.findFirst({
+      where: {
+        brandId: brandId,
+        name: model,
+        bodyType: bodyType,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return existingModelQuery.id ?? null;
+  }
+
   async createModelByBrand(dto: CreateCarModelDTO) {
     const brandId = await this.getBrandByName(dto.brand);
+
+    const existingModel = await this.existingBrandModel(
+      brandId,
+      dto.name,
+      dto.bodyType,
+    );
+    console.log('existingModel', existingModel);
+
+    if (existingModel) {
+      throw new BadRequestException(
+        `This brand ${dto.brand}, model ${dto.name} with body-type ${dto.bodyType} already exists.`,
+      );
+    }
 
     await this.prisma.carModel.create({
       data: {

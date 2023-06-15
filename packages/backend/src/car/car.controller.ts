@@ -28,22 +28,28 @@ export class CarController {
       if (yearOfEst) {
         dto.yearOfEst = new Date(dto.yearOfEst).toISOString();
       }
+
+      await this.carsService.getBrandByName(dto.name);
+
       await this.carsService.createCarBrand(dto);
       return {
         status: 201,
         message: 'Car Brand created successfully',
       };
     } catch (error) {
-      console.log('error', error);
+      console.log(')))error', error);
       if (error.constructor.name === PrismaClientKnownRequestError.name) {
         if (error.code === 'P2002') {
           throw new ForbiddenException('Car brand already exists');
         }
       }
 
-      throw new InternalServerErrorException(
-        'Something went wrong, please try agin later',
-      );
+      if (error instanceof Error) {
+        const { message } = error;
+        throw new BadRequestException(message);
+      }
+
+      throw new InternalServerErrorException('Unexpected error occured');
     }
   }
 
@@ -57,38 +63,32 @@ export class CarController {
     } catch (error) {
       console.error('__ERROR getCarsBrands controller', error);
       if (error instanceof Error) {
-        throw new BadRequestException(error.message);
+        return {
+          message: error.message,
+        };
       }
 
-      throw new InternalServerErrorException('Internal server error');
+      throw new InternalServerErrorException();
     }
   }
 
-  @Public()
   @Post('/carmodel')
-  async createCar(@Body() dto: CreateCarModelDTO): Promise<SuccessResponse> {
-    try {
-      await this.carsService.createModelByBrand({
-        ...dto,
-        name: dto.name.trim().toLocaleLowerCase(),
-      });
+  async createCarModel(
+    @Body() dto: CreateCarModelDTO,
+  ): Promise<SuccessResponse> {
+    await this.carsService.createModelByBrand({
+      ...dto,
+      name: dto.name.trim().toLocaleLowerCase(),
+    });
 
-      return {
-        status: 201,
-        message: 'car model added',
-      };
-    } catch (error) {
-      console.error('__ERROR createCar controller', error);
-      if (error instanceof Error) {
-        throw new BadRequestException(error.message);
-      }
-
-      throw new InternalServerErrorException('Internal server error');
-    }
+    return {
+      status: 201,
+      message: 'car model added',
+    };
   }
 
   @Public()
-  @Get('/brandModels/:name')
+  @Get('/carmodel/:name')
   async getModelsByBrand(@Param() params: { name: string }) {
     console.log('name', params.name);
 
