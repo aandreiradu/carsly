@@ -113,6 +113,9 @@ export class CarService {
       select: {
         name: true,
       },
+      orderBy: {
+        name: 'asc',
+      },
     });
 
     const modelsMap = models.map((mod) => mod.name.toUpperCase());
