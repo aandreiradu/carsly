@@ -1,16 +1,17 @@
-import { Lightbulb } from 'phosphor-react';
-import Checkbox from '../../components/Checkbox/checkbox.component';
+import { Camera, Lightbulb } from 'phosphor-react';
+import Checkbox from '../../components/UI/Checkbox/checkbox.component';
 import { AdPageProps } from '../../types/ad.types';
 import { Input } from '../../components/UI/Input/input.component';
+import TextArea from '../../components/UI/Textarea/textarea.component';
+import AdSectionHeader from '../../components/Ad/adSectionHeader.component';
+import AdSectionHeaderWithImage from '../../components/Ad/adSectionHeaderWithImage.component';
 
 const Ad = ({ title }: AdPageProps) => {
   return (
     <section className="w-full bg-white px-5 py-3 md:px-16 md:py-7 xl:px-64 xl:py-14 font-kanit text-black ">
       <h1 className=" text-xl font-bold py-4 tracking-wide lg:text-3xl lg:py-1 lg:tracking-wider">{title}</h1>
 
-      <h3 className="inline-block relative text-xl font-bold /*py-2*/ tracking-wide my-1 lg:text-xl /*lg:py-4*/ lg:my-3 after:absolute after:-bottom-1 after:h-[2px] after:bg-black/40 after:w-3/6 after:hover:w-4/5 after:transition-all after:duration-300  after:right-0 after:left-0 after:mx-auto after:my-0">
-        Vehicle details
-      </h3>
+      <AdSectionHeader title="Vehicle details" />
 
       <p className="text-gray-500 text-base font-bold mt-1 tracking-wide lg:text-base">Status</p>
 
@@ -49,10 +50,7 @@ const Ad = ({ title }: AdPageProps) => {
         </div>
       </div>
 
-      {/* <h3 className="relative text-xl font-bold py-2 tracking-wide my-1 lg:text-xl lg:py-4 lg:my-3">General Informations</h3> */}
-      <h3 className="inline-block relative text-xl font-bold my-1 lg:text-xl mt-5 lg:mt-10 lg:mb-5 tracking-wide after:absolute after:-bottom-1 after:h-[2px] after:bg-black/40 after:w-3/6 after:hover:w-4/5 after:transition-all after:duration-300  after:right-0 after:left-0 after:mx-auto after:my-0">
-        General Informations
-      </h3>
+      <AdSectionHeader title="General Informations" />
 
       <div className="flex space-x-4 w-full">
         <Lightbulb className="w-10 h-10 lg:h-6 lg:w-6" />
@@ -85,6 +83,7 @@ const Ad = ({ title }: AdPageProps) => {
           />
         </div>
       </div>
+
       <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
         <div className="flex flex-col w-full lg:flex-1">
           <label className="my-2">Date of first registration</label>
@@ -93,16 +92,12 @@ const Ad = ({ title }: AdPageProps) => {
             {' / '}
             <Input id="vin" type="number" placeholder="LL" className="border-none bg-gray-200 rounded-lg w-28 lg:w-16" />
             {' / '}
-            <Input id="vin" type="number" placeholder="AA" className="border-none bg-gray-200 rounded-lg w-28 lg:w-16" />
+            <Input id="vin" type="number" placeholder="AAAA" className="border-none bg-gray-200 rounded-lg w-32 lg:w-20" />
           </div>
         </div>
       </div>
 
-      {/* <h3 className="relative text-xl font-bold tracking-wide my-1 lg:text-xl mt-5 lg:mt-10">Technical details</h3> */}
-
-      <h3 className="inline-block relative text-xl font-bold my-1 lg:text-xl mt-5 lg:mt-10 lg:mb-5 tracking-wide after:absolute after:-bottom-1 after:h-[2px] after:bg-black/40 after:w-3/6 after:hover:w-4/5 after:transition-all after:duration-300  after:right-0 after:left-0 after:mx-auto after:my-0">
-        Technical details
-      </h3>
+      <AdSectionHeader title="Technical details" />
 
       <p className="text-sm lg:text-base font-light">
         Please check the details of the vehicle before publishing the ad. You can change mistakes regarding VIN, make, model,
@@ -222,9 +217,7 @@ const Ad = ({ title }: AdPageProps) => {
         </div>
       </div>
 
-      <h3 className="inline-block relative text-xl font-bold my-1 lg:text-xl mt-5 lg:mt-10 lg:mb-5 tracking-wide after:absolute after:-bottom-1 after:h-[2px] after:bg-black/40 after:w-3/6 after:hover:w-4/5 after:transition-all after:duration-300  after:right-0 after:left-0 after:mx-auto after:my-0">
-        Body type details
-      </h3>
+      <AdSectionHeader title="Body type details" />
 
       <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
         <div className="flex flex-col w-full lg:flex-1 col-span-2">
@@ -258,6 +251,180 @@ const Ad = ({ title }: AdPageProps) => {
           />
         </div>
       </div>
+
+      {/* <div className="flex space-x-3 relative text-xl font-bold my-1 lg:text-xl mt-5 lg:mt-10 lg:mb-5 tracking-wide">
+        <h3>Images</h3>
+        <div className="flex space-x-2 items-center bg-indigo-500 text-white px-2 rounded-md">
+          <Camera className="h-4 w-4" />
+          <span className="text-xs">0 / 5</span>
+        </div>
+      </div> */}
+
+      <AdSectionHeaderWithImage title="Images" image={<Camera className="h-4 w-4" />} labelText={'0 / 5'} />
+
+      <div className="flex space-x-4 w-full my-5">
+        <Lightbulb className="w-10 h-10 lg:h-6 lg:w-6" />
+        <span className="text-base font-light">
+          Increase the attractiveness of the ad by adding a YouTube link with a recording of the vehicle
+        </span>
+      </div>
+
+      <div className="flex flex-col w-full lg:flex-1">
+        <Input
+          label="Video Youtube "
+          labelClasses="my-2"
+          id="youtubeVideo"
+          type="text"
+          placeholder="Ex: https://www.youtube.com/watch?v=2g83-3j7nww&t=51s"
+          className="border-none bg-gray-200 rounded-lg"
+        />
+      </div>
+
+      {/* <div className="flex space-x-3 relative text-xl font-bold my-1 lg:text-xl mt-5 lg:mt-10 lg:mb-5 tracking-wide">
+        <h3>Vehicle description</h3>
+        <div className="flex space-x-2 items-center bg-indigo-500 text-white px-2 rounded-md">
+          <span className="text-xs">OPTIONAL</span>
+        </div>
+      </div> */}
+
+      <AdSectionHeaderWithImage title="Vehicle description" labelText="OPTIONAL" />
+
+      <div className="flex flex-col w-full lg:flex-1">
+        <Input
+          label="Short description"
+          labelClasses="my-2"
+          id="shortDescription"
+          type="text"
+          placeholder="Ex: First Owner / Battery replace, etc"
+          className="border-none bg-gray-200 rounded-lg"
+        />
+      </div>
+
+      <div className="flex flex-col w-full lg:flex-1 my-8">
+        <TextArea maxLen={10} minLen={1} label="Description" className="bg-gray-200 rounded-md" />
+      </div>
+
+      <AdSectionHeaderWithImage title="Vehicle historic" labelText="OPTIONAL" />
+
+      <p className="text-base lg:text-xl font-light">Origin of the vehicle</p>
+
+      <div className="flex flex-col w-full lg:flex-1">
+        <Input
+          label="Vehicle origin country"
+          labelClasses="my-2"
+          id="VehicleOrigincountry"
+          type="text"
+          placeholder="Select"
+          className="border-none bg-gray-200 rounded-lg w-full lg:w-1/3"
+        />
+      </div>
+
+      <p className="mt-7 text-base lg:text-xl font-light">Vehicle Status</p>
+
+      <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5">
+        <Checkbox
+          label="First owner"
+          id="firstOnwer"
+          className="text-black focus:ring-black h-6"
+          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-6"
+          labelClassNames="text-lg"
+        />
+        <Checkbox
+          label="Without accident"
+          id="withoutAccident"
+          className="text-black focus:ring-black h-6"
+          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-6"
+          labelClassNames="text-lg"
+        />
+        <Checkbox
+          label="Registered"
+          id="isVehicleRegistered"
+          className="text-black focus:ring-black h-6"
+          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
+          labelClassNames="text-lg"
+        />
+        <Checkbox
+          label="Service card"
+          id="serviceCard"
+          className="text-black focus:ring-black h-6"
+          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
+          labelClassNames="text-lg"
+        />
+        <Checkbox
+          label="Vintage car"
+          id="vintagecAR"
+          className="text-black focus:ring-black h-6"
+          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
+          labelClassNames="text-lg"
+        />
+        <Checkbox
+          label="Tuning"
+          id="tuning"
+          className="text-black focus:ring-black h-6"
+          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
+          labelClassNames="text-lg"
+        />
+      </div>
+
+      <AdSectionHeader title="Price" />
+
+      <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
+        <div className="flex flex-col w-full lg:flex-1">
+          <Input
+            label="Price*"
+            id="price"
+            type="number"
+            placeholder="Ex: 8000 EUR"
+            className="border-none bg-gray-200 rounded-lg"
+          />
+        </div>
+        <div className="flex flex-col w-full lg:flex-1">
+          <Input
+            label="Currency*"
+            id="currency"
+            type="text"
+            placeholder="EUR"
+            className="border-none bg-gray-200 rounded-lg"
+          />
+        </div>
+      </div>
+
+      <AdSectionHeader title="Price details" />
+
+      <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5">
+        <Checkbox
+          label="Negotiable"
+          id="priceNegotiable"
+          className="text-black focus:ring-black h-6"
+          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
+          labelClassNames="text-lg"
+        />
+        <Checkbox
+          label="Leasing"
+          id="leasing"
+          className="text-black focus:ring-black h-6"
+          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
+          labelClassNames="text-lg"
+        />
+      </div>
+
+      <AdSectionHeader title="Seller details" />
+
+      <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-2">
+        <div className="flex flex-col w-full lg:flex-1">
+          <Input label="Name" id="sellerName" type="text" className="border-none bg-gray-200 rounded-lg mt-1" />
+        </div>
+        <div className="flex flex-col w-full lg:flex-1">
+          <Input label="City" id="sellerCity" type="text" className="border-none bg-gray-200 rounded-lg mt-1" />
+        </div>
+        <div className="flex flex-col w-full lg:flex-1">
+          <Input label="Phone number" id="sellerPhone" type="text" className="border-none bg-gray-200 rounded-lg mt-1" />
+        </div>
+      </div>
+
+      <button className="cursor-pointer bg-indigo-500 hover:bg-indigo-800 shadow-md hover:transition-colors text-white flex items-center justify-center my-5 py-2 px-3 lg:w-48 mx-auto text-xl rounded-lg lg:my-10 lg:py-3 lg:px-5">
+        Submit
+      </button>
     </section>
   );
 };
