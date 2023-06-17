@@ -55,11 +55,15 @@ const TextArea = ({ label, maxLen, minLen, rows, className }: TextareaProps) => 
       ></textarea>
       <div className="flex">
         {descriptionCountExceeded && (
-          <span className="flex text-red-500 items-center flex-1 w-full">
+          <span className="text-sm lg:text-base flex text-red-500 items-center basis-3/5 ">
             Loooks like you exceeded the limit of {maxLen} characters.
           </span>
         )}
-        <span className={`flex items-center justify-end w-full flex-1 ${descriptionCountExceeded && 'text-red-500'}`}>
+        <span
+          className={`text-sm lg:text-base flex items-center justify-end  basis-2/5 ${
+            descriptionCountExceeded ? 'text-red-500' : 'flex-1'
+          }`}
+        >
           {descriptionCount} / 6000
         </span>
       </div>
