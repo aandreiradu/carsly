@@ -54,7 +54,6 @@ const TopLevelNotification = forwardRef<TopLevelNotificationHandlers, ITopLevelN
 
     useEffect(() => {
       const timeout = setTimeout(() => {
-        console.log('timeout running', dismissAfterXMs);
         hide();
       }, dismissAfterXMs);
 
