@@ -28,11 +28,9 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             className={`${cn('h-8 w-6 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600', className)}`}
           />
         </div>
-        <div className="ml-3 text-sm leading-6">
-          <label htmlFor="comments" className={`font-medium text-gray-900 ${labelClassNames}`}>
-            {label}
-          </label>{' '}
-        </div>
+        <label htmlFor={id} className={`ml-3 text-sm leading-6 font-medium text-gray-900 ${labelClassNames}`}>
+          {label}
+        </label>
       </div>
     );
   },
