@@ -5,10 +5,36 @@ import { Input } from '../../components/UI/Input/input.component';
 import TextArea from '../../components/UI/Textarea/textarea.component';
 import AdSectionHeader from '../../components/Ad/adSectionHeader.component';
 import AdSectionHeaderWithImage from '../../components/Ad/adSectionHeaderWithImage.component';
+import { useZodForm } from '../../hooks/useZodForm/useZodForm.hook';
+import { AdProps, adSchema } from '../../schema/ad.schema';
+import { SubmitHandler } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
 const Ad = ({ title }: AdPageProps) => {
+  const adPageForm = useZodForm({
+    schema: adSchema,
+    defaultValues: {
+      isImported: false,
+      isDamaged: false,
+    },
+  });
+
+  const handleIsDamaged = (args: boolean) => {
+    adPageForm.setValue('isImported', args);
+  };
+
+  console.log(adPageForm.watch());
+  console.log(adPageForm.formState.errors);
+
+  const onSubmit: SubmitHandler<AdProps> = (data) => {
+    // TODO
+  };
+
   return (
-    <section className="w-full bg-white px-5 py-3 md:px-16 md:py-7 xl:px-64 xl:py-14 font-kanit text-black ">
+    <form
+      onSubmit={adPageForm.handleSubmit(onSubmit)}
+      className="w-full bg-white px-5 py-3 md:px-16 md:py-7 xl:px-64 xl:py-14 font-kanit text-black "
+    >
       <h1 className=" text-xl font-bold py-4 tracking-wide lg:text-3xl lg:py-1 lg:tracking-wider">{title}</h1>
 
       <AdSectionHeader title="Vehicle details" />
@@ -17,22 +43,38 @@ const Ad = ({ title }: AdPageProps) => {
 
       <div className="flex flex-col">
         <div className="flex gap-5">
-          <Checkbox
-            label="Damaged"
-            id="damaged"
-            className="text-black focus:ring-black h-6"
-            wrapperClassNames="flex items-center basis-3/6 px-3 py-1 border border-gray-200 mt-6"
-            labelClassNames="text-lg"
+          <Controller
+            name="isDamaged"
+            control={adPageForm.control}
+            render={({ field: { onChange } }) => (
+              <Checkbox
+                {...adPageForm.register('isDamaged')}
+                label="Damaged"
+                id="damaged"
+                className="text-black focus:ring-black h-6"
+                wrapperClassNames="flex items-center basis-3/6 px-3 py-1 border border-gray-200 mt-6"
+                labelClassNames="text-lg"
+                onChange={onChange}
+              />
+            )}
           />
+
           <div className="flex basis-3/6 ">
             <div className="flex flex-col w-full">
               <label htmlFor="imported p-1">Imported*</label>
               <div className="flex items-center justify-between w-full">
-                <button className="relative flex justify-center items-center w-full bg-gray-200 m-0 px-3 py-2 text-black font-bold cursor-pointer leading-6 hover:bg-indigo-600 focus:bg-indigo-600 group">
+                <button
+                  type="button"
+                  onClick={() => handleIsDamaged(false)}
+                  className="relative flex justify-center items-center w-full bg-gray-200 m-0 px-3 py-2 text-black font-bold cursor-pointer leading-6 hover:bg-indigo-600 focus:bg-indigo-600 group"
+                >
                   No
-                  {/* <span className="absolute h-4 inline-block right-0 w-[1px] bg-gray-500 group-hover:hidden group-focus:hidden"></span> */}
                 </button>
-                <button className="relative flex justify-center items-center w-full bg-gray-200 m-0 px-3 py-2 text-black font-bold cursor-pointer leading-6 hover:bg-indigo-600 focus:bg-indigo-600">
+                <button
+                  type="button"
+                  onClick={() => handleIsDamaged(true)}
+                  className="relative flex justify-center items-center w-full bg-gray-200 m-0 px-3 py-2 text-black font-bold cursor-pointer leading-6 hover:bg-indigo-600 focus:bg-indigo-600"
+                >
                   Yes
                 </button>
               </div>
@@ -40,12 +82,20 @@ const Ad = ({ title }: AdPageProps) => {
           </div>
         </div>
         <div className="flex lg:w-[49%] mt-6">
-          <Checkbox
-            label="Right hand drive"
-            id="rightHandDrive"
-            className="text-black focus:ring-black h-6"
-            wrapperClassNames="w-full px-3 py-1 border border-gray-200"
-            labelClassNames="text-lg"
+          <Controller
+            control={adPageForm.control}
+            name="isRightHandDrive"
+            render={({ field: { onChange } }) => (
+              <Checkbox
+                {...adPageForm.register('isRightHandDrive')}
+                label="Right hand drive"
+                id="rightHandDrive"
+                className="text-black focus:ring-black h-6"
+                wrapperClassNames="w-full px-3 py-1 border border-gray-200"
+                labelClassNames="text-lg"
+                onChange={onChange}
+              />
+            )}
           />
         </div>
       </div>
@@ -61,38 +111,92 @@ const Ad = ({ title }: AdPageProps) => {
 
       <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
         <div className="flex flex-col w-full lg:flex-1">
-          <Input
-            label="VIN (chassis series)"
-            labelClasses="my-2"
-            id="vin"
-            type="text"
-            placeholder="ex: 1FTPW14V88FC22108"
-            maxLength={17}
-            className="border-none bg-gray-200 rounded-lg"
+          <Controller
+            control={adPageForm.control}
+            name="VIN"
+            render={({ field: { onChange } }) => (
+              <Input
+                {...adPageForm.register('VIN')}
+                label="VIN (chassis series)*"
+                labelClasses="my-2"
+                id="vin"
+                type="text"
+                placeholder="ex: 1FTPW14V88FC22108"
+                maxLength={17}
+                className="border-none bg-gray-200 rounded-lg"
+                onChange={onChange}
+              />
+            )}
           />
         </div>
         <div className="flex flex-col w-full lg:flex-1">
-          <Input
-            label="KM*"
-            labelClasses="my-2"
-            id="km"
-            type="number"
-            placeholder="ex: 100 000"
-            maxLength={17}
-            className="border-none bg-gray-200 rounded-lg"
+          <Controller
+            control={adPageForm.control}
+            name="KM"
+            render={({ field: { onChange } }) => (
+              <Input
+                label="KM*"
+                labelClasses="my-2"
+                id="km"
+                type="number"
+                placeholder="ex: 100 000"
+                maxLength={17}
+                className="border-none bg-gray-200 rounded-lg"
+                onChange={onChange}
+              />
+            )}
           />
         </div>
       </div>
 
       <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
         <div className="flex flex-col w-full lg:flex-1">
-          <label className="my-2">Date of first registration</label>
+          <label className="my-2">Date of first registration*</label>
           <div className="flex items-center gap-2">
-            <Input id="vin" type="number" placeholder="ZZ" className="border-none bg-gray-200 rounded-lg w-28 lg:w-16" />
+            <Controller
+              control={adPageForm.control}
+              name="dayOfRegistration"
+              render={({ field: { onChange } }) => (
+                <Input
+                  {...adPageForm.register('dayOfRegistration')}
+                  id="zzDOR"
+                  type="number"
+                  placeholder="DD"
+                  className="border-none bg-gray-200 rounded-lg w-28 lg:w-16"
+                  onChange={onChange}
+                />
+              )}
+            />
             {' / '}
-            <Input id="vin" type="number" placeholder="LL" className="border-none bg-gray-200 rounded-lg w-28 lg:w-16" />
+            <Controller
+              control={adPageForm.control}
+              name="monthOfRegistration"
+              render={({ field: { onChange } }) => (
+                <Input
+                  {...adPageForm.register('monthOfRegistration')}
+                  id="mmDOR"
+                  type="number"
+                  placeholder="MM"
+                  className="border-none bg-gray-200 rounded-lg w-28 lg:w-16"
+                  onChange={onChange}
+                />
+              )}
+            />
             {' / '}
-            <Input id="vin" type="number" placeholder="AAAA" className="border-none bg-gray-200 rounded-lg w-32 lg:w-20" />
+            <Controller
+              control={adPageForm.control}
+              name="yearOfRegistration"
+              render={({ field: { onChange } }) => (
+                <Input
+                  {...adPageForm.register('yearOfRegistration')}
+                  id="yyyyDOR"
+                  type="number"
+                  placeholder="YYY"
+                  className="border-none bg-gray-200 rounded-lg w-32 lg:w-20"
+                  onChange={onChange}
+                />
+              )}
+            />
           </div>
         </div>
       </div>
@@ -146,33 +250,57 @@ const Ad = ({ title }: AdPageProps) => {
           />
         </div>
         <div className="flex flex-col w-full lg:flex-1">
-          <Input
-            label="Power*"
-            labelClasses="my-2"
-            id="power"
-            type="text"
-            placeholder="Ex: 150"
-            className="border-none bg-gray-200 rounded-lg"
+          <Controller
+            control={adPageForm.control}
+            name="power"
+            render={({ field: { onChange } }) => (
+              <Input
+                {...adPageForm.register('power')}
+                label="Power*"
+                labelClasses="my-2"
+                id="power"
+                type="text"
+                placeholder="Ex: 150"
+                className="border-none bg-gray-200 rounded-lg"
+                onChange={onChange}
+              />
+            )}
           />
         </div>
         <div className="flex flex-col w-full lg:flex-1">
-          <Input
-            label="Engine size*"
-            labelClasses="my-2"
-            id="engineSize"
-            type="text"
-            placeholder="Ex: 1 395 cm3"
-            className="border-none bg-gray-200 rounded-lg"
+          <Controller
+            control={adPageForm.control}
+            name="engineSize"
+            render={({ field: { onChange } }) => (
+              <Input
+                {...adPageForm.register('engineSize')}
+                label="Engine size*"
+                labelClasses="my-2"
+                id="engineSize"
+                type="text"
+                placeholder="Ex: 1 395 cm3"
+                className="border-none bg-gray-200 rounded-lg"
+                onChange={onChange}
+              />
+            )}
           />
         </div>
         <div className="flex flex-col w-full lg:flex-1">
-          <Input
-            label="No of doors*"
-            labelClasses="my-2"
-            id="noOfDoors"
-            type="text"
-            placeholder="Select"
-            className="border-none bg-gray-200 rounded-lg"
+          <Controller
+            control={adPageForm.control}
+            name="engineSize"
+            render={({ field: { onChange } }) => (
+              <Input
+                {...adPageForm.register('noOfDoors')}
+                label="No of doors*"
+                labelClasses="my-2"
+                id="noOfDoors"
+                type="text"
+                placeholder="Select"
+                className="border-none bg-gray-200 rounded-lg"
+                onChange={onChange}
+              />
+            )}
           />
         </div>
         <div className="flex flex-col w-full lg:flex-1">
@@ -206,13 +334,21 @@ const Ad = ({ title }: AdPageProps) => {
           />
         </div>
         <div className="flex flex-col w-full lg:flex-1">
-          <Input
-            label="CO2 Emissions"
-            labelClasses="my-2"
-            id="co2emissions"
-            type="text"
-            placeholder="g/km"
-            className="border-none bg-gray-200 rounded-lg"
+          <Controller
+            control={adPageForm.control}
+            name="co2emissions"
+            render={({ field: { onChange } }) => (
+              <Input
+                {...adPageForm.register('co2emissions')}
+                label="CO2 Emissions"
+                labelClasses="my-2"
+                id="co2emissions"
+                type="text"
+                placeholder="g/km"
+                className="border-none bg-gray-200 rounded-lg"
+                onChange={onChange}
+              />
+            )}
           />
         </div>
       </div>
@@ -270,13 +406,21 @@ const Ad = ({ title }: AdPageProps) => {
       </div>
 
       <div className="flex flex-col w-full lg:flex-1">
-        <Input
-          label="Video Youtube "
-          labelClasses="my-2"
-          id="youtubeVideo"
-          type="text"
-          placeholder="Ex: https://www.youtube.com/watch?v=2g83-3j7nww&t=51s"
-          className="border-none bg-gray-200 rounded-lg"
+        <Controller
+          control={adPageForm.control}
+          name="youtubeVideo"
+          render={({ field: { onChange } }) => (
+            <Input
+              {...adPageForm.register('youtubeVideo')}
+              label="Video Youtube "
+              labelClasses="my-2"
+              id="youtubeVideo"
+              type="text"
+              placeholder="Ex: https://www.youtube.com/watch?v=2g83-3j7nww&t=51s"
+              className="border-none bg-gray-200 rounded-lg"
+              onChange={onChange}
+            />
+          )}
         />
       </div>
 
@@ -290,18 +434,39 @@ const Ad = ({ title }: AdPageProps) => {
       <AdSectionHeaderWithImage title="Vehicle description" labelText="OPTIONAL" />
 
       <div className="flex flex-col w-full lg:flex-1">
-        <Input
-          label="Short description"
-          labelClasses="my-2"
-          id="shortDescription"
-          type="text"
-          placeholder="Ex: First Owner / Battery replace, etc"
-          className="border-none bg-gray-200 rounded-lg"
+        <Controller
+          control={adPageForm.control}
+          name="shortDescription"
+          render={({ field: { onChange } }) => (
+            <Input
+              {...adPageForm.register('shortDescription')}
+              label="Short description"
+              labelClasses="my-2"
+              id="shortDescription"
+              type="text"
+              placeholder="Ex: First Owner / Battery replace, etc"
+              className="border-none bg-gray-200 rounded-lg"
+              onChange={onChange}
+            />
+          )}
         />
       </div>
 
       <div className="flex flex-col w-full lg:flex-1 my-8">
-        <TextArea maxLen={10} minLen={1} label="Description" className="bg-gray-200 rounded-md" />
+        <Controller
+          control={adPageForm.control}
+          name="description"
+          render={({ field: { onChange } }) => (
+            <TextArea
+              {...adPageForm.register('shortDescription')}
+              maxLen={10}
+              minLen={1}
+              label="Description"
+              className="bg-gray-200 rounded-md"
+              onChange={onChange}
+            />
+          )}
+        />
       </div>
 
       <AdSectionHeaderWithImage title="Vehicle historic" labelText="OPTIONAL" />
@@ -309,60 +474,121 @@ const Ad = ({ title }: AdPageProps) => {
       <p className="text-base lg:text-xl font-light">Origin of the vehicle</p>
 
       <div className="flex flex-col w-full lg:flex-1">
-        <Input
-          label="Vehicle origin country"
-          labelClasses="my-2"
-          id="VehicleOrigincountry"
-          type="text"
-          placeholder="Select"
-          className="border-none bg-gray-200 rounded-lg w-full lg:w-1/3"
+        <Controller
+          control={adPageForm.control}
+          name="vehicleOrigin"
+          render={({ field: { onChange } }) => (
+            <Input
+              {...adPageForm.register('vehicleOrigin')}
+              label="Vehicle origin country"
+              labelClasses="my-2"
+              id="VehicleOrigincountry"
+              type="text"
+              placeholder="Select"
+              className="border-none bg-gray-200 rounded-lg w-full lg:w-1/3"
+              onChange={onChange}
+            />
+          )}
         />
       </div>
 
       <p className="mt-7 text-base lg:text-xl font-light">Vehicle Status</p>
 
       <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5">
-        <Checkbox
-          label="First owner"
-          id="firstOnwer"
-          className="text-black focus:ring-black h-6"
-          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-6"
-          labelClassNames="text-lg"
+        <Controller
+          control={adPageForm.control}
+          name="isFirstOwner"
+          render={({ field: { onChange } }) => (
+            <Checkbox
+              {...adPageForm.register('isFirstOwner')}
+              label="First owner"
+              id="firstOnwer"
+              className="text-black focus:ring-black h-6"
+              wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-6"
+              labelClassNames="text-lg"
+              onChange={onChange}
+            />
+          )}
         />
-        <Checkbox
-          label="Without accident"
-          id="withoutAccident"
-          className="text-black focus:ring-black h-6"
-          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-6"
-          labelClassNames="text-lg"
+
+        <Controller
+          control={adPageForm.control}
+          name="isWithoutAccident"
+          render={({ field: { onChange } }) => (
+            <Checkbox
+              {...adPageForm.register('isWithoutAccident')}
+              label="Without accident"
+              id="withoutAccident"
+              className="text-black focus:ring-black h-6"
+              wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-6"
+              labelClassNames="text-lg"
+              onChange={onChange}
+            />
+          )}
         />
-        <Checkbox
-          label="Registered"
-          id="isVehicleRegistered"
-          className="text-black focus:ring-black h-6"
-          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
-          labelClassNames="text-lg"
+
+        <Controller
+          control={adPageForm.control}
+          name="isRegistered"
+          render={({ field: { onChange } }) => (
+            <Checkbox
+              {...adPageForm.register('isRegistered')}
+              label="Registered"
+              id="isVehicleRegistered"
+              className="text-black focus:ring-black h-6"
+              wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
+              labelClassNames="text-lg"
+              onChange={onChange}
+            />
+          )}
         />
-        <Checkbox
-          label="Service card"
-          id="serviceCard"
-          className="text-black focus:ring-black h-6"
-          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
-          labelClassNames="text-lg"
+
+        <Controller
+          control={adPageForm.control}
+          name="isServiceCardAvailable"
+          render={({ field: { onChange } }) => (
+            <Checkbox
+              {...adPageForm.register('isServiceCardAvailable')}
+              label="Service card"
+              id="serviceCard"
+              className="text-black focus:ring-black h-6"
+              wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
+              labelClassNames="text-lg"
+              onChange={onChange}
+            />
+          )}
         />
-        <Checkbox
-          label="Vintage car"
-          id="vintagecAR"
-          className="text-black focus:ring-black h-6"
-          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
-          labelClassNames="text-lg"
+
+        <Controller
+          control={adPageForm.control}
+          name="isVintageCar"
+          render={({ field: { onChange } }) => (
+            <Checkbox
+              {...adPageForm.register('isVintageCar')}
+              label="Vintage car"
+              id="vintagecAR"
+              className="text-black focus:ring-black h-6"
+              wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
+              labelClassNames="text-lg"
+              onChange={onChange}
+            />
+          )}
         />
-        <Checkbox
-          label="Tuning"
-          id="tuning"
-          className="text-black focus:ring-black h-6"
-          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
-          labelClassNames="text-lg"
+
+        <Controller
+          control={adPageForm.control}
+          name="hasTuning"
+          render={({ field: { onChange } }) => (
+            <Checkbox
+              {...adPageForm.register('hasTuning')}
+              label="Tuning"
+              id="tuning"
+              className="text-black focus:ring-black h-6"
+              wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
+              labelClassNames="text-lg"
+              onChange={onChange}
+            />
+          )}
         />
       </div>
 
@@ -370,21 +596,37 @@ const Ad = ({ title }: AdPageProps) => {
 
       <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
         <div className="flex flex-col w-full lg:flex-1">
-          <Input
-            label="Price*"
-            id="price"
-            type="number"
-            placeholder="Ex: 8000 EUR"
-            className="border-none bg-gray-200 rounded-lg"
+          <Controller
+            control={adPageForm.control}
+            name="price"
+            render={({ field: { onChange } }) => (
+              <Input
+                {...adPageForm.register('price')}
+                label="Price*"
+                id="price"
+                type="number"
+                placeholder="Ex: 8000 EUR"
+                className="border-none bg-gray-200 rounded-lg"
+                onChange={onChange}
+              />
+            )}
           />
         </div>
         <div className="flex flex-col w-full lg:flex-1">
-          <Input
-            label="Currency*"
-            id="currency"
-            type="text"
-            placeholder="EUR"
-            className="border-none bg-gray-200 rounded-lg"
+          <Controller
+            control={adPageForm.control}
+            name="price"
+            render={({ field: { onChange } }) => (
+              <Input
+                {...adPageForm.register('currency')}
+                label="Currency*"
+                id="currency"
+                type="text"
+                placeholder="EUR"
+                className="border-none bg-gray-200 rounded-lg"
+                onChange={onChange}
+              />
+            )}
           />
         </div>
       </div>
@@ -392,19 +634,36 @@ const Ad = ({ title }: AdPageProps) => {
       <AdSectionHeader title="Price details" />
 
       <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5">
-        <Checkbox
-          label="Negotiable"
-          id="priceNegotiable"
-          className="text-black focus:ring-black h-6"
-          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
-          labelClassNames="text-lg"
+        <Controller
+          control={adPageForm.control}
+          name="isNegotiable"
+          render={({ field: { onChange } }) => (
+            <Checkbox
+              {...adPageForm.register('isNegotiable')}
+              label="Negotiable"
+              id="priceNegotiable"
+              className="text-black focus:ring-black h-6"
+              wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
+              labelClassNames="text-lg"
+              onChange={onChange}
+            />
+          )}
         />
-        <Checkbox
-          label="Leasing"
-          id="leasing"
-          className="text-black focus:ring-black h-6"
-          wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
-          labelClassNames="text-lg"
+
+        <Controller
+          control={adPageForm.control}
+          name="isLeasing"
+          render={({ field: { onChange } }) => (
+            <Checkbox
+              {...adPageForm.register('isLeasing')}
+              label="Leasing"
+              id="leasing"
+              className="text-black focus:ring-black h-6"
+              wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
+              labelClassNames="text-lg"
+              onChange={onChange}
+            />
+          )}
         />
       </div>
 
@@ -412,20 +671,59 @@ const Ad = ({ title }: AdPageProps) => {
 
       <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-2">
         <div className="flex flex-col w-full lg:flex-1">
-          <Input label="Name" id="sellerName" type="text" className="border-none bg-gray-200 rounded-lg mt-1" />
+          <Controller
+            control={adPageForm.control}
+            name="sellerFullName"
+            render={({ field: { onChange } }) => (
+              <Input
+                {...adPageForm.register('sellerFullName')}
+                label="Name*"
+                id="sellerName"
+                type="text"
+                className="border-none bg-gray-200 rounded-lg mt-1"
+                onChange={onChange}
+              />
+            )}
+          />
         </div>
         <div className="flex flex-col w-full lg:flex-1">
-          <Input label="City" id="sellerCity" type="text" className="border-none bg-gray-200 rounded-lg mt-1" />
+          <Controller
+            control={adPageForm.control}
+            name="sellerCity"
+            render={({ field: { onChange } }) => (
+              <Input
+                {...adPageForm.register('sellerCity')}
+                label="City*"
+                id="sellerCity"
+                type="text"
+                className="border-none bg-gray-200 rounded-lg mt-1"
+                onChange={onChange}
+              />
+            )}
+          />
         </div>
         <div className="flex flex-col w-full lg:flex-1">
-          <Input label="Phone number" id="sellerPhone" type="text" className="border-none bg-gray-200 rounded-lg mt-1" />
+          <Controller
+            control={adPageForm.control}
+            name="sellerPhoneNumber"
+            render={({ field: { onChange } }) => (
+              <Input
+                {...adPageForm.register('sellerPhoneNumber')}
+                label="Phone number*"
+                id="sellerPhone"
+                type="text"
+                className="border-none bg-gray-200 rounded-lg mt-1"
+                onChange={onChange}
+              />
+            )}
+          />
         </div>
       </div>
 
       <button className="cursor-pointer bg-indigo-500 hover:bg-indigo-800 shadow-md hover:transition-colors text-white flex items-center justify-center my-5 py-2 px-3 lg:w-48 mx-auto text-xl rounded-lg lg:my-10 lg:py-3 lg:px-5">
         Submit
       </button>
-    </section>
+    </form>
   );
 };
 
