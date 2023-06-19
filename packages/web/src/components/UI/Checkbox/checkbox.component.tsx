@@ -8,6 +8,7 @@ type CheckboxProps = {
   className?: string;
   wrapperClassNames?: string;
   labelClassNames?: string;
+  onChange?: any;
 };
 
 export function cn(...inputs: ClassValue[]) {
@@ -15,7 +16,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ label, id, className, wrapperClassNames, labelClassNames }, ref) => {
+  ({ label, id, className, wrapperClassNames, labelClassNames, ...props }, ref) => {
     return (
       <div className={`relative flex ${wrapperClassNames}`}>
         <div className="flex h-6 items-center">
@@ -26,6 +27,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             name={label}
             type="checkbox"
             className={`${cn('h-8 w-6 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600', className)}`}
+            {...props}
           />
         </div>
         <label htmlFor={id} className={`ml-3 text-sm leading-6 font-medium text-gray-900 ${labelClassNames}`}>

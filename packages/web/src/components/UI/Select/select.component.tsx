@@ -14,8 +14,6 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({ dataSource, onChange, 
 
   const handleOpen = () => setIsOpen((prev) => !prev);
 
-  console.log('selected.name este', selected.name);
-
   return (
     <div className="relative h-full" onClick={handleOpen}>
       <Listbox
