@@ -8,3 +8,7 @@ export const sellNow__getYears = () => {
 
   return sellNowYears;
 };
+
+export const sellNowYearsSorted = sellNow__getYears()
+  .map((data) => ({ name: String(data) }))
+  .reverse();

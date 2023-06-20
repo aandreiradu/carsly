@@ -16,9 +16,17 @@ const sidebarLinks: SidebarLinkProps[] = [
     icon: <House className="w-6 h-6 text-white group-hover:text-black" />,
     isActive: true,
   },
+  // {
+  //   label: 'Sell Now',
+  //   isLink: false,
+  //   isActive: false,
+  //   icon: <PlusCircle className="w-6 h-6 text-white group-hover:text-black" />,
+  //   setShowComponent: () => {},
+  // },
   {
     label: 'Sell Now',
-    isLink: false,
+    isLink: true,
+    href: '/auto/add',
     isActive: false,
     icon: <PlusCircle className="w-6 h-6 text-white group-hover:text-black" />,
     setShowComponent: () => {},
