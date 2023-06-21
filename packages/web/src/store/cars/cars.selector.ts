@@ -7,14 +7,13 @@ export const selectCarsBrands = createSelector(carsState, (state) => state.brand
 
 export const selectModelsByBrand = (brand: string) =>
   createSelector(carsState, (state) => {
-    console.log('i received this', brand);
     return state.models[brand] ?? [];
   });
 
 export const selectModelsByBrandDataSource = (brand: string) =>
   createSelector(carsState, (state) => {
     if (!brand) {
-      return [{ name: '' }];
+      return [];
     }
 
     if (state.models[brand]?.length === 0) {
@@ -27,3 +26,5 @@ export const selectModelsByBrandDataSource = (brand: string) =>
       })) ?? []
     );
   });
+
+export const getAllModels = () => createSelector(carsState, (state) => state.models);

@@ -10,10 +10,10 @@ import { AdProps, adSchema } from '../../schema/ad.schema';
 import { SubmitHandler } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import Select from '../../components/UI/Select/select.component';
-import { sellNowYearsSorted } from '../../config/settings';
+import { noOfSeatsDictionary, sellNowYearsSorted } from '../../config/settings';
 import Label from '../../components/UI/Label/label.component';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCarsBrands, selectModelsByBrandDataSource } from '../../store/cars/cars.selector';
+import { getAllModels, selectCarsBrands, selectModelsByBrandDataSource } from '../../store/cars/cars.selector';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { CarsBrandsSuccess } from '../../types/index.types';
 import { useCallback, useEffect, useRef } from 'react';
@@ -21,6 +21,18 @@ import { setCarsBrands, setModelsByBrand } from '../../store/cars/cars.slice';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from '../../components/UI/TopLevelNotification/topLevelNotification.component';
+import {
+  bodyTypeDictionary,
+  carsColorsDictionary,
+  carsColorsTypesDictionary,
+  countriesDictionary,
+  currencyDictionary,
+  fuelTypeDictionary,
+  gearboxDictionary,
+  polluationNormDictionary,
+  transmissionDictionary,
+} from '../SellNow/types';
+import { noOfDorsDictionary } from '../../config/settings';
 
 const Ad = ({ title }: AdPageProps) => {
   const dispatch = useDispatch();
@@ -35,11 +47,65 @@ const Ad = ({ title }: AdPageProps) => {
   });
   const carsBrands = useSelector(selectCarsBrands);
   const cachedModels = useSelector(selectModelsByBrandDataSource(adPageForm.getValues('brand')));
-  console.log('cachedModels', cachedModels);
+  const allModels = useSelector(getAllModels());
 
   const handleIsDamaged = (args: boolean) => {
     adPageForm.setValue('isImported', args);
   };
+
+  if (error) {
+    console.error('error ad', error);
+    if (topLevelNotificationRef) {
+      topLevelNotificationRef.current?.display({
+        icon: <Info className="w-14 h-8 text-red-600-400" />,
+        message: `${error.message ?? 'Someting went wrong. Please try again later'}`,
+      });
+    }
+  }
+
+  const handleBrandChange = useCallback(
+    async (brand: string) => {
+      if (!allModels[brand]) {
+        const respModels = await fetchModelsByBrand(brand);
+        if (respModels) {
+          const { data, status } = respModels;
+          if (status === 200 && data && data?.brandModels && data?.brand) {
+            if (data.brandModels[data.brand].length === 0) {
+              /* reset selects */
+              adPageForm.setValue('brand', '');
+              adPageForm.setValue('model', '');
+
+              if (topLevelNotificationRef) {
+                topLevelNotificationRef.current?.display({
+                  icon: <Info className="w-14 h-8 text-yellow-400" />,
+                  message: `No models were defined for ${brand}. \n Please select another brand`,
+                });
+              }
+
+              /* dispatch even if no models were defined => will be used later for caching */
+              dispatch(setModelsByBrand({ brand: data.brand, models: data.brandModels[data.brand] }));
+            }
+            dispatch(setModelsByBrand({ brand: data.brand, models: data.brandModels[data.brand] }));
+          } else {
+            if (topLevelNotificationRef) {
+              topLevelNotificationRef.current?.display({
+                icon: <Warning className="w-14 h-8 text-red-500" />,
+                message: 'Something went wrong when fetching your brand models. Please try again later',
+              });
+            }
+          }
+        }
+      } else if (allModels[brand]?.length === 0) {
+        if (topLevelNotificationRef) {
+          topLevelNotificationRef.current?.display({
+            icon: <Info className="w-14 h-8 text-yellow-400" />,
+            message: `No models were defined for ${brand}. \n Please select another brand`,
+          });
+        }
+      }
+    },
+    [adPageForm.getValues('brand')],
+  );
 
   console.log('watchh', adPageForm.watch());
   console.log(adPageForm.formState.errors);
@@ -162,40 +228,28 @@ const Ad = ({ title }: AdPageProps) => {
 
         <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
           <div className="flex flex-col w-full lg:flex-1">
-            <Controller
-              control={adPageForm.control}
-              name="VIN"
-              render={({ field: { onChange } }) => (
-                <Input
-                  {...adPageForm.register('VIN')}
-                  label="VIN (chassis series)*"
-                  labelClasses="my-2"
-                  id="vin"
-                  type="text"
-                  placeholder="ex: 1FTPW14V88FC22108"
-                  maxLength={17}
-                  className="border-none bg-gray-200 rounded-lg"
-                  onChange={onChange}
-                />
-              )}
+            <Input
+              {...adPageForm.register('VIN')}
+              label="VIN (chassis series)*"
+              labelClasses="my-2"
+              id="vin"
+              type="text"
+              placeholder="ex: 1FTPW14V88FC22108"
+              maxLength={17}
+              className="border-none bg-gray-200 rounded-lg"
+              error={adPageForm.formState.errors.VIN?.message}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Controller
-              control={adPageForm.control}
-              name="KM"
-              render={({ field: { onChange } }) => (
-                <Input
-                  label="KM*"
-                  labelClasses="my-2"
-                  id="km"
-                  type="number"
-                  placeholder="ex: 100 000"
-                  maxLength={17}
-                  className="border-none bg-gray-200 rounded-lg"
-                  onChange={onChange}
-                />
-              )}
+            <Input
+              label="KM*"
+              labelClasses="my-2"
+              id="km"
+              type="number"
+              placeholder="ex: 100 000"
+              maxLength={17}
+              className="border-none bg-gray-200 rounded-lg"
+              error={adPageForm.formState.errors.KM?.message}
             />
           </div>
         </div>
@@ -204,50 +258,38 @@ const Ad = ({ title }: AdPageProps) => {
           <div className="flex flex-col w-full lg:flex-1">
             <label className="my-2">Date of first registration*</label>
             <div className="flex items-center gap-2">
-              <Controller
-                control={adPageForm.control}
-                name="dayOfRegistration"
-                render={({ field: { onChange } }) => (
-                  <Input
-                    {...adPageForm.register('dayOfRegistration')}
-                    id="zzDOR"
-                    type="number"
-                    placeholder="DD"
-                    className="border-none bg-gray-200 rounded-lg w-28 lg:w-16"
-                    onChange={onChange}
-                  />
-                )}
-              />
+              <div className="flex flex-col">
+                <Input
+                  {...adPageForm.register('dayOfRegistration')}
+                  id="zzDOR"
+                  type="number"
+                  placeholder="DD"
+                  className="border-none bg-gray-200 rounded-lg w-28 lg:w-16"
+                  error={adPageForm.formState.errors.dayOfRegistration?.message}
+                />
+              </div>
               {' / '}
-              <Controller
-                control={adPageForm.control}
-                name="monthOfRegistration"
-                render={({ field: { onChange } }) => (
-                  <Input
-                    {...adPageForm.register('monthOfRegistration')}
-                    id="mmDOR"
-                    type="number"
-                    placeholder="MM"
-                    className="border-none bg-gray-200 rounded-lg w-28 lg:w-16"
-                    onChange={onChange}
-                  />
-                )}
-              />
+              <div className="flex flex-col">
+                <Input
+                  {...adPageForm.register('monthOfRegistration')}
+                  id="mmDOR"
+                  type="number"
+                  placeholder="MM"
+                  className="border-none bg-gray-200 rounded-lg w-28 lg:w-16"
+                  error={adPageForm.formState.errors.monthOfRegistration?.message}
+                />
+              </div>
               {' / '}
-              <Controller
-                control={adPageForm.control}
-                name="yearOfRegistration"
-                render={({ field: { onChange } }) => (
-                  <Input
-                    {...adPageForm.register('yearOfRegistration')}
-                    id="yyyyDOR"
-                    type="number"
-                    placeholder="YYY"
-                    className="border-none bg-gray-200 rounded-lg w-32 lg:w-20"
-                    onChange={onChange}
-                  />
-                )}
-              />
+              <div className="flex flex-col">
+                <Input
+                  {...adPageForm.register('yearOfRegistration')}
+                  id="yyyyDOR"
+                  type="number"
+                  placeholder="YYY"
+                  className="border-none bg-gray-200 rounded-lg w-32 lg:w-20"
+                  error={adPageForm.formState.errors.yearOfRegistration?.message}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -287,43 +329,9 @@ const Ad = ({ title }: AdPageProps) => {
               render={({ field: { onChange } }) => (
                 <Select
                   disabled={loading}
-                  onChange={async (e: { name: string }) => {
+                  onChange={(e: { name: string }) => {
                     onChange(e.name);
-                    if (cachedModels?.length === 0 || (cachedModels.length > 0 && !cachedModels[1].name)) {
-                      console.log('fac request');
-                      const respModels = await fetchModelsByBrand(e.name);
-                      console.log('respModels', respModels);
-                      if (respModels) {
-                        const { data, status } = respModels;
-                        if (status === 200 && data && data?.brandModels && data?.brand) {
-                          if (data.brandModels[data.brand].length === 0) {
-                            /* reset selects */
-                            adPageForm.setValue('brand', '');
-                            adPageForm.setValue('model', '');
-
-                            if (topLevelNotificationRef) {
-                              topLevelNotificationRef.current?.display({
-                                icon: <Info className="w-14 h-8 text-yellow-400" />,
-                                message: `No models were defined for ${e.name}. \n Please select another brand`,
-                              });
-                            }
-
-                            /* dispatch even if no models were defined => will be used later for caching */
-                            dispatch(setModelsByBrand({ brand: data.brand, models: data.brandModels[data.brand] }));
-                            return;
-                          }
-                        } else {
-                          if (topLevelNotificationRef) {
-                            topLevelNotificationRef.current?.display({
-                              icon: <Warning className="w-14 h-8 text-red-500" />,
-                              message: 'Something went wrong when fetching your brand models. Please try again later',
-                            });
-                          }
-                        }
-                      }
-                    } else {
-                      console.log('no req needed');
-                    }
+                    handleBrandChange(e.name);
                   }}
                   dataSource={carsBrands}
                   cachedValue={adPageForm.watch('brand') || ''}
@@ -343,6 +351,7 @@ const Ad = ({ title }: AdPageProps) => {
                 <Select
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={cachedModels}
+                  disabled={allModels[adPageForm.getValues('brand')]?.length === 0 || loading}
                   cachedValue={adPageForm.watch('model') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                 />
@@ -350,115 +359,154 @@ const Ad = ({ title }: AdPageProps) => {
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Input
-              label="Fuel*"
-              labelClasses="my-2"
-              id="fuel"
-              type="text"
-              placeholder="Select"
-              className="border-none bg-gray-200 rounded-lg"
-            />
-          </div>
-          <div className="flex flex-col w-full lg:flex-1">
+            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+              Fuel*
+            </Label>
             <Controller
               control={adPageForm.control}
-              name="power"
+              name="fuel"
               render={({ field: { onChange } }) => (
-                <Input
-                  {...adPageForm.register('power')}
-                  label="Power*"
-                  labelClasses="my-2"
-                  id="power"
-                  type="text"
-                  placeholder="Ex: 150"
-                  className="border-none bg-gray-200 rounded-lg"
-                  onChange={onChange}
-                />
-              )}
-            />
-          </div>
-          <div className="flex flex-col w-full lg:flex-1">
-            <Controller
-              control={adPageForm.control}
-              name="engineSize"
-              render={({ field: { onChange } }) => (
-                <Input
-                  {...adPageForm.register('engineSize')}
-                  label="Engine size*"
-                  labelClasses="my-2"
-                  id="engineSize"
-                  type="text"
-                  placeholder="Ex: 1 395 cm3"
-                  className="border-none bg-gray-200 rounded-lg"
-                  onChange={onChange}
-                />
-              )}
-            />
-          </div>
-          <div className="flex flex-col w-full lg:flex-1">
-            <Controller
-              control={adPageForm.control}
-              name="engineSize"
-              render={({ field: { onChange } }) => (
-                <Input
-                  {...adPageForm.register('noOfDoors')}
-                  label="No of doors*"
-                  labelClasses="my-2"
-                  id="noOfDoors"
-                  type="text"
-                  placeholder="Select"
-                  className="border-none bg-gray-200 rounded-lg"
-                  onChange={onChange}
+                <Select
+                  onChange={(e: { name: string }) => onChange(e.name)}
+                  dataSource={fuelTypeDictionary}
+                  disabled={
+                    !adPageForm.getValues('brand') ||
+                    !adPageForm.getValues('model') ||
+                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
+                    loading
+                  }
+                  cachedValue={adPageForm.watch('fuel') || ''}
+                  classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                 />
               )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
             <Input
-              label="Gearbox*"
+              {...adPageForm.register('power')}
+              label="Power*"
               labelClasses="my-2"
-              id="gearbox"
+              id="power"
               type="text"
-              placeholder="Select"
+              placeholder="Ex: 150"
               className="border-none bg-gray-200 rounded-lg"
+              error={adPageForm.formState.errors.power?.message}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
             <Input
-              label="Transmission*"
+              {...adPageForm.register('engineSize')}
+              label="Engine size*"
               labelClasses="my-2"
-              id="transmission"
+              id="engineSize"
               type="text"
-              placeholder="Select"
+              placeholder="Ex: 1 395 cm3"
               className="border-none bg-gray-200 rounded-lg"
+              error={adPageForm.formState.errors.engineSize?.message}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Input
-              label="Polluation Norm*"
-              labelClasses="my-2"
-              id="polluationNorm"
-              type="text"
-              placeholder="Select"
-              className="border-none bg-gray-200 rounded-lg"
-            />
-          </div>
-          <div className="flex flex-col w-full lg:flex-1">
+            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+              No of doors*
+            </Label>
             <Controller
               control={adPageForm.control}
-              name="co2emissions"
+              name="noOfDoors"
               render={({ field: { onChange } }) => (
-                <Input
-                  {...adPageForm.register('co2emissions')}
-                  label="CO2 Emissions"
-                  labelClasses="my-2"
-                  id="co2emissions"
-                  type="text"
-                  placeholder="g/km"
-                  className="border-none bg-gray-200 rounded-lg"
-                  onChange={onChange}
+                <Select
+                  onChange={(e: { name: string }) => onChange(e.name)}
+                  dataSource={noOfDorsDictionary}
+                  disabled={
+                    !adPageForm.getValues('brand') ||
+                    !adPageForm.getValues('model') ||
+                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
+                    loading
+                  }
+                  cachedValue={adPageForm.watch('noOfDoors') || ''}
+                  classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                 />
               )}
+            />
+          </div>
+          <div className="flex flex-col w-full lg:flex-1">
+            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+              Gearbox*
+            </Label>
+            <Controller
+              control={adPageForm.control}
+              name="gearbox"
+              render={({ field: { onChange } }) => (
+                <Select
+                  onChange={(e: { name: string }) => onChange(e.name)}
+                  dataSource={gearboxDictionary}
+                  disabled={
+                    !adPageForm.getValues('brand') ||
+                    !adPageForm.getValues('model') ||
+                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
+                    loading
+                  }
+                  cachedValue={adPageForm.watch('gearbox') || ''}
+                  classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                />
+              )}
+            />
+          </div>
+          <div className="flex flex-col w-full lg:flex-1">
+            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+              Transmission*
+            </Label>
+            <Controller
+              control={adPageForm.control}
+              name="transmission"
+              render={({ field: { onChange } }) => (
+                <Select
+                  onChange={(e: { name: string }) => onChange(e.name)}
+                  dataSource={transmissionDictionary}
+                  disabled={
+                    !adPageForm.getValues('brand') ||
+                    !adPageForm.getValues('model') ||
+                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
+                    loading
+                  }
+                  cachedValue={adPageForm.watch('transmission') || ''}
+                  classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                />
+              )}
+            />
+          </div>
+          <div className="flex flex-col w-full lg:flex-1">
+            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+              Polluation Norm*
+            </Label>
+            <Controller
+              control={adPageForm.control}
+              name="polluationNorm"
+              render={({ field: { onChange } }) => (
+                <Select
+                  onChange={(e: { name: string }) => onChange(e.name)}
+                  dataSource={polluationNormDictionary}
+                  disabled={
+                    !adPageForm.getValues('brand') ||
+                    !adPageForm.getValues('model') ||
+                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
+                    loading
+                  }
+                  cachedValue={adPageForm.watch('polluationNorm') || ''}
+                  classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                />
+              )}
+            />
+          </div>
+          <div className="flex flex-col w-full lg:flex-1">
+            <Input
+              {...adPageForm.register('co2emissions')}
+              label="CO2 Emissions"
+              labelClasses="my-2"
+              id="co2emissions"
+              type="text"
+              placeholder="g/km"
+              className="border-none bg-gray-200 rounded-lg"
+              error={adPageForm.formState.errors.co2emissions?.message}
             />
           </div>
         </div>
@@ -467,33 +515,97 @@ const Ad = ({ title }: AdPageProps) => {
 
         <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
           <div className="flex flex-col w-full lg:flex-1 col-span-2">
-            <Input
-              label="Body type*"
-              labelClasses="my-2"
-              id="bodyType"
-              type="text"
-              placeholder="Select"
-              className="border-none bg-gray-200 rounded-lg"
+            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+              Body Type*
+            </Label>
+            <Controller
+              control={adPageForm.control}
+              name="bodyType"
+              render={({ field: { onChange } }) => (
+                <Select
+                  onChange={(e: { name: string }) => onChange(e.name)}
+                  dataSource={bodyTypeDictionary}
+                  disabled={
+                    !adPageForm.getValues('brand') ||
+                    !adPageForm.getValues('model') ||
+                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
+                    loading
+                  }
+                  cachedValue={adPageForm.watch('bodyType') || ''}
+                  classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                />
+              )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Input
-              label="Color*"
-              labelClasses="my-2"
-              id="color"
-              type="text"
-              placeholder="Select"
-              className="border-none bg-gray-200 rounded-lg"
+            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+              Color*
+            </Label>
+            <Controller
+              control={adPageForm.control}
+              name="color"
+              render={({ field: { onChange } }) => (
+                <Select
+                  onChange={(e: { name: string }) => onChange(e.name)}
+                  dataSource={carsColorsDictionary}
+                  disabled={
+                    !adPageForm.getValues('brand') ||
+                    !adPageForm.getValues('model') ||
+                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
+                    loading
+                  }
+                  cachedValue={adPageForm.watch('color') || ''}
+                  classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                />
+              )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Input
-              label="Seats*"
-              labelClasses="my-2"
-              id="seats"
-              type="text"
-              placeholder="Select"
-              className="border-none bg-gray-200 rounded-lg"
+            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+              Color Type*
+            </Label>
+            <Controller
+              control={adPageForm.control}
+              name="colorType"
+              render={({ field: { onChange } }) => (
+                <Select
+                  onChange={(e: { name: string }) => onChange(e.name)}
+                  dataSource={carsColorsTypesDictionary}
+                  disabled={
+                    !adPageForm.getValues('brand') ||
+                    !adPageForm.getValues('model') ||
+                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
+                    loading
+                  }
+                  cachedValue={adPageForm.watch('colorType') || ''}
+                  classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                />
+              )}
+            />
+          </div>
+        </div>
+        <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
+          <div className="flex flex-col w-full lg:flex-1">
+            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+              Seats*
+            </Label>
+            <Controller
+              control={adPageForm.control}
+              name="seats"
+              render={({ field: { onChange } }) => (
+                <Select
+                  onChange={(e: { name: string }) => onChange(e.name)}
+                  dataSource={noOfSeatsDictionary}
+                  disabled={
+                    !adPageForm.getValues('brand') ||
+                    !adPageForm.getValues('model') ||
+                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
+                    loading
+                  }
+                  cachedValue={adPageForm.watch('seats') || ''}
+                  classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                />
+              )}
             />
           </div>
         </div>
@@ -516,21 +628,15 @@ const Ad = ({ title }: AdPageProps) => {
         </div>
 
         <div className="flex flex-col w-full lg:flex-1">
-          <Controller
-            control={adPageForm.control}
-            name="youtubeVideo"
-            render={({ field: { onChange } }) => (
-              <Input
-                {...adPageForm.register('youtubeVideo')}
-                label="Video Youtube "
-                labelClasses="my-2"
-                id="youtubeVideo"
-                type="text"
-                placeholder="Ex: https://www.youtube.com/watch?v=2g83-3j7nww&t=51s"
-                className="border-none bg-gray-200 rounded-lg"
-                onChange={onChange}
-              />
-            )}
+          <Input
+            {...adPageForm.register('youtubeVideo')}
+            label="Video Youtube "
+            labelClasses="my-2"
+            id="youtubeVideo"
+            type="text"
+            placeholder="Ex: https://www.youtube.com/watch?v=2g83-3j7nww&t=51s"
+            className="border-none bg-gray-200 rounded-lg"
+            error={adPageForm.formState.errors.youtubeVideo?.message}
           />
         </div>
 
@@ -544,38 +650,25 @@ const Ad = ({ title }: AdPageProps) => {
         <AdSectionHeaderWithImage title="Vehicle description" labelText="OPTIONAL" />
 
         <div className="flex flex-col w-full lg:flex-1">
-          <Controller
-            control={adPageForm.control}
-            name="shortDescription"
-            render={({ field: { onChange } }) => (
-              <Input
-                {...adPageForm.register('shortDescription')}
-                label="Short description"
-                labelClasses="my-2"
-                id="shortDescription"
-                type="text"
-                placeholder="Ex: First Owner / Battery replace, etc"
-                className="border-none bg-gray-200 rounded-lg"
-                onChange={onChange}
-              />
-            )}
+          <Input
+            {...adPageForm.register('shortDescription')}
+            label="Short description"
+            labelClasses="my-2"
+            id="shortDescription"
+            type="text"
+            placeholder="Ex: First Owner / Battery replace, etc"
+            className="border-none bg-gray-200 rounded-lg"
+            error={adPageForm.formState.errors.shortDescription?.message}
           />
         </div>
 
         <div className="flex flex-col w-full lg:flex-1 my-8">
-          <Controller
-            control={adPageForm.control}
-            name="description"
-            render={({ field: { onChange } }) => (
-              <TextArea
-                {...adPageForm.register('shortDescription')}
-                maxLen={10}
-                minLen={1}
-                label="Description"
-                className="bg-gray-200 rounded-md"
-                onChange={onChange}
-              />
-            )}
+          <TextArea
+            {...adPageForm.register('shortDescription')}
+            maxLen={10}
+            minLen={1}
+            label="Description"
+            className="bg-gray-200 rounded-md"
           />
         </div>
 
@@ -584,19 +677,24 @@ const Ad = ({ title }: AdPageProps) => {
         <p className="text-base lg:text-xl font-light">Origin of the vehicle</p>
 
         <div className="flex flex-col w-full lg:flex-1">
+          <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+            Vehicle origin*
+          </Label>
           <Controller
             control={adPageForm.control}
             name="vehicleOrigin"
             render={({ field: { onChange } }) => (
-              <Input
-                {...adPageForm.register('vehicleOrigin')}
-                label="Vehicle origin country"
-                labelClasses="my-2"
-                id="VehicleOrigincountry"
-                type="text"
-                placeholder="Select"
-                className="border-none bg-gray-200 rounded-lg w-full lg:w-1/3"
-                onChange={onChange}
+              <Select
+                onChange={(e: { name: string }) => onChange(e.name)}
+                dataSource={countriesDictionary}
+                disabled={
+                  !adPageForm.getValues('brand') ||
+                  !adPageForm.getValues('model') ||
+                  allModels[adPageForm.getValues('brand')]?.length === 0 ||
+                  loading
+                }
+                cachedValue={adPageForm.watch('vehicleOrigin') || ''}
+                classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
               />
             )}
           />
@@ -701,34 +799,36 @@ const Ad = ({ title }: AdPageProps) => {
 
         <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
           <div className="flex flex-col w-full lg:flex-1">
-            <Controller
-              control={adPageForm.control}
-              name="price"
-              render={({ field: { onChange } }) => (
-                <Input
-                  label="Price*"
-                  id="price"
-                  type="number"
-                  placeholder="Ex: 8000 EUR"
-                  className="border-none bg-gray-200 rounded-lg"
-                  onChange={onChange}
-                />
-              )}
+            <Input
+              {...adPageForm.register('price')}
+              label="Price*"
+              labelClasses="my-2"
+              id="price"
+              type="text"
+              placeholder="Ex: 8000 EUR"
+              className="border-none bg-gray-200 rounded-lg"
+              error={adPageForm.formState.errors.price?.message}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
+            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+              Currency*
+            </Label>
             <Controller
               control={adPageForm.control}
-              name="price"
+              name="currency"
               render={({ field: { onChange } }) => (
-                <Input
-                  {...adPageForm.register('currency')}
-                  label="Currency*"
-                  id="currency"
-                  type="text"
-                  placeholder="EUR"
-                  className="border-none bg-gray-200 rounded-lg"
-                  onChange={onChange}
+                <Select
+                  onChange={(e: { name: string }) => onChange(e.name)}
+                  dataSource={currencyDictionary}
+                  disabled={
+                    !adPageForm.getValues('brand') ||
+                    !adPageForm.getValues('model') ||
+                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
+                    loading
+                  }
+                  cachedValue={adPageForm.watch('currency') || ''}
+                  classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                 />
               )}
             />
@@ -775,51 +875,36 @@ const Ad = ({ title }: AdPageProps) => {
 
         <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-2">
           <div className="flex flex-col w-full lg:flex-1">
-            <Controller
-              control={adPageForm.control}
-              name="sellerFullName"
-              render={({ field: { onChange } }) => (
-                <Input
-                  {...adPageForm.register('sellerFullName')}
-                  label="Name*"
-                  id="sellerName"
-                  type="text"
-                  className="border-none bg-gray-200 rounded-lg mt-1"
-                  onChange={onChange}
-                />
-              )}
+            <Input
+              {...adPageForm.register('sellerFullName')}
+              label="Name*"
+              labelClasses="my-2"
+              id="sellerFullName"
+              type="text"
+              className="border-none bg-gray-200 rounded-lg"
+              error={adPageForm.formState.errors.sellerFullName?.message}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Controller
-              control={adPageForm.control}
-              name="sellerCity"
-              render={({ field: { onChange } }) => (
-                <Input
-                  {...adPageForm.register('sellerCity')}
-                  label="City*"
-                  id="sellerCity"
-                  type="text"
-                  className="border-none bg-gray-200 rounded-lg mt-1"
-                  onChange={onChange}
-                />
-              )}
+            <Input
+              {...adPageForm.register('sellerCity')}
+              label="City*"
+              labelClasses="my-2"
+              id="sellerCity"
+              type="text"
+              className="border-none bg-gray-200 rounded-lg"
+              error={adPageForm.formState.errors.sellerCity?.message}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Controller
-              control={adPageForm.control}
-              name="sellerPhoneNumber"
-              render={({ field: { onChange } }) => (
-                <Input
-                  {...adPageForm.register('sellerPhoneNumber')}
-                  label="Phone number*"
-                  id="sellerPhone"
-                  type="text"
-                  className="border-none bg-gray-200 rounded-lg mt-1"
-                  onChange={onChange}
-                />
-              )}
+            <Input
+              {...adPageForm.register('sellerPhoneNumber')}
+              label="Phone number*"
+              labelClasses="my-2"
+              id="sellerPhoneNo"
+              type="text"
+              className="border-none bg-gray-200 rounded-lg"
+              error={adPageForm.formState.errors.sellerPhoneNumber?.message}
             />
           </div>
         </div>
@@ -833,6 +918,3 @@ const Ad = ({ title }: AdPageProps) => {
 };
 
 export default Ad;
-function dispatch(arg0: any) {
-  throw new Error('Function not implemented.');
-}

@@ -5,7 +5,7 @@ import { cn } from '../Checkbox/checkbox.component';
 
 export type SelectProps = {
   dataSource: Record<'name', string>[];
-  onChange: any;
+  onChange?: any;
   cachedValue?: string | number;
   classNameWrapper?: string;
   classNameListbox?: string;
@@ -36,7 +36,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
             >
               <span className="block truncate px-2 ">{cachedValue}</span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                {isOpen ? (
+                {isOpen && !disabled ? (
                   <CaretDown className="h-5 w-5 text-black" aria-hidden="true" />
                 ) : (
                   <CaretUp className="h-5 w-5 text-black" aria-hidden="true" />

@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import {
-  Currency,
+  CarsColorsTypes,
+  ColorTypes,
+  CurrencyTypes,
   FuelType,
   GearboxTypes,
   PolluationNormTypes,
@@ -15,28 +17,29 @@ export const adSchema = z.object({
 
   // General Informations
   VIN: z.string().nonempty(),
-  KM: z.number().min(0),
-  dayOfRegistration: z.number().min(1).max(31),
-  monthOfRegistration: z.number().min(1).max(12),
-  yearOfRegistration: z.number().min(1900),
+  KM: z.string().min(0),
+  dayOfRegistration: z.string().min(1).max(31),
+  monthOfRegistration: z.string().min(1).max(12),
+  yearOfRegistration: z.string().min(1900),
 
   // Technical Details
-  year: z.number().min(1900),
+  year: z.string().min(1900),
   brand: z.string().min(1),
   model: z.string().min(1),
   fuel: z.nativeEnum(FuelType),
-  power: z.number(),
-  engineSize: z.number(),
-  noOfDoors: z.number().min(1),
+  power: z.string().min(1),
+  engineSize: z.string().min(1),
+  noOfDoors: z.string().min(1),
   gearbox: z.nativeEnum(GearboxTypes),
   transmission: z.nativeEnum(TransmissionTypes),
   polluationNorm: z.nativeEnum(PolluationNormTypes),
-  co2emissions: z.number().optional(),
+  co2emissions: z.string().optional(),
 
   // Body Type details
   bodyType: z.nativeEnum(VehicleBodyType),
-  color: z.string().nonempty(),
-  seats: z.number(),
+  color: z.nativeEnum(CarsColorsTypes),
+  colorType: z.nativeEnum(ColorTypes),
+  seats: z.string(),
 
   youtubeVideo: z.string().optional(),
   shortDescription: z.string().optional(),
@@ -52,17 +55,17 @@ export const adSchema = z.object({
   hasTuning: z.boolean().optional(),
 
   //   Price
-  price: z.number().min(1),
-  currency: z.nativeEnum(Currency),
+  price: z.string().min(1),
+  currency: z.nativeEnum(CurrencyTypes),
 
   //   Price details
   isNegotiable: z.boolean(),
   isLeasing: z.boolean(),
 
   //   Seller Details
-  sellerFullName: z.string().nonempty(),
-  sellerCity: z.string().nonempty(),
-  sellerPhoneNumber: z.string().min(10),
+  sellerFullName: z.string().nonempty().min(1, { message: 'Please insert the seller name' }),
+  sellerCity: z.string().nonempty().min(1, { message: 'Please add a city' }),
+  sellerPhoneNumber: z.string().nonempty().min(10, { message: 'Please add a phone number' }),
 });
 
 export type AdProps = z.infer<typeof adSchema>;
