@@ -1,4 +1,4 @@
-import { Camera, Info, Lightbulb, Warning } from 'phosphor-react';
+import { Info, Lightbulb, Warning } from 'phosphor-react';
 import Checkbox from '../../components/UI/Checkbox/checkbox.component';
 import { AdPageProps } from '../../types/ad.types';
 import { Input } from '../../components/UI/Input/input.component';
@@ -15,8 +15,8 @@ import Label from '../../components/UI/Label/label.component';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllModels, selectCarsBrands, selectModelsByBrandDataSource } from '../../store/cars/cars.selector';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
-import { CarsBrandsSuccess, ShowComponentProps } from '../../types/index.types';
-import { SetStateAction, useCallback, useEffect, useRef } from 'react';
+import { CarsBrandsSuccess } from '../../types/index.types';
+import { useCallback, useEffect, useRef } from 'react';
 import { setCarsBrands, setModelsByBrand } from '../../store/cars/cars.slice';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
@@ -33,7 +33,7 @@ import {
   transmissionDictionary,
 } from '../SellNow/types';
 import { noOfDorsDictionary } from '../../config/settings';
-import Nav from '../../components/Nav/nav.component';
+import File from '../../components/UI/File/file.component';
 
 const Ad = ({ title }: AdPageProps) => {
   const dispatch = useDispatch();
@@ -632,7 +632,12 @@ const Ad = ({ title }: AdPageProps) => {
           </div>
         </div>
 
-        <AdSectionHeaderWithImage title="Images" image={<Camera className="h-4 w-4" />} labelText={'0 / 5'} />
+        <File
+          maxAcceptedFile={5}
+          wrapperClasses="bg-gray-200 mt-2 p-4 lg:min-h-[200px] rounded-lg text-white"
+          buttonClasses="text-white bg-indigo-500 rounded-lg"
+          withCountHeader={true}
+        />
 
         <div className="flex space-x-4 w-full my-5">
           <Lightbulb className="w-10 h-10 lg:h-6 lg:w-6" />
@@ -653,13 +658,6 @@ const Ad = ({ title }: AdPageProps) => {
             error={adPageForm.formState.errors.youtubeVideo?.message}
           />
         </div>
-
-        {/* <div className="flex space-x-3 relative text-xl font-bold my-1 lg:text-xl mt-5 lg:mt-10 lg:mb-5 tracking-wide">
-          <h3>Vehicle description</h3>
-          <div className="flex space-x-2 items-center bg-indigo-500 text-white px-2 rounded-md">
-            <span className="text-xs">OPTIONAL</span>
-          </div>
-        </div> */}
 
         <AdSectionHeaderWithImage title="Vehicle description" labelText="OPTIONAL" />
 
