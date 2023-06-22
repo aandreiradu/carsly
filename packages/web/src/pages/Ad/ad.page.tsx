@@ -15,8 +15,8 @@ import Label from '../../components/UI/Label/label.component';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllModels, selectCarsBrands, selectModelsByBrandDataSource } from '../../store/cars/cars.selector';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
-import { CarsBrandsSuccess } from '../../types/index.types';
-import { useCallback, useEffect, useRef } from 'react';
+import { CarsBrandsSuccess, ShowComponentProps } from '../../types/index.types';
+import { SetStateAction, useCallback, useEffect, useRef } from 'react';
 import { setCarsBrands, setModelsByBrand } from '../../store/cars/cars.slice';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
@@ -33,6 +33,7 @@ import {
   transmissionDictionary,
 } from '../SellNow/types';
 import { noOfDorsDictionary } from '../../config/settings';
+import Nav from '../../components/Nav/nav.component';
 
 const Ad = ({ title }: AdPageProps) => {
   const dispatch = useDispatch();
@@ -42,7 +43,6 @@ const Ad = ({ title }: AdPageProps) => {
     schema: adSchema,
     defaultValues: {
       isImported: false,
-      isDamaged: false,
     },
   });
   const carsBrands = useSelector(selectCarsBrands);
@@ -183,18 +183,27 @@ const Ad = ({ title }: AdPageProps) => {
                   <button
                     type="button"
                     onClick={() => handleIsDamaged(false)}
-                    className="relative flex justify-center items-center w-full bg-gray-200 m-0 px-3 py-2 text-black font-bold cursor-pointer leading-6 hover:bg-indigo-600 focus:bg-indigo-600 group"
+                    className={`relative flex justify-center items-center w-full bg-gray-200 m-0 px-3 py-2 text-black font-bold cursor-pointer leading-6 hover:bg-indigo-600 focus:bg-indigo-600 group ${
+                      !adPageForm.getValues('isImported') && 'bg-indigo-600 text-white'
+                    }`}
                   >
                     No
                   </button>
                   <button
                     type="button"
                     onClick={() => handleIsDamaged(true)}
-                    className="relative flex justify-center items-center w-full bg-gray-200 m-0 px-3 py-2 text-black font-bold cursor-pointer leading-6 hover:bg-indigo-600 focus:bg-indigo-600"
+                    className={`relative flex justify-center items-center w-full bg-gray-200 m-0 px-3 py-2 text-black font-bold cursor-pointer leading-6 hover:bg-indigo-600 focus:bg-indigo-600 ${
+                      adPageForm.getValues('isImported') && 'bg-indigo-600 text-white'
+                    }`}
                   >
                     Yes
                   </button>
                 </div>
+                {adPageForm.formState.errors.isImported && (
+                  <span className="text-red-500 text-sm ">
+                    {adPageForm.formState.errors.isImported.message ?? 'Please complete this field'}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -315,6 +324,7 @@ const Ad = ({ title }: AdPageProps) => {
                   dataSource={sellNowYearsSorted}
                   cachedValue={adPageForm.watch('year')}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                  error={adPageForm.formState.errors.year?.message}
                 />
               )}
             />
@@ -336,6 +346,7 @@ const Ad = ({ title }: AdPageProps) => {
                   dataSource={carsBrands}
                   cachedValue={adPageForm.watch('brand') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-full h-[41px]"
+                  error={adPageForm.formState.errors.brand?.message}
                 />
               )}
             />
@@ -354,6 +365,7 @@ const Ad = ({ title }: AdPageProps) => {
                   disabled={allModels[adPageForm.getValues('brand')]?.length === 0 || loading}
                   cachedValue={adPageForm.watch('model') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                  error={adPageForm.formState.errors.model?.message}
                 />
               )}
             />
@@ -377,6 +389,7 @@ const Ad = ({ title }: AdPageProps) => {
                   }
                   cachedValue={adPageForm.watch('fuel') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                  error={adPageForm.formState.errors.fuel?.message}
                 />
               )}
             />
@@ -387,7 +400,8 @@ const Ad = ({ title }: AdPageProps) => {
               label="Power*"
               labelClasses="my-2"
               id="power"
-              type="text"
+              type="number"
+              min={1}
               placeholder="Ex: 150"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.power?.message}
@@ -424,6 +438,7 @@ const Ad = ({ title }: AdPageProps) => {
                   }
                   cachedValue={adPageForm.watch('noOfDoors') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                  error={adPageForm.formState.errors.noOfDoors?.message}
                 />
               )}
             />
@@ -447,6 +462,7 @@ const Ad = ({ title }: AdPageProps) => {
                   }
                   cachedValue={adPageForm.watch('gearbox') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                  error={adPageForm.formState.errors.gearbox?.message}
                 />
               )}
             />
@@ -470,6 +486,7 @@ const Ad = ({ title }: AdPageProps) => {
                   }
                   cachedValue={adPageForm.watch('transmission') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                  error={adPageForm.formState.errors.transmission?.message}
                 />
               )}
             />
@@ -493,6 +510,7 @@ const Ad = ({ title }: AdPageProps) => {
                   }
                   cachedValue={adPageForm.watch('polluationNorm') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                  error={adPageForm.formState.errors.polluationNorm?.message}
                 />
               )}
             />
@@ -503,7 +521,7 @@ const Ad = ({ title }: AdPageProps) => {
               label="CO2 Emissions"
               labelClasses="my-2"
               id="co2emissions"
-              type="text"
+              type="number"
               placeholder="g/km"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.co2emissions?.message}
@@ -533,6 +551,7 @@ const Ad = ({ title }: AdPageProps) => {
                   }
                   cachedValue={adPageForm.watch('bodyType') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                  error={adPageForm.formState.errors.bodyType?.message}
                 />
               )}
             />
@@ -556,6 +575,7 @@ const Ad = ({ title }: AdPageProps) => {
                   }
                   cachedValue={adPageForm.watch('color') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                  error={adPageForm.formState.errors.color?.message}
                 />
               )}
             />
@@ -579,6 +599,7 @@ const Ad = ({ title }: AdPageProps) => {
                   }
                   cachedValue={adPageForm.watch('colorType') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                  error={adPageForm.formState.errors.colorType?.message}
                 />
               )}
             />
@@ -604,19 +625,12 @@ const Ad = ({ title }: AdPageProps) => {
                   }
                   cachedValue={adPageForm.watch('seats') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                  error={adPageForm.formState.errors.seats?.message}
                 />
               )}
             />
           </div>
         </div>
-
-        {/* <div className="flex space-x-3 relative text-xl font-bold my-1 lg:text-xl mt-5 lg:mt-10 lg:mb-5 tracking-wide">
-          <h3>Images</h3>
-          <div className="flex space-x-2 items-center bg-indigo-500 text-white px-2 rounded-md">
-            <Camera className="h-4 w-4" />
-            <span className="text-xs">0 / 5</span>
-          </div>
-        </div> */}
 
         <AdSectionHeaderWithImage title="Images" image={<Camera className="h-4 w-4" />} labelText={'0 / 5'} />
 
@@ -656,6 +670,7 @@ const Ad = ({ title }: AdPageProps) => {
             labelClasses="my-2"
             id="shortDescription"
             type="text"
+            maxLength={30}
             placeholder="Ex: First Owner / Battery replace, etc"
             className="border-none bg-gray-200 rounded-lg"
             error={adPageForm.formState.errors.shortDescription?.message}
@@ -695,6 +710,7 @@ const Ad = ({ title }: AdPageProps) => {
                 }
                 cachedValue={adPageForm.watch('vehicleOrigin') || ''}
                 classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                error={adPageForm.formState.errors.vehicleOrigin?.message}
               />
             )}
           />
@@ -804,7 +820,7 @@ const Ad = ({ title }: AdPageProps) => {
               label="Price*"
               labelClasses="my-2"
               id="price"
-              type="text"
+              type="number"
               placeholder="Ex: 8000 EUR"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.price?.message}
@@ -829,6 +845,7 @@ const Ad = ({ title }: AdPageProps) => {
                   }
                   cachedValue={adPageForm.watch('currency') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                  error={adPageForm.formState.errors.currency?.message}
                 />
               )}
             />
@@ -843,13 +860,13 @@ const Ad = ({ title }: AdPageProps) => {
             name="isNegotiable"
             render={({ field: { onChange } }) => (
               <Checkbox
-                {...adPageForm.register('isNegotiable')}
                 label="Negotiable"
                 id="priceNegotiable"
                 className="text-black focus:ring-black h-6"
                 wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
                 labelClassNames="text-lg"
                 onChange={onChange}
+                error={adPageForm.formState.errors.isNegotiable?.message}
               />
             )}
           />
@@ -859,13 +876,13 @@ const Ad = ({ title }: AdPageProps) => {
             name="isLeasing"
             render={({ field: { onChange } }) => (
               <Checkbox
-                {...adPageForm.register('isLeasing')}
                 label="Leasing"
                 id="leasing"
                 className="text-black focus:ring-black h-6"
                 wrapperClassNames="flex items-center basis-3/6 px-3 py-3 border border-gray-200 mt-3"
                 labelClassNames="text-lg"
                 onChange={onChange}
+                error={adPageForm.formState.errors.isLeasing?.message}
               />
             )}
           />
