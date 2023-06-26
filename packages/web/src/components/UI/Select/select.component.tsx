@@ -10,10 +10,11 @@ export type SelectProps = {
   classNameWrapper?: string;
   classNameListbox?: string;
   disabled?: boolean;
+  error?: string;
 };
 
 const Select = forwardRef<HTMLDivElement, SelectProps>(
-  ({ disabled = false, classNameListbox, classNameWrapper, dataSource, onChange, cachedValue }, ref) => {
+  ({ disabled = false, classNameListbox, classNameWrapper, dataSource, onChange, cachedValue, error }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState({ name: cachedValue || '' });
 
@@ -76,6 +77,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
             </Transition>
           </div>
         </Listbox>
+        {error && <span className="text-red-500 text-sm ">{error}</span>}
       </div>
     );
   },
