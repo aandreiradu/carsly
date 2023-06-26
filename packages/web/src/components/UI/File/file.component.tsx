@@ -3,6 +3,7 @@ import { cn } from '../Checkbox/checkbox.component';
 import TopLevelNotification, { TopLevelNotificationHandlers } from '../TopLevelNotification/topLevelNotification.component';
 import { Camera, Warning, X } from 'phosphor-react';
 import AdSectionHeaderWithImage from '../../Ad/adSectionHeaderWithImage.component';
+import { dataUrlToFile } from '../../../utils/dataUrl-to-Files';
 
 type FileComponentProps = {
   wrapperClasses?: string;
@@ -45,47 +46,35 @@ const FileComponent = ({ maxAcceptedFile, wrapperClasses, buttonClasses, withCou
         }
       }
 
-      console.log('imageFiles is', imageFiles);
-      console.log('validImages is', validImages);
-
-      if (validImages?.length > 5) {
+      if (+validImages?.length + +images.length > 5) {
         if (notificaionRef) {
           notificaionRef.current?.display({
             icon: <Warning className="w-14 h-8 text-red-600" />,
             message: `Ooops! Limit exceeded. You can set up to ${maxAcceptedFile} files`,
           });
         }
-        validImages = [];
-        setImages([]);
-        setImageFiles([]);
         return;
       }
 
       if (validImages.length) {
-        //@ts-ignore
-        // setImageFiles((prev) => [
-        //   ...prev,
-        //   //@ts-ignore
-        //   validImages,
-        // ]);
-        setImageFiles(validImages);
+        setImageFiles((prev) => [...prev, ...validImages]);
       }
     }
   };
 
-  const handleRemoveImage = (image: string) => {
-    console.log('image received', image);
-    console.log('imgss', images);
-
+  const handleRemoveImage = async (image: string) => {
     const filteredImgs = images.filter((img) => img !== image);
-    console.log('filteredImgs', filteredImgs);
-    //@ts-ignore
-    setImageFiles(filteredImgs);
+    const imagesFilesFiltered: File[] = [];
+
+    for (let i = 0; i < filteredImgs.length; i++) {
+      const file = await dataUrlToFile(filteredImgs[i], `${new Date().toISOString()}__${i}`);
+      imagesFilesFiltered.push(file);
+    }
+    setImageFiles(imagesFilesFiltered);
+    setImages(filteredImgs);
   };
 
   useEffect(() => {
-    console.log('imageFilesimageFilesimageFiles!!!!', imageFiles);
-
     const fileReaders: FileReader[] = [];
     let isCancel = false;
     if (imageFiles.length) {
@@ -108,7 +97,6 @@ const FileComponent = ({ maxAcceptedFile, wrapperClasses, buttonClasses, withCou
             reject(new Error('Failed to read file'));
           };
 
-          console.log('file', file);
           fileReader.readAsDataURL(file);
         });
       });
@@ -170,17 +158,17 @@ const FileComponent = ({ maxAcceptedFile, wrapperClasses, buttonClasses, withCou
           multiple
           onChange={changeHandler}
         />
+
         {images.length > 0 ? (
           <div className="flex w-full space-x-8 flex-wrap mt-4 overflow-y-auto">
             {images.map((image) => {
               return (
-                <div key={image} className="relative my-2">
+                <div key={image} className="relative my-2 group">
                   {' '}
-                  <img className="h-24 w-24 object-fill peer" src={image} alt="" />{' '}
-                  {/* <div className="p-1 bg-black rounded absolute z-10 -top-3 -right-5 "> */}
-                  <div className="peer-focus-within:visible peer-hover:visible invisible overlay absolute top-0 left-0 w-full h-full bg-black/50 z-10"></div>
+                  <img className="h-24 w-24 object-fill" src={image} alt="" />{' '}
+                  <div className="group-hover:visible group-focus-within::visible invisible overlay absolute top-0 left-0 w-full h-full bg-black/50 z-10"></div>
                   <div
-                    className="peer-focus-within:visible peer-hover:visible invisible p-1 bg-black rounded absolute z-10 top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4"
+                    className=" group-hover:visible group-focus-within::visible invisible p-1 bg-black rounded absolute z-10 top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4"
                     onClick={handleRemoveImage.bind(this, image)}
                   >
                     <X className="h-4 w-4" />
