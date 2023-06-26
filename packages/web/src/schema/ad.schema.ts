@@ -153,8 +153,8 @@ export const adSchema = z.object({
   }),
 
   //   Price details
-  isNegotiable: z.boolean(),
-  isLeasing: z.boolean(),
+  isNegotiable: z.boolean().optional(),
+  isLeasing: z.boolean().optional(),
 
   //   Seller Details
   sellerFullName: z
