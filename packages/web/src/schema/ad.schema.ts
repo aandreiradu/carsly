@@ -23,11 +23,13 @@ export const adSchema = z.object({
       invalid_type_error: 'Please insert a valid VIN',
     })
     .length(13, { message: 'Please insert a valid VIN' }),
-  KM: z
-    .string({
-      required_error: 'Please insert the number of KM',
+  KM: z.coerce
+    .number({
+      description: 'The number of kilometers should be greater or equal than 1',
+      required_error: 'The number of kilometers should be greater or equal than 1',
+      invalid_type_error: 'The number of kilometers should be greater or equal than 1',
     })
-    .min(0, { message: 'The number of kilometers should be greater or equal than 0' }),
+    .min(1, { message: 'The number of kilometers should be greater or equal than 1' }),
   dayOfRegistration: z.coerce
     .number({
       description: 'Please insert the day of the first registration',
@@ -35,7 +37,7 @@ export const adSchema = z.object({
       invalid_type_error: 'Please insert the day of the first registration',
     })
     .min(1, { message: 'Day of registration should be between 1 - 31' })
-    .max(12, { message: 'Day of registration should be between 1 - 31' }),
+    .max(31, { message: 'Day of registration should be between 1 - 31' }),
   monthOfRegistration: z.coerce
     .number({
       description: 'Please insert the month of the first registration',
@@ -50,7 +52,7 @@ export const adSchema = z.object({
       required_error: 'Please insert the year of the first registration',
       invalid_type_error: 'Please insert the year of the first registration',
     })
-    .min(1, { message: 'Year of registration should be greater than or equal to 1900' }),
+    .min(1900, { message: 'Year of registration should be greater than or equal to 1900' }),
 
   // Technical Details
   year: z.string({
@@ -108,7 +110,7 @@ export const adSchema = z.object({
     required_error: 'Please select the polluation norm ',
     invalid_type_error: 'Please select a valid polluation norm ',
   }),
-  co2emissions: z.coerce.number().min(1, { message: 'The value should be greater than or equal to 1' }),
+  co2emissions: z.coerce.number().min(1, { message: 'The value should be greater than or equal to 1' }).optional(),
 
   // Body Type details
   bodyType: z.nativeEnum(VehicleBodyType, {
