@@ -28,19 +28,29 @@ export const adSchema = z.object({
       required_error: 'Please insert the number of KM',
     })
     .min(0, { message: 'The number of kilometers should be greater or equal than 0' }),
-  dayOfRegistration: z
-    .string()
-    .min(1, { message: 'Please insert the day of the first registration' })
-    .max(31, { message: 'Please insert the day of the first registration' })
-    .nonempty(),
-  monthOfRegistration: z
-    .string()
-    .min(1, { message: 'Please insert the month of the first registration' })
-    .max(12, { message: 'Please insert the day of the first registration' }),
-  yearOfRegistration: z.string({
-    required_error: 'Please insert the year of the first registration',
-    invalid_type_error: 'Please insert the year of the first registration',
-  }),
+  dayOfRegistration: z.coerce
+    .number({
+      description: 'Please insert the day of the first registration',
+      required_error: 'Please insert the day of the first registration',
+      invalid_type_error: 'Please insert the day of the first registration',
+    })
+    .min(1, { message: 'Day of registration should be between 1 - 31' })
+    .max(12, { message: 'Day of registration should be between 1 - 31' }),
+  monthOfRegistration: z.coerce
+    .number({
+      description: 'Please insert the month of the first registration',
+      required_error: 'Please insert the month of the first registration',
+      invalid_type_error: 'Please insert the month of the first registration',
+    })
+    .min(1, { message: 'Month of registration should be between 1 - 12' })
+    .max(12, { message: 'Month of registration should be between 1 - 12' }),
+  yearOfRegistration: z.coerce
+    .number({
+      description: 'Please insert the year of the first registration',
+      required_error: 'Please insert the year of the first registration',
+      invalid_type_error: 'Please insert the year of the first registration',
+    })
+    .min(1, { message: 'Year of registration should be greater than or equal to 1900' }),
 
   // Technical Details
   year: z.string({
