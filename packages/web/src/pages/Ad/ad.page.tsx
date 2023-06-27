@@ -266,7 +266,7 @@ const Ad = ({ title }: AdPageProps) => {
         <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
           <div className="flex flex-col w-full lg:flex-1">
             <label className="my-2">Date of first registration*</label>
-            <div className="flex items-center gap-2">
+            <div className={`flex gap-2 items-start`}>
               <div className="flex flex-col">
                 <Input
                   {...adPageForm.register('dayOfRegistration')}
@@ -277,7 +277,7 @@ const Ad = ({ title }: AdPageProps) => {
                   error={adPageForm.formState.errors.dayOfRegistration?.message}
                 />
               </div>
-              {' / '}
+
               <div className="flex flex-col">
                 <Input
                   {...adPageForm.register('monthOfRegistration')}
@@ -288,14 +288,13 @@ const Ad = ({ title }: AdPageProps) => {
                   error={adPageForm.formState.errors.monthOfRegistration?.message}
                 />
               </div>
-              {' / '}
               <div className="flex flex-col">
                 <Input
                   {...adPageForm.register('yearOfRegistration')}
                   id="yyyyDOR"
                   type="number"
-                  placeholder="YYY"
-                  className="border-none bg-gray-200 rounded-lg w-32 lg:w-20"
+                  placeholder="YYYY"
+                  className="border-none bg-gray-200 rounded-lg w-28 lg:w-16"
                   error={adPageForm.formState.errors.yearOfRegistration?.message}
                 />
               </div>
@@ -637,6 +636,7 @@ const Ad = ({ title }: AdPageProps) => {
           wrapperClasses="bg-gray-200 mt-2 p-4 lg:min-h-[200px] rounded-lg text-white"
           buttonClasses="text-white bg-indigo-500 rounded-lg"
           withCountHeader={true}
+          withDragDrop={false}
         />
 
         <div className="flex space-x-4 w-full my-5">
