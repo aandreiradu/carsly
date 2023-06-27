@@ -112,6 +112,8 @@ const Ad = ({ title }: AdPageProps) => {
 
   const onSubmit: SubmitHandler<AdProps> = (data) => {
     // TODO
+
+    console.log('data to BE', data);
   };
 
   useEffect(() => {
@@ -251,14 +253,15 @@ const Ad = ({ title }: AdPageProps) => {
           </div>
           <div className="flex flex-col w-full lg:flex-1">
             <Input
+              {...adPageForm.register('KM')}
               label="KM*"
               labelClasses="my-2"
               id="km"
               type="number"
               placeholder="ex: 100 000"
-              maxLength={17}
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.KM?.message}
+              step="any"
             />
           </div>
         </div>
@@ -329,7 +332,10 @@ const Ad = ({ title }: AdPageProps) => {
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+            <Label
+              disabled={loading || !adPageForm.getValues('year')}
+              className={`visible my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1`}
+            >
               Brand*
             </Label>
             <Controller
@@ -337,7 +343,6 @@ const Ad = ({ title }: AdPageProps) => {
               name="brand"
               render={({ field: { onChange } }) => (
                 <Select
-                  disabled={loading}
                   onChange={(e: { name: string }) => {
                     onChange(e.name);
                     handleBrandChange(e.name);
@@ -346,12 +351,16 @@ const Ad = ({ title }: AdPageProps) => {
                   cachedValue={adPageForm.watch('brand') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-full h-[41px]"
                   error={adPageForm.formState.errors.brand?.message}
+                  disabled={loading || !adPageForm.getValues('year')}
                 />
               )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+            <Label
+              disabled={loading || !adPageForm.getValues('brand')}
+              className="visible my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
+            >
               Model*
             </Label>
             <Controller
@@ -361,16 +370,21 @@ const Ad = ({ title }: AdPageProps) => {
                 <Select
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={cachedModels}
-                  disabled={allModels[adPageForm.getValues('brand')]?.length === 0 || loading}
                   cachedValue={adPageForm.watch('model') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.model?.message}
+                  disabled={
+                    allModels[adPageForm.getValues('brand')]?.length === 0 || !adPageForm.getValues('brand') || loading
+                  }
                 />
               )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+            <Label
+              disabled={loading || !adPageForm.getValues('model')}
+              className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
+            >
               Fuel*
             </Label>
             <Controller
@@ -381,10 +395,7 @@ const Ad = ({ title }: AdPageProps) => {
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={fuelTypeDictionary}
                   disabled={
-                    !adPageForm.getValues('brand') ||
-                    !adPageForm.getValues('model') ||
-                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
-                    loading
+                    !adPageForm.getValues('model') || allModels[adPageForm.getValues('brand')]?.length === 0 || loading
                   }
                   cachedValue={adPageForm.watch('fuel') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
@@ -404,6 +415,7 @@ const Ad = ({ title }: AdPageProps) => {
               placeholder="Ex: 150"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.power?.message}
+              disabled={!adPageForm.getValues('fuel')}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
@@ -416,10 +428,14 @@ const Ad = ({ title }: AdPageProps) => {
               placeholder="Ex: 1 395 cm3"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.engineSize?.message}
+              disabled={!adPageForm.getValues('power')}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+            <Label
+              disabled={loading || !adPageForm.getValues('engineSize')}
+              className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
+            >
               No of doors*
             </Label>
             <Controller
@@ -429,21 +445,19 @@ const Ad = ({ title }: AdPageProps) => {
                 <Select
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={noOfDorsDictionary}
-                  disabled={
-                    !adPageForm.getValues('brand') ||
-                    !adPageForm.getValues('model') ||
-                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
-                    loading
-                  }
                   cachedValue={adPageForm.watch('noOfDoors') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.noOfDoors?.message}
+                  disabled={loading || !adPageForm.getValues('engineSize')}
                 />
               )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+            <Label
+              disabled={loading || !adPageForm.getValues('noOfDoors')}
+              className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
+            >
               Gearbox*
             </Label>
             <Controller
@@ -453,21 +467,19 @@ const Ad = ({ title }: AdPageProps) => {
                 <Select
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={gearboxDictionary}
-                  disabled={
-                    !adPageForm.getValues('brand') ||
-                    !adPageForm.getValues('model') ||
-                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
-                    loading
-                  }
                   cachedValue={adPageForm.watch('gearbox') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.gearbox?.message}
+                  disabled={loading || !adPageForm.getValues('noOfDoors')}
                 />
               )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+            <Label
+              disabled={loading || !adPageForm.getValues('gearbox')}
+              className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
+            >
               Transmission*
             </Label>
             <Controller
@@ -477,21 +489,19 @@ const Ad = ({ title }: AdPageProps) => {
                 <Select
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={transmissionDictionary}
-                  disabled={
-                    !adPageForm.getValues('brand') ||
-                    !adPageForm.getValues('model') ||
-                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
-                    loading
-                  }
                   cachedValue={adPageForm.watch('transmission') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.transmission?.message}
+                  disabled={loading || !adPageForm.getValues('gearbox')}
                 />
               )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+            <Label
+              disabled={loading || !adPageForm.getValues('transmission')}
+              className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
+            >
               Polluation Norm*
             </Label>
             <Controller
@@ -501,15 +511,10 @@ const Ad = ({ title }: AdPageProps) => {
                 <Select
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={polluationNormDictionary}
-                  disabled={
-                    !adPageForm.getValues('brand') ||
-                    !adPageForm.getValues('model') ||
-                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
-                    loading
-                  }
                   cachedValue={adPageForm.watch('polluationNorm') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.polluationNorm?.message}
+                  disabled={loading || !adPageForm.getValues('gearbox')}
                 />
               )}
             />
@@ -524,6 +529,8 @@ const Ad = ({ title }: AdPageProps) => {
               placeholder="g/km"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.co2emissions?.message}
+              disabled={loading || !adPageForm.getValues('polluationNorm')}
+              required={false}
             />
           </div>
         </div>
@@ -542,15 +549,10 @@ const Ad = ({ title }: AdPageProps) => {
                 <Select
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={bodyTypeDictionary}
-                  disabled={
-                    !adPageForm.getValues('brand') ||
-                    !adPageForm.getValues('model') ||
-                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
-                    loading
-                  }
                   cachedValue={adPageForm.watch('bodyType') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.bodyType?.message}
+                  disabled={loading || !adPageForm.getValues('polluationNorm')}
                 />
               )}
             />
@@ -566,15 +568,10 @@ const Ad = ({ title }: AdPageProps) => {
                 <Select
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={carsColorsDictionary}
-                  disabled={
-                    !adPageForm.getValues('brand') ||
-                    !adPageForm.getValues('model') ||
-                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
-                    loading
-                  }
                   cachedValue={adPageForm.watch('color') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.color?.message}
+                  disabled={loading || !adPageForm.getValues('bodyType')}
                 />
               )}
             />
@@ -590,15 +587,10 @@ const Ad = ({ title }: AdPageProps) => {
                 <Select
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={carsColorsTypesDictionary}
-                  disabled={
-                    !adPageForm.getValues('brand') ||
-                    !adPageForm.getValues('model') ||
-                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
-                    loading
-                  }
                   cachedValue={adPageForm.watch('colorType') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.colorType?.message}
+                  disabled={loading || !adPageForm.getValues('color')}
                 />
               )}
             />
@@ -606,7 +598,10 @@ const Ad = ({ title }: AdPageProps) => {
         </div>
         <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
           <div className="flex flex-col w-full lg:flex-1">
-            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+            <Label
+              disabled={loading || !adPageForm.getValues('colorType')}
+              className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
+            >
               Seats*
             </Label>
             <Controller
@@ -616,15 +611,10 @@ const Ad = ({ title }: AdPageProps) => {
                 <Select
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={noOfSeatsDictionary}
-                  disabled={
-                    !adPageForm.getValues('brand') ||
-                    !adPageForm.getValues('model') ||
-                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
-                    loading
-                  }
                   cachedValue={adPageForm.watch('seats') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.seats?.message}
+                  disabled={loading || !adPageForm.getValues('colorType')}
                 />
               )}
             />
@@ -656,6 +646,7 @@ const Ad = ({ title }: AdPageProps) => {
             placeholder="Ex: https://www.youtube.com/watch?v=2g83-3j7nww&t=51s"
             className="border-none bg-gray-200 rounded-lg"
             error={adPageForm.formState.errors.youtubeVideo?.message}
+            required={false}
           />
         </div>
 
@@ -690,7 +681,10 @@ const Ad = ({ title }: AdPageProps) => {
         <p className="text-base lg:text-xl font-light">Origin of the vehicle</p>
 
         <div className="flex flex-col w-full lg:flex-1">
-          <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+          <Label
+            disabled={loading || !adPageForm.getValues('seats')}
+            className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
+          >
             Vehicle origin*
           </Label>
           <Controller
@@ -700,15 +694,10 @@ const Ad = ({ title }: AdPageProps) => {
               <Select
                 onChange={(e: { name: string }) => onChange(e.name)}
                 dataSource={countriesDictionary}
-                disabled={
-                  !adPageForm.getValues('brand') ||
-                  !adPageForm.getValues('model') ||
-                  allModels[adPageForm.getValues('brand')]?.length === 0 ||
-                  loading
-                }
                 cachedValue={adPageForm.watch('vehicleOrigin') || ''}
                 classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                 error={adPageForm.formState.errors.vehicleOrigin?.message}
+                disabled={loading || !adPageForm.getValues('seats')}
               />
             )}
           />
@@ -822,10 +811,14 @@ const Ad = ({ title }: AdPageProps) => {
               placeholder="Ex: 8000 EUR"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.price?.message}
+              disabled={loading || !adPageForm.getValues('vehicleOrigin')}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
-            <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
+            <Label
+              disabled={loading || !adPageForm.getValues('price')}
+              className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
+            >
               Currency*
             </Label>
             <Controller
@@ -835,15 +828,10 @@ const Ad = ({ title }: AdPageProps) => {
                 <Select
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={currencyDictionary}
-                  disabled={
-                    !adPageForm.getValues('brand') ||
-                    !adPageForm.getValues('model') ||
-                    allModels[adPageForm.getValues('brand')]?.length === 0 ||
-                    loading
-                  }
                   cachedValue={adPageForm.watch('currency') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.currency?.message}
+                  disabled={loading || !adPageForm.getValues('price')}
                 />
               )}
             />
@@ -898,6 +886,7 @@ const Ad = ({ title }: AdPageProps) => {
               type="text"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.sellerFullName?.message}
+              disabled={loading || !adPageForm.getValues('currency')}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
@@ -909,6 +898,7 @@ const Ad = ({ title }: AdPageProps) => {
               type="text"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.sellerCity?.message}
+              disabled={loading || !adPageForm.getValues('sellerFullName')}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
@@ -920,6 +910,7 @@ const Ad = ({ title }: AdPageProps) => {
               type="text"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.sellerPhoneNumber?.message}
+              disabled={loading || !adPageForm.getValues('sellerCity')}
             />
           </div>
         </div>
