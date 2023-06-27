@@ -10,11 +10,18 @@ type FileComponentProps = {
   maxAcceptedFile: number;
   buttonClasses?: string;
   withCountHeader?: boolean;
+  withDragDrop?: boolean;
 };
 
 const imageTypeRegex = /image\/(png|jpg|)/gm;
 
-const FileComponent = ({ maxAcceptedFile, wrapperClasses, buttonClasses, withCountHeader }: FileComponentProps) => {
+const FileComponent = ({
+  withDragDrop,
+  maxAcceptedFile,
+  wrapperClasses,
+  buttonClasses,
+  withCountHeader,
+}: FileComponentProps) => {
   const notificaionRef = useRef<TopLevelNotificationHandlers>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -144,7 +151,7 @@ const FileComponent = ({ maxAcceptedFile, wrapperClasses, buttonClasses, withCou
           >
             Add photos
           </button>
-          <span className="text-black">or drag & drop photos here</span>
+          {withDragDrop && <span className="text-black">or drag & drop photos here</span>}
         </div>
         <span className="text-black text-center mt-4 text-sm">
           You can add up to {maxAcceptedFile} photos. Accepted formats .JPG and .PNG
