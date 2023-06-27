@@ -21,7 +21,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
     const handleOpen = () => setIsOpen((prev) => !prev);
 
     return (
-      <div className="relative h-full" onClick={handleOpen}>
+      <div className={`relative h-full visible ${disabled && 'invisible'}`} onClick={handleOpen}>
         <Listbox
           ref={ref}
           value={selected || cachedValue}
@@ -33,7 +33,12 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
           <div className={`${cn('relative w-full', classNameWrapper)}`}>
             <Listbox.Button
               aria-disabled={disabled}
-              className="relative  text-black w-full cursor-default h-full rounded-lg bg-transparent pl-1 pr-10 text-left  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm"
+              className={`relative visible  text-black w-full cursor-default h-full rounded-lg bg-transparent 
+                      pl-1 pr-10 text-left  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 
+                      focus-visible:ring-white focus-visible:ring-opacity-75 
+                      focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm
+                      ${disabled && 'invisible opacity-50 cursor-not-allowed'}        
+              `}
             >
               <span className="block truncate px-2 ">{cachedValue}</span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -46,6 +51,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
             </Listbox.Button>
             <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
               <Listbox.Options
+                aria-disabled={disabled}
                 className={`${cn(
                   'z-40 absolute top-10 max-h-40 w-full overflow-auto rounded-md bg-white py-1 text-base  ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm',
                   classNameListbox,

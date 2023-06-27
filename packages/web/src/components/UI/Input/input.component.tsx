@@ -6,6 +6,7 @@ type InputProps = ComponentPropsWithoutRef<'input'> & {
   label?: string;
   labelClasses?: string;
   error?: string;
+  disabled?: boolean;
 };
 
 function classNames(...classes: string[]) {
@@ -13,23 +14,35 @@ function classNames(...classes: string[]) {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ labelClasses, label, type, error, className, value, ...props }, ref) => {
+  ({ disabled, labelClasses, label, type, error, className, value, ...props }, ref) => {
+    console.log('label', label, disabled);
     const id = useId();
     return (
       <>
         {label && (
-          <Label htmlFor={id} className={`text-sm ${labelClasses} ${classNames(error ? '!text-red-500' : '')}`}>
+          <Label
+            htmlFor={id}
+            className={`
+            text-sm visible ${labelClasses}
+            ${disabled && 'invisible opacity-20 cursor-not-allowed transition-opacity'} 
+            ${classNames(error ? '!text-red-500' : '')}`}
+          >
             {label}
           </Label>
         )}
         <input
           ref={ref}
           id={id}
-          className={classNames('focus:ring-0', error ? '!border-red-500' : '', className ? className : '')}
+          className={`
+              visible
+              ${classNames('focus:ring-0', error ? '!border-red-500' : '', className ? className : '')}
+              ${disabled && 'invisible opacity-50 cursor-not-allowed'}
+          `}
           type={type || 'text'}
           spellCheck="false"
           {...props}
           placeholder={props.placeholder}
+          disabled={disabled}
         />
         {error && <span className="text-red-500 text-sm ">{error}</span>}
       </>
