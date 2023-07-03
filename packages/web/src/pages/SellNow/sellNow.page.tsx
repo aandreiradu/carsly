@@ -1,23 +1,31 @@
 import { useCallback, useRef, useState } from 'react';
 import { SellNowProps } from '../../types/index.types';
-import Modal from '../../components/Modal/modal.component';
+import Modal from '../../components/UI/Modal/modal.component';
 import { sellNow__getYears } from '../../config/settings';
-import Select from '../../components/Select/select.component';
-import Label from '../../components/UI/Label/label.component';
+
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCarsBrands, selectModelsByBrandDataSource } from '../../store/cars/cars.selector';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { SellNowStageOneProps, sellNowStageOne } from './types';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import {
+  FuelType,
+  SellNowStageOneProps,
+  SellNowStageTwoProps,
+  fuelTypeDictionary,
+  sellNowStageOne,
+  sellNowStageTwo,
+} from './types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PulseLoader } from 'react-spinners';
 import { setModelsByBrand } from '../../store/cars/cars.slice';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from '../../components/UI/TopLevelNotification/topLevelNotification.component';
 import { Info, Warning } from 'phosphor-react';
+import StageLevelOne from '../../components/StageLevel/stageLevelOne.component';
+import StageLevelTwo from '../../components/StageLevel/stageLevelTwo.component';
 
 const maxStageLevel = +import.meta.env.VITE_MAX_STAGE_LEVEL_SELLNOW;
+
 export type SellNowHandlers = {
   display: () => void;
   hide: () => void;
@@ -28,31 +36,45 @@ const sellNowYears = sellNow__getYears()
   .reverse();
 
 const SellNow = ({ setShowComponent, componentName, show }: SellNowProps) => {
-  const {
-    formState: { errors },
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-  } = useForm<SellNowStageOneProps>({
+  const stageOneForm = useForm<SellNowStageOneProps>({
     resolver: zodResolver(sellNowStageOne),
     mode: 'onSubmit',
+    defaultValues: {
+      brand: '',
+      year: '',
+    },
   });
+  const stageTwoForm = useForm<SellNowStageTwoProps>({
+    resolver: zodResolver(sellNowStageTwo),
+    mode: 'onSubmit',
+    defaultValues: {
+      fuel: FuelType.Petrol,
+      model: '',
+    },
+  });
+
+  console.log('////', stageOneForm.formState.errors);
+
   const dispatch = useDispatch();
   const { loading, sendRequest, error: fetchModelsByBrandError } = useHttpRequest();
   const [stageLevel, setStageLevel] = useState(1);
   const carsBrands = useSelector(selectCarsBrands);
-  const brandModels = useSelector(selectModelsByBrandDataSource(getValues('model' ?? null)));
+  const brandModels = useSelector(selectModelsByBrandDataSource(stageOneForm.getValues('brand' ?? null)));
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   console.log('brandModels', brandModels);
 
-  const onSubmit: SubmitHandler<SellNowStageOneProps> = async (data) => {
-    console.log('data', data);
+  const onSubmitStageOne: SubmitHandler<SellNowStageOneProps> = async () => {
+    await changeStageLevel();
   };
 
-  if (errors) {
-    console.log('errors', errors);
-  }
+  const onSubmitStageTwo: SubmitHandler<SellNowStageTwoProps> = async (data) => {
+    const model = stageTwoForm.getValues('model');
+    const fuel = stageTwoForm.getValues('fuel');
+    if (stageLevel < maxStageLevel && model && fuel) {
+      setStageLevel((prev) => prev + 1);
+      return;
+    }
+  };
 
   const fetchModelsByBrand = useCallback(
     async (model: string) => {
@@ -62,7 +84,7 @@ const SellNow = ({ setShowComponent, componentName, show }: SellNowProps) => {
         signal: contorller.signal,
       });
     },
-    [getValues('model')],
+    [stageOneForm.getValues('brand')],
   );
 
   const changeStageLevel = useCallback(async () => {
@@ -71,9 +93,9 @@ const SellNow = ({ setShowComponent, componentName, show }: SellNowProps) => {
       return;
     }
 
-    const model = getValues('model');
-    const year = getValues('year');
-    if (stageLevel < maxStageLevel && Object.keys(errors).length === 0 && model && year) {
+    const model = stageOneForm.getValues('brand');
+    const year = stageOneForm.getValues('year');
+    if (stageLevel < maxStageLevel && model && year) {
       const respModels = await fetchModelsByBrand(model);
       if (respModels) {
         const { data, status } = respModels;
@@ -122,99 +144,37 @@ const SellNow = ({ setShowComponent, componentName, show }: SellNowProps) => {
             title="Sell Your Car Now"
             onClose={() => {
               setStageLevel(1);
-              setValue('model', '');
-              setValue('year', '');
+              stageOneForm.setValue('brand', '');
+              stageOneForm.setValue('year', '');
+              stageTwoForm.setValue('model', '');
+              stageTwoForm.setValue('fuel', FuelType.Petrol);
             }}
             onPrev={() => {
-              setStageLevel(1);
+              setStageLevel((prev) => prev - 1);
             }}
             className="relative"
           >
-            <form
-              id="sellNow"
-              className="mt-8 w-full flex flex-col /*lg:w-96 md:max-w-2xl*/ "
-              onSubmit={handleSubmit(onSubmit)}
-            >
-              <div className="w-full grid grid-cols-2 gap-5">
-                {stageLevel === 1 && (
-                  <>
-                    <div className="flex flex-col">
-                      <div className="relative border border-black w-full py-1 px-1 bg-yellow-300 flex flex-col flex-1 rounded-xl max-h-16">
-                        <Label className="text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
-                          Year*
-                        </Label>
-                        <Controller
-                          control={control}
-                          name="year"
-                          render={({ field: { onChange } }) => (
-                            <Select onChange={(e: { name: string }) => onChange(e.name)} dataSource={sellNowYears} />
-                          )}
-                        />
-                      </div>
-                      <span className="lg:pl-1 text-sm text-red-500">{errors?.year?.message}</span>
-                    </div>
-                    <div className="flex flex-col">
-                      <div className="relative border border-black w-full py-1 px-1 bg-yellow-300 flex flex-col flex-1 rounded-xl max-h-16">
-                        <Label className="text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
-                          Brand*
-                        </Label>
-                        <Controller
-                          control={control}
-                          name="model"
-                          render={({ field: { onChange } }) => (
-                            <Select onChange={(e: { name: string }) => onChange(e.name)} dataSource={carsBrands} />
-                          )}
-                        />
-                      </div>
-                      <span className="lg:pl-1 text-sm text-red-500">{errors?.model?.message}</span>
-                    </div>
-                  </>
-                )}
-                {stageLevel === 2 && (
-                  <>
-                    <div className="flex flex-col">
-                      <div className="relative border border-black w-full py-1 px-1 bg-yellow-300 flex flex-col flex-1 rounded-xl max-h-16">
-                        <Label className="text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
-                          Model*
-                        </Label>
-                        <Controller
-                          control={control}
-                          name="year"
-                          render={({ field: { onChange } }) => (
-                            <Select onChange={(e: { name: string }) => onChange(e.name)} dataSource={brandModels} />
-                          )}
-                        />
-                      </div>
-                      <span className="lg:pl-1 text-sm text-red-500">{errors?.year?.message}</span>
-                    </div>
-                    <div className="flex flex-col">
-                      <div className="relative border border-black w-full py-1 px-1 bg-yellow-300 flex flex-col flex-1 rounded-xl max-h-16">
-                        <Label className="text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
-                          Fuel*
-                        </Label>
-                        <Controller
-                          control={control}
-                          name="model"
-                          render={({ field: { onChange } }) => (
-                            <Select onChange={(e: { name: string }) => onChange(e.name)} dataSource={carsBrands} />
-                          )}
-                        />
-                      </div>
-                      <span className="lg:pl-1 text-sm text-red-500">{errors?.model?.message}</span>
-                    </div>
-                  </>
-                )}
-              </div>
-              <button
-                type="submit"
-                // disabled={carsBrands?.length === 0 || sellNowYears?.length === 0}
-                onClick={changeStageLevel}
-                className="w-32 text-black text-base mx-auto mt-10  border  border-black p-2 rounded-lg disabled:bg-gray-500/25 disabled:border-none disabled:text-white disabled:cursor-not-allowed"
-              >
-                {loading ? <PulseLoader color="#1f1f1f" /> : 'Continue'}
-              </button>
-            </form>
-
+            {stageLevel === 1 && (
+              <StageLevelOne
+                form={stageOneForm}
+                dataSourceOne={sellNowYears}
+                labelTextOne="Year*"
+                dataSourceTwo={carsBrands}
+                labelTextTwo="Brand*"
+                onSubmit={stageOneForm.handleSubmit(onSubmitStageOne)}
+                isLoading={loading}
+              />
+            )}
+            {stageLevel === 2 && (
+              <StageLevelTwo
+                form={stageTwoForm}
+                dataSourceOne={brandModels}
+                labelTextOne="Model*"
+                dataSourceTwo={fuelTypeDictionary}
+                labelTextTwo="Fuel*"
+                onSubmit={stageTwoForm.handleSubmit(onSubmitStageTwo)}
+              />
+            )}
             <span className="mx-auto text-black mt-3 text-xs">
               Step {stageLevel} / {maxStageLevel}
             </span>
