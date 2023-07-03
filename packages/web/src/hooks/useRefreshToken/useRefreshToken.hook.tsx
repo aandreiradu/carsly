@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { useCallback } from 'react';
 import _axios from '../../api/axios/axios';
 import { useDispatch } from 'react-redux';
 import { AxiosError } from 'axios';
@@ -20,7 +20,7 @@ const useRefreshToken = () => {
 
       if (response?.status === 200) {
         const accessToken = response.data.accessToken;
-        console.log('accessToken received in useRefreshTOken', accessToken);
+        // console.log('accessToken received in useRefreshTOken', accessToken);
 
         if (!accessToken) {
           throw new Error('No access token received');
@@ -29,7 +29,7 @@ const useRefreshToken = () => {
         dispatch(setAccessToken({ accessToken }));
         return { accessToken };
       }
-      console.log('response from useRefreshToken', response);
+      // console.log('response from useRefreshToken', response);
 
       throw new Error('No token received');
     } catch (error) {

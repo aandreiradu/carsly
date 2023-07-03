@@ -10,7 +10,6 @@ export type SidebarLinkProps = {
   onClick?: () => void;
   isActive: boolean;
   setShowComponent?: Dispatch<SetStateAction<ShowComponentProps>>;
-  ref?: React.RefObject<HTMLLIElement>;
 };
 
 const SidebarLink: FC<SidebarLinkProps> = ({ icon, href, isLink, onClick, isActive, setShowComponent, label }) => {

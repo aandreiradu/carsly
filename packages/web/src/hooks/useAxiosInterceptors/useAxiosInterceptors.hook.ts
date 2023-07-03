@@ -15,7 +15,7 @@ const useAxiosInterceptors = () => {
     const requestInterceptor = _axios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
       if (config?.headers) {
         if (!config.headers['Authorization']) {
-          console.log('no authorization token in header, will attach this', accessToken);
+          // console.log('no authorization token in header, will attach this', accessToken);
           config.headers['Authorization'] = `Bearer ${accessToken}`;
         }
       } else {
@@ -29,10 +29,10 @@ const useAxiosInterceptors = () => {
       async (error: AxiosError) => {
         const previousReq = error.config;
         if (error.response?.status === 403 && previousReq) {
-          console.log('responseInterceptor /// 403 branch');
-          console.log('response interceptor received 403 from BE', error.response);
+          // console.log('responseInterceptor /// 403 branch');
+          // console.log('response interceptor received 403 from BE', error.response);
 
-          console.log('calling useRefreshToken from interceptor');
+          // console.log('calling useRefreshToken from interceptor');
           const { accessToken, errorMessage } = await refresh();
 
           if (errorMessage) {
@@ -40,15 +40,15 @@ const useAxiosInterceptors = () => {
           }
 
           if (accessToken) {
-            console.log('responseInterceptor /// new access token received');
+            // console.log('responseInterceptor /// new access token received');
             if (previousReq?.headers) {
-              console.log('attached the new access token to headers');
+              // console.log('attached the new access token to headers');
               previousReq.headers.Authorization = `Bearer ${accessToken}`;
             }
             return _axios(previousReq);
           }
         } else if (error.response?.status === 401) {
-          console.log('responseInterceptor /// 401 branch');
+          // console.log('responseInterceptor /// 401 branch');
           const message = error.response.data;
 
           if (message === 'Unauthorized') {

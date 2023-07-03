@@ -7,7 +7,6 @@ import _axios from '../../api/axios/axios';
 import { useEffect, useRef, useState } from 'react';
 import { CarsBrandsSuccess, ShowComponentProps } from '../../types/index.types';
 import Sidebar from '../../components/Sidebar/sidebar.component';
-import SellNow from '../SellNow/sellNow.page';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCarsBrands } from '../../store/cars/cars.slice';
 import TopLevelNotification, {
@@ -19,6 +18,7 @@ const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Ne
 
 const Home = () => {
   const carsBrands = useSelector(selectCarsBrands);
+  console.log('carsBrands din home', carsBrands);
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const dispatch = useDispatch();
   const { sendRequest, error } = useHttpRequest<CarsBrandsSuccess>();
@@ -59,7 +59,7 @@ const Home = () => {
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
       <Nav setShowComponent={setShowComponent} />
       <Sidebar setShowComponent={setShowComponent} />
-      <SellNow show={showComponet.show} componentName={showComponet.componentName} setShowComponent={setShowComponent} />
+      {/* <SellNow show={showComponet.show} componentName={showComponet.componentName} setShowComponent={setShowComponent} /> */}
       <section className="px-2 gap-4 lg:gap-0 md:px-0 my-6 md:my-0 h-full max-h-[98%] flex flex-wrap items-center w-full overflow-auto  xl:space-x-5 2xl:space-x-7">
         {/* LEFT */}
         <div className="flex md:h-full w-full shadow-xl bg-default-gray rounded-2xl md:max-h-[800px] md:my-auto py-3 px-2 m-0 lg:m-5 lg:py-5 lg:px-6 md:max-w-[600px] xl:max-w-[1000px]">
