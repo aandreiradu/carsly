@@ -2,7 +2,6 @@ import { useCallback, useRef, useState } from 'react';
 import { SellNowProps } from '../../types/index.types';
 import Modal from '../../components/Modal/modal.component';
 import { sellNow__getYears } from '../../config/settings';
-import Select from '../../components/Select/select.component';
 import Label from '../../components/UI/Label/label.component';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,6 +15,7 @@ import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from '../../components/UI/TopLevelNotification/topLevelNotification.component';
 import { Info, Warning } from 'phosphor-react';
+import Select from '../../components/UI/Select/select.component';
 
 const maxStageLevel = +import.meta.env.VITE_MAX_STAGE_LEVEL_SELLNOW;
 export type SellNowHandlers = {
@@ -42,7 +42,7 @@ const SellNow = ({ setShowComponent, componentName, show }: SellNowProps) => {
   const { loading, sendRequest, error: fetchModelsByBrandError } = useHttpRequest();
   const [stageLevel, setStageLevel] = useState(1);
   const carsBrands = useSelector(selectCarsBrands);
-  const brandModels = useSelector(selectModelsByBrandDataSource(getValues('model' ?? null)));
+  const brandModels = useSelector(selectModelsByBrandDataSource(getValues('brand' ?? null)));
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   console.log('brandModels', brandModels);
 
@@ -62,7 +62,7 @@ const SellNow = ({ setShowComponent, componentName, show }: SellNowProps) => {
         signal: contorller.signal,
       });
     },
-    [getValues('model')],
+    [getValues('brand')],
   );
 
   const changeStageLevel = useCallback(async () => {
@@ -71,7 +71,7 @@ const SellNow = ({ setShowComponent, componentName, show }: SellNowProps) => {
       return;
     }
 
-    const model = getValues('model');
+    const model = getValues('brand');
     const year = getValues('year');
     if (stageLevel < maxStageLevel && Object.keys(errors).length === 0 && model && year) {
       const respModels = await fetchModelsByBrand(model);
@@ -122,7 +122,7 @@ const SellNow = ({ setShowComponent, componentName, show }: SellNowProps) => {
             title="Sell Your Car Now"
             onClose={() => {
               setStageLevel(1);
-              setValue('model', '');
+              setValue('brand', '');
               setValue('year', '');
             }}
             onPrev={() => {
@@ -160,13 +160,13 @@ const SellNow = ({ setShowComponent, componentName, show }: SellNowProps) => {
                         </Label>
                         <Controller
                           control={control}
-                          name="model"
+                          name="brand"
                           render={({ field: { onChange } }) => (
                             <Select onChange={(e: { name: string }) => onChange(e.name)} dataSource={carsBrands} />
                           )}
                         />
                       </div>
-                      <span className="lg:pl-1 text-sm text-red-500">{errors?.model?.message}</span>
+                      <span className="lg:pl-1 text-sm text-red-500">{errors?.brand?.message}</span>
                     </div>
                   </>
                 )}
@@ -194,13 +194,13 @@ const SellNow = ({ setShowComponent, componentName, show }: SellNowProps) => {
                         </Label>
                         <Controller
                           control={control}
-                          name="model"
+                          name="brand"
                           render={({ field: { onChange } }) => (
                             <Select onChange={(e: { name: string }) => onChange(e.name)} dataSource={carsBrands} />
                           )}
                         />
                       </div>
-                      <span className="lg:pl-1 text-sm text-red-500">{errors?.model?.message}</span>
+                      <span className="lg:pl-1 text-sm text-red-500">{errors?.brand?.message}</span>
                     </div>
                   </>
                 )}
