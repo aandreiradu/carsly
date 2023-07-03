@@ -39,9 +39,10 @@ const SignIn = () => {
     mode: 'onSubmit',
   });
   const { data, error, loading, sendRequest }: HttpReqRes<SignInResponse> = useHttpRequest<SignInResponse>();
-  const passwordRef = useRef<HTMLInputElement>(null);
+  let passwordRef = useRef<HTMLInputElement | null>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
+  const { ref, ...rest } = register('password');
 
   useEffect(() => {
     if (data) {
@@ -124,7 +125,11 @@ const SignIn = () => {
         <div className="flex-1 my-3 py-1 px-1 bg-yellow-300 flex rounded-xl h-14 w-full ">
           <div className="pl-1 flex flex-col w-4/5">
             <Input
-              {...register('password')}
+              {...rest}
+              ref={(e) => {
+                ref(e);
+                passwordRef.current = e;
+              }}
               className={`text-black border-none focus:outline-none active:outline-none bg-transparent px-1 ${
                 errors.password?.message && 'border-red-500'
               }`}
@@ -136,7 +141,6 @@ const SignIn = () => {
               label="Password"
               error={errors.password?.message}
               required
-              // ref={passwordRef}
             />
           </div>
           <div className="flex h-full items-center justify-end w-1/5">
@@ -145,7 +149,7 @@ const SignIn = () => {
         </div>
 
         <button
-          ref={submitButtonRef}
+          // ref={submitButtonRef}
           type="submit"
           form="register"
           className="my-3 bg-default-yellow text-black border-none px-2 py-4 rounded-lg shadow-sm shadow-yellow-300/50 hover:bg-default-gray hover:text-white ease-in hover:shadow-none"
