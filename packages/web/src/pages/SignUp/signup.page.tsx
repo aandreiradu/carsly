@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import AuthLayout from '../../components/Layouts/Auth/auth.layout';
 import { Link, useNavigate } from 'react-router-dom';
 import { AddressBook, Check, Envelope, Eye, Warning } from 'phosphor-react';
@@ -26,10 +26,12 @@ const SignUp = () => {
     mode: 'onSubmit',
   });
   const { error, loading, sendRequest }: HttpReqRes<AuthAccountCreated> = useHttpRequest<AuthAccountCreated>();
-  const passwordRef = useRef<HTMLInputElement>(null);
-  const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement | null>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
+  const { ref: refPassword, ...restPassword } = register('password');
+  const { ref: refConfirmPassword, ...restConfirmPassword } = register('confirmPassword');
 
   useEffect(() => {
     if (error) {
@@ -155,7 +157,11 @@ const SignUp = () => {
         <div className="flex-1 my-3 py-1 px-1 bg-yellow-300 flex rounded-xl h-14 w-full ">
           <div className="pl-1 flex flex-col w-4/5">
             <Input
-              {...register('password')}
+              {...restPassword}
+              ref={(e) => {
+                refPassword(e);
+                passwordRef.current = e;
+              }}
               className={`text-black border-none focus:outline-none active:outline-none bg-transparent px-1 ${
                 errors.password?.message && 'border-red-500'
               }`}
@@ -167,7 +173,6 @@ const SignUp = () => {
               label="Password"
               error={errors.password?.message}
               required
-              // ref={passwordRef}
             />
           </div>
           <div className="flex h-full items-center justify-end w-1/5">
@@ -179,7 +184,11 @@ const SignUp = () => {
         <div className="flex-1 my-3 py-1 px-1 bg-yellow-300 flex rounded-xl h-14 w-full ">
           <div className="pl-1 flex flex-col w-4/5">
             <Input
-              {...register('confirmPassword')}
+              {...restConfirmPassword}
+              ref={(e) => {
+                refPassword(e);
+                confirmPasswordRef.current = e;
+              }}
               className={`text-black border-none focus:outline-none active:outline-none bg-transparent px-1 ${
                 errors.confirmPassword?.message && 'border-red-500'
               }`}
@@ -191,7 +200,6 @@ const SignUp = () => {
               label="Confirm Password"
               error={errors.confirmPassword?.message}
               required
-              // ref={confirmPasswordRef}
             />
           </div>
           <div className="flex h-full items-center justify-end w-1/5">
