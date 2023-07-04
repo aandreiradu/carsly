@@ -48,7 +48,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           id="description"
           autoComplete="off"
           rows={rows}
-          // maxLength={maxLen}
+          maxLength={maxLen}
           minLength={minLen}
           name={label}
           ref={descriptionRef}
@@ -66,7 +66,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextareaProps>(
               descriptionCountExceeded ? 'text-red-500' : 'flex-1'
             }`}
           >
-            {descriptionCount} / 6000
+            {descriptionCount} / {maxLen}
           </span>
         </div>
       </>
