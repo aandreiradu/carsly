@@ -15,7 +15,6 @@ function classNames(...classes: string[]) {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ disabled, labelClasses, label, type, error, className, value, ...props }, ref) => {
-    console.log('label', label, disabled);
     const id = useId();
     return (
       <>

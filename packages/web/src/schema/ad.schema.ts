@@ -133,8 +133,8 @@ export const adSchema = z.object({
     required_error: 'Please select the number of seats',
     invalid_type_error: 'Please select the number of seats',
   }),
-  youtubeVideo: z.string().url().optional(),
-  shortDescription: z.string().optional(),
+  youtubeVideo: z.string().optional(),
+  adTitle: z.string(),
   description: z.string().optional(),
   vehicleOrigin: z.nativeEnum(CountriesTypes, {
     description: 'Please select a country',
