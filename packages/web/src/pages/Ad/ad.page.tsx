@@ -33,12 +33,13 @@ import {
   transmissionDictionary,
 } from '../SellNow/types';
 import { noOfDorsDictionary } from '../../config/settings';
-import File from '../../components/UI/File/file.component';
+import File, { FileComponentHnadlers } from '../../components/UI/File/file.component';
 
 const Ad = ({ title }: AdPageProps) => {
   const formRef = useRef<HTMLFormElement | null>(null);
   const dispatch = useDispatch();
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
+  const imagesRef = useRef<FileComponentHnadlers>(null);
   const { sendRequest, error, loading } = useHttpRequest<CarsBrandsSuccess>();
   const adPageForm = useZodForm({
     schema: adSchema,
@@ -53,6 +54,26 @@ const Ad = ({ title }: AdPageProps) => {
   const handleIsDamaged = (args: boolean) => {
     adPageForm.setValue('isImported', args);
   };
+
+  useEffect(() => {
+    const getCarsBrands = async () => {
+      const brandsResponse = await sendRequest('/api/car/brands', {
+        method: 'GET',
+        withCredentials: true,
+      });
+
+      if (brandsResponse) {
+        const { status, data } = brandsResponse;
+
+        if (status === 200 && data?.carsBrands) {
+          dispatch(setCarsBrands({ carsBrands: data.carsBrands }));
+        }
+      }
+    };
+
+    //cached
+    carsBrands?.length === 0 ? getCarsBrands() : console.log('ad page cars brands are cached');
+  }, []);
 
   if (error) {
     console.error('error ad', error);
@@ -114,27 +135,9 @@ const Ad = ({ title }: AdPageProps) => {
   const onSubmit: SubmitHandler<AdProps> = async (data) => {
     // TODO
     console.log('data to BE', data);
+    const images = imagesRef.current?.getImages();
+    console.log('images', images);
   };
-
-  useEffect(() => {
-    const getCarsBrands = async () => {
-      const brandsResponse = await sendRequest('/api/car/brands', {
-        method: 'GET',
-        withCredentials: true,
-      });
-
-      if (brandsResponse) {
-        const { status, data } = brandsResponse;
-
-        if (status === 200 && data?.carsBrands) {
-          dispatch(setCarsBrands({ carsBrands: data.carsBrands }));
-        }
-      }
-    };
-
-    //cached
-    carsBrands?.length === 0 ? getCarsBrands() : console.log('ad page cars brands are cached');
-  }, []);
 
   const fetchModelsByBrand = useCallback(
     async (model: string) => {
@@ -375,7 +378,7 @@ const Ad = ({ title }: AdPageProps) => {
           </div>
           <div className="flex flex-col w-full lg:flex-1">
             <Label
-              disabled={loading || !adPageForm.getValues('brand')}
+              disabled={loading || (!adPageForm.getValues('brand') && cachedModels.length === 0)}
               className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
             >
               Model*
@@ -653,7 +656,7 @@ const Ad = ({ title }: AdPageProps) => {
         </div>
         {adPageForm.getValues('seats') && (
           <File
-            maxAcceptedFile={5}
+            maxAcceptedFiles={5}
             wrapperClasses="bg-gray-200 mt-2 p-4 lg:min-h-[200px] rounded-lg text-white"
             buttonClasses="text-white bg-indigo-500 rounded-lg"
             withCountHeader={true}
@@ -684,21 +687,21 @@ const Ad = ({ title }: AdPageProps) => {
         {adPageForm.getValues('seats') && <AdSectionHeaderWithImage title="Vehicle description" labelText="OPTIONAL" />}
         <div className={`${adPageForm.getValues('seats') ? 'flex flex-col w-full lg:flex-1' : 'hidden'}`}>
           <Input
-            {...adPageForm.register('shortDescription')}
-            label="Short description"
+            {...adPageForm.register('adTitle')}
+            label="Title*"
             labelClasses="my-2"
-            id="shortDescription"
+            id="adTitle"
             type="text"
             maxLength={30}
-            placeholder="Ex: First Owner / Battery replace, etc"
+            placeholder="Ex: 2018 Mercedes-Benz E53 AMG"
             className="border-none bg-gray-200 rounded-lg"
-            error={adPageForm.formState.errors.shortDescription?.message}
+            error={adPageForm.formState.errors.adTitle?.message}
           />
         </div>
         <div className={`${adPageForm.getValues('seats') ? 'flex flex-col w-full lg:flex-1 my-8' : 'hidden'}`}>
           <TextArea
-            {...adPageForm.register('shortDescription')}
-            maxLen={100}
+            {...adPageForm.register('description')}
+            maxLen={250}
             minLen={1}
             label="Description"
             className="bg-gray-200 rounded-md"
@@ -947,7 +950,7 @@ const Ad = ({ title }: AdPageProps) => {
         <button
           form="adForm"
           type="submit"
-          disabled={Boolean(!adPageForm.getValues('sellerPhoneNumber'))}
+          disabled={adPageForm.getValues('sellerPhoneNumber')?.length < 10}
           className={`
             flex opacity-100 bg-indigo-500 hover:bg-indigo-800 shadow-md hover:transition-colors text-white items-center justify-center my-5 py-2 px-3 lg:w-48 mx-auto text-xl rounded-lg lg:my-10 lg:py-3 lg:px-5
             ${!Boolean(adPageForm.getValues('sellerPhoneNumber')) && 'opacity-50 bg-gray-500 cursor-not-allowed'}
