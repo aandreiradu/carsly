@@ -12,9 +12,9 @@ import {
 } from '../pages/SellNow/types';
 
 export const adSchema = z.object({
-  isDamaged: z.boolean().optional(),
-  isRightHandDrive: z.boolean().optional(),
-  isImported: z.boolean().optional(),
+  isDamaged: z.boolean().optional().nullable(),
+  isRightHandDrive: z.boolean().optional().nullable(),
+  isImported: z.boolean().optional().nullable(),
 
   // General Informations
   VIN: z
@@ -110,7 +110,11 @@ export const adSchema = z.object({
     required_error: 'Please select the polluation norm ',
     invalid_type_error: 'Please select a valid polluation norm ',
   }),
-  co2emissions: z.coerce.number().min(1, { message: 'The value should be greater than or equal to 1' }).optional(),
+  co2emissions: z.coerce
+    .number()
+    .min(1, { message: 'The value should be greater than or equal to 1' })
+    .optional()
+    .or(z.literal('').or(z.literal(undefined))),
 
   // Body Type details
   bodyType: z.nativeEnum(VehicleBodyType, {
