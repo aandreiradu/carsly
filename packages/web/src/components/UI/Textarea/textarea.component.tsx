@@ -1,55 +1,30 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  KeyboardEvent,
-  forwardRef,
-  TextareaHTMLAttributes,
-  Ref,
-  ForwardRefRenderFunction,
-} from 'react';
-import { useController, useFormContext } from 'react-hook-form';
+import { useEffect, useRef, useState, KeyboardEvent, ComponentPropsWithoutRef, ChangeEvent } from 'react';
 
-export type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
+export type TextareaProps = ComponentPropsWithoutRef<'textarea'> & {
   maxLen: number;
   minLen: number;
   label: string;
   rows?: number;
   className?: string;
-  onChange?: any;
-  name: string;
+  onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
 };
 
-// const TextArea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-//   // ({ label, maxLen, minLen, rows, className,name,...rest }: TextareaProps, ref: Ref<HTMLTextAreaElement>) => {
-//   ({ label, maxLen, minLen, rows, className, name }: TextareaProps, ref: Ref<HTMLTextAreaElement>) => {
-const TextArea: ForwardRefRenderFunction<HTMLTextAreaElement, TextareaProps> = (
-  { name, ...rest },
-  ref: Ref<HTMLTextAreaElement>,
-) => {
-  const descriptionRef = useRef<HTMLTextAreaElement>(null);
+const TextArea = ({ maxLen, minLen, label, rows, className, onChange, name }: TextareaProps) => {
+  // forwardRef<HTMLTextAreaElement, TextareaProps>(
+  //   ({ label, maxLen, minLen, rows, className, name, onChange }: TextareaProps, ref: Ref<HTMLTextAreaElement>) => {
+  const descriptionRef = useRef<HTMLTextAreaElement | null>(null);
   const [descriptionCount, setDescriptionCount] = useState<number>(0);
   const [descriptionCountExceeded, setDescriptionCountExceeded] = useState<boolean>(false);
-  const { control } = useFormContext();
-  const {
-    field: { value, onChange },
-    fieldState: { error },
-  } = useController({
-    name,
-    control,
-  });
 
   const updateDescriptionCount = () => {
     setDescriptionCount(descriptionRef?.current?.textLength ?? 0);
-    if (descriptionCount > rest.maxLen) {
+    if (descriptionCount > maxLen) {
       setDescriptionCountExceeded(true);
     }
-    console.log('descriptionRef.current?.value este', descriptionRef.current?.value);
-    onChange(descriptionRef.current?.value);
   };
 
   useEffect(() => {
-    if (descriptionCount > rest.maxLen) {
+    if (descriptionCount > maxLen) {
       setDescriptionCountExceeded(true);
     } else {
       setDescriptionCountExceeded(false);
@@ -58,35 +33,38 @@ const TextArea: ForwardRefRenderFunction<HTMLTextAreaElement, TextareaProps> = (
 
   const handleBackspace = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Backspace' || e.key === 'backspace') {
-      setDescriptionCount(+String(descriptionRef?.current?.textLength).slice(0, rest.maxLen - 1));
+      setDescriptionCount(+String(descriptionRef?.current?.textLength).slice(0, maxLen - 1));
     }
-    console.log('target este', e.currentTarget.value);
-    onChange(e.currentTarget.value);
   };
 
   return (
     <>
-      <label htmlFor={rest.label} className={`${descriptionCountExceeded && 'text-red-500'}`}>
-        {rest.label}
+      <label htmlFor={label} className={`${descriptionCountExceeded && 'text-red-500'}`}>
+        {label}
       </label>
       <textarea
+        ref={descriptionRef}
         className={`focus:ring-transparent mt-2 h-36 resize-none py-2 pr-6 pl-4 lg:h-60 lg:py-4 lg:pr-10 ${
           descriptionCountExceeded && 'border border-red-500 '
-        } ${rest.className}`}
+        } ${className}`}
         id="description"
         autoComplete="off"
-        rows={rest.rows}
-        maxLength={rest.maxLen}
-        minLength={rest.minLen}
+        rows={rows}
+        maxLength={maxLen}
+        minLength={minLen}
         name={name}
-        ref={ref}
-        onChange={updateDescriptionCount}
+        onChange={(e) => {
+          updateDescriptionCount();
+          if (typeof onChange === 'function') {
+            onChange(e);
+          }
+        }}
         onKeyDown={handleBackspace}
       ></textarea>
       <div className="flex">
         {descriptionCountExceeded && (
           <span className="text-sm lg:text-base flex text-red-500 items-center basis-3/5 ">
-            Loooks like you exceeded the limit of {rest.maxLen} characters.
+            Loooks like you exceeded the limit of {maxLen} characters.
           </span>
         )}
         <span
@@ -94,11 +72,11 @@ const TextArea: ForwardRefRenderFunction<HTMLTextAreaElement, TextareaProps> = (
             descriptionCountExceeded ? 'text-red-500' : 'flex-1'
           }`}
         >
-          {descriptionCount} / {rest.maxLen}
+          {descriptionCount} / {maxLen}
         </span>
       </div>
     </>
   );
 };
 
-export default forwardRef(TextArea);
+export default TextArea;

@@ -40,7 +40,7 @@ const Ad = ({ title }: AdPageProps) => {
   const dispatch = useDispatch();
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const imagesRef = useRef<FileComponentHnadlers>(null);
-  const descriptionRef = useRef<HTMLTextAreaElement>(null);
+  const descriptionRef = useRef<HTMLTextAreaElement | null>(null);
   const { sendRequest, error, loading } = useHttpRequest<CarsBrandsSuccess>();
   const adPageForm = useZodForm({
     schema: adSchema,
@@ -51,6 +51,7 @@ const Ad = ({ title }: AdPageProps) => {
   const carsBrands = useSelector(selectCarsBrands);
   const cachedModels = useSelector(selectModelsByBrandDataSource(adPageForm.getValues('brand')));
   const allModels = useSelector(getAllModels());
+  const { ref, ...rest } = adPageForm.register('description');
 
   const handleIsDamaged = (args: boolean) => {
     adPageForm.setValue('isImported', args);
@@ -704,14 +705,23 @@ const Ad = ({ title }: AdPageProps) => {
             />
           </div>
           <div className={`${adPageForm.getValues('seats') ? 'flex flex-col w-full lg:flex-1 my-8' : 'hidden'}`}>
-            <TextArea
-              name="description"
+            <Controller
+              name={'description'}
               control={adPageForm.control}
-              ref={descriptionRef}
-              maxLen={250}
-              minLen={1}
-              label="Description"
-              className="bg-gray-200 rounded-md"
+              render={() => (
+                <TextArea
+                  name="description"
+                  maxLen={250}
+                  minLen={1}
+                  label="Description"
+                  className="bg-gray-200 rounded-md"
+                  onChange={(option) => {
+                    if (option) {
+                      adPageForm.setValue('description', option?.target?.value);
+                    }
+                  }}
+                />
+              )}
             />
           </div>
           {adPageForm.getValues('seats') && <AdSectionHeaderWithImage title="Vehicle historic" />}
