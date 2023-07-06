@@ -10,6 +10,7 @@ import {
   TransmissionTypes,
   VehicleBodyType,
 } from '../pages/SellNow/types';
+import regex from '../utils/regex';
 
 export const adSchema = z.object({
   isDamaged: z.boolean().optional().nullable(),
@@ -22,6 +23,7 @@ export const adSchema = z.object({
       required_error: 'Please insert the VIN',
       invalid_type_error: 'Please insert a valid VIN',
     })
+    .regex(regex.ONLY_ALPHA_NUM_NO_SPACES, { message: 'VIN must include only characters and numbers without spaces' })
     .length(13, { message: 'Please insert a valid VIN' }),
   KM: z.coerce
     .number({
@@ -137,7 +139,14 @@ export const adSchema = z.object({
     required_error: 'Please select the number of seats',
     invalid_type_error: 'Please select the number of seats',
   }),
-  youtubeVideo: z.string().optional(),
+
+  images: z.any(),
+
+  youtubeVideo: z
+    .string()
+    .url()
+    .optional()
+    .or(z.literal('').or(z.literal(undefined))),
   adTitle: z.string(),
   description: z.string().optional(),
   vehicleOrigin: z.nativeEnum(CountriesTypes, {

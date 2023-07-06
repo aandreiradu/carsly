@@ -33,14 +33,13 @@ import {
   transmissionDictionary,
 } from '../SellNow/types';
 import { noOfDorsDictionary } from '../../config/settings';
-import File, { FileComponentHnadlers } from '../../components/UI/File/file.component';
+import File from '../../components/UI/File/file.component';
 
 const Ad = ({ title }: AdPageProps) => {
+  const topViewRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
   const dispatch = useDispatch();
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
-  const imagesRef = useRef<FileComponentHnadlers>(null);
-  const descriptionRef = useRef<HTMLTextAreaElement | null>(null);
   const { sendRequest, error, loading } = useHttpRequest<CarsBrandsSuccess>();
   const adPageForm = useZodForm({
     schema: adSchema,
@@ -51,7 +50,6 @@ const Ad = ({ title }: AdPageProps) => {
   const carsBrands = useSelector(selectCarsBrands);
   const cachedModels = useSelector(selectModelsByBrandDataSource(adPageForm.getValues('brand')));
   const allModels = useSelector(getAllModels());
-  const { ref, ...rest } = adPageForm.register('description');
 
   const handleIsDamaged = (args: boolean) => {
     adPageForm.setValue('isImported', args);
@@ -134,11 +132,13 @@ const Ad = ({ title }: AdPageProps) => {
   console.log('watchh', adPageForm.watch());
   console.log(adPageForm.formState.errors);
 
+  if (Object.keys(adPageForm.formState.errors)?.length > 0 && adPageForm.formState.isSubmitting) {
+    topViewRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }
+
   const onSubmit: SubmitHandler<AdProps> = async (data) => {
     // TODO
     console.log('data to BE', data);
-    const images = imagesRef.current?.getImages();
-    console.log('images', images);
   };
 
   const fetchModelsByBrand = useCallback(
@@ -152,10 +152,16 @@ const Ad = ({ title }: AdPageProps) => {
     [adPageForm.watch('brand')],
   );
 
+  console.log('eval this', {
+    len: adPageForm.getValues('sellerPhoneNumber')?.length < 10,
+    val: adPageForm.getValues('sellerPhoneNumber'),
+  });
+
   const methods = useForm();
 
   return (
     <>
+      <div ref={topViewRef}></div>
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
       <FormProvider {...methods}>
         <form
@@ -173,7 +179,6 @@ const Ad = ({ title }: AdPageProps) => {
                 control={adPageForm.control}
                 render={({ field: { onChange } }) => (
                   <Checkbox
-                    {...adPageForm.register('isDamaged')}
                     label="Damaged"
                     id="damaged"
                     className="text-black focus:ring-black h-6"
@@ -221,7 +226,6 @@ const Ad = ({ title }: AdPageProps) => {
                 name="isRightHandDrive"
                 render={({ field: { onChange } }) => (
                   <Checkbox
-                    {...adPageForm.register('isRightHandDrive')}
                     label="Right hand drive"
                     id="rightHandDrive"
                     className="text-black focus:ring-black h-6"
@@ -243,16 +247,27 @@ const Ad = ({ title }: AdPageProps) => {
           </div>
           <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
             <div className="flex flex-col w-full lg:flex-1">
-              <Input
-                {...adPageForm.register('VIN')}
-                label="VIN (chassis series)*"
-                labelClasses="my-2"
-                id="vin"
-                type="text"
-                placeholder="ex: 1FTPW14V88FC22108"
-                maxLength={13}
-                className="border-none bg-gray-200 rounded-lg"
-                error={adPageForm.formState.errors.VIN?.message}
+              <Controller
+                control={adPageForm.control}
+                name="VIN"
+                render={({}) => (
+                  <Input
+                    label="VIN (chassis series)*"
+                    labelClasses="my-2"
+                    id="vin"
+                    type="text"
+                    placeholder="ex: 1FTPW14V88FC22108"
+                    maxLength={13}
+                    className="border-none bg-gray-200 rounded-lg"
+                    error={adPageForm.formState.errors.VIN?.message}
+                    onChange={(e) => {
+                      if (e?.target.value) {
+                        e.target.value = e?.target.value.toUpperCase();
+                        adPageForm.setValue('VIN', e.target.value.toUpperCase());
+                      }
+                    }}
+                  />
+                )}
               />
             </div>
             <div className="flex flex-col w-full lg:flex-1">
@@ -661,12 +676,23 @@ const Ad = ({ title }: AdPageProps) => {
             </div>
           </div>
           {adPageForm.getValues('seats') && (
-            <File
-              maxAcceptedFiles={5}
-              wrapperClasses="bg-gray-200 mt-2 p-4 lg:min-h-[200px] rounded-lg text-white"
-              buttonClasses="text-white bg-indigo-500 rounded-lg"
-              withCountHeader={true}
-              withDragDrop={false}
+            <Controller
+              name={'images'}
+              control={adPageForm.control}
+              render={() => (
+                <File
+                  maxAcceptedFiles={5}
+                  wrapperClasses="bg-gray-200 mt-2 p-4 lg:min-h-[200px] rounded-lg text-white"
+                  buttonClasses="text-white bg-indigo-500 rounded-lg"
+                  withCountHeader={true}
+                  withDragDrop={false}
+                  onChange={(option) => {
+                    if (option) {
+                      adPageForm.setValue('images', option);
+                    }
+                  }}
+                />
+              )}
             />
           )}
           {adPageForm.getValues('seats') && (
@@ -968,10 +994,16 @@ const Ad = ({ title }: AdPageProps) => {
           <button
             form="adForm"
             type="submit"
-            disabled={adPageForm.getValues('sellerPhoneNumber')?.length < 10}
+            disabled={
+              !adPageForm.getValues('sellerPhoneNumber') && !Boolean(adPageForm.getValues('sellerPhoneNumber')?.length < 10)
+            }
             className={`
             flex opacity-100 bg-indigo-500 hover:bg-indigo-800 shadow-md hover:transition-colors text-white items-center justify-center my-5 py-2 px-3 lg:w-48 mx-auto text-xl rounded-lg lg:my-10 lg:py-3 lg:px-5
-            ${!Boolean(adPageForm.getValues('sellerPhoneNumber')) && 'opacity-50 bg-gray-500 cursor-not-allowed'}
+            ${
+              !adPageForm.getValues('sellerPhoneNumber') &&
+              !Boolean(adPageForm.getValues('sellerPhoneNumber')?.length < 10) &&
+              'opacity-50 bg-gray-500 cursor-not-allowed'
+            }
             `}
           >
             Submit
