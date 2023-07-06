@@ -10,11 +10,12 @@ import {
   TransmissionTypes,
   VehicleBodyType,
 } from '../pages/SellNow/types';
+import regex from '../utils/regex';
 
 export const adSchema = z.object({
-  isDamaged: z.boolean().optional(),
-  isRightHandDrive: z.boolean().optional(),
-  isImported: z.boolean().optional(),
+  isDamaged: z.boolean().optional().nullable(),
+  isRightHandDrive: z.boolean().optional().nullable(),
+  isImported: z.boolean().optional().nullable(),
 
   // General Informations
   VIN: z
@@ -22,6 +23,7 @@ export const adSchema = z.object({
       required_error: 'Please insert the VIN',
       invalid_type_error: 'Please insert a valid VIN',
     })
+    .regex(regex.ONLY_ALPHA_NUM_NO_SPACES, { message: 'VIN must include only characters and numbers without spaces' })
     .length(13, { message: 'Please insert a valid VIN' }),
   KM: z.coerce
     .number({
@@ -110,7 +112,11 @@ export const adSchema = z.object({
     required_error: 'Please select the polluation norm ',
     invalid_type_error: 'Please select a valid polluation norm ',
   }),
-  co2emissions: z.coerce.number().min(1, { message: 'The value should be greater than or equal to 1' }).optional(),
+  co2emissions: z.coerce
+    .number()
+    .min(1, { message: 'The value should be greater than or equal to 1' })
+    .optional()
+    .or(z.literal('').or(z.literal(undefined))),
 
   // Body Type details
   bodyType: z.nativeEnum(VehicleBodyType, {
@@ -133,8 +139,15 @@ export const adSchema = z.object({
     required_error: 'Please select the number of seats',
     invalid_type_error: 'Please select the number of seats',
   }),
-  youtubeVideo: z.string().url().optional(),
-  shortDescription: z.string().optional(),
+
+  images: z.any(),
+
+  youtubeVideo: z
+    .string()
+    .url()
+    .optional()
+    .or(z.literal('').or(z.literal(undefined))),
+  adTitle: z.string(),
   description: z.string().optional(),
   vehicleOrigin: z.nativeEnum(CountriesTypes, {
     description: 'Please select a country',

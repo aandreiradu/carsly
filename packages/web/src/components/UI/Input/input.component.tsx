@@ -43,7 +43,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           placeholder={props.placeholder}
           disabled={disabled}
         />
-        {error && <span className="text-red-500 text-sm ">{error}</span>}
+        {error && <span className="text-red-500 text-xs md:text-sm ">{error}</span>}
       </>
     );
   },
