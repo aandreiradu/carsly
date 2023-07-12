@@ -72,7 +72,7 @@ const Ad = ({ title }: AdPageProps) => {
     };
 
     //cached
-    carsBrands?.length === 0 ? getCarsBrands() : console.log('ad page cars brands are cached');
+    carsBrands?.length === 0 && getCarsBrands();
   }, []);
 
   if (error) {
@@ -286,7 +286,7 @@ const Ad = ({ title }: AdPageProps) => {
           </div>
           <div
             className={`${
-              adPageForm.getValues('VIN') && adPageForm.getValues('KM')
+              adPageForm?.getValues('VIN')?.length === 13 && adPageForm?.getValues('KM')
                 ? 'flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5'
                 : 'hidden'
             }`}
@@ -333,12 +333,16 @@ const Ad = ({ title }: AdPageProps) => {
               </div>
             </div>
           </div>
-          {adPageForm.getValues('dayOfRegistration') &&
-            adPageForm.getValues('monthOfRegistration') &&
+          {adPageForm.getValues('dayOfRegistration') >= 1 &&
+            adPageForm.getValues('dayOfRegistration') <= 31 &&
+            adPageForm.getValues('monthOfRegistration') >= 1 &&
+            adPageForm.getValues('monthOfRegistration') <= 12 &&
             adPageForm.getValues('yearOfRegistration') >= 1900 && <AdSectionHeader title="Technical details" />}
 
-          {adPageForm.getValues('dayOfRegistration') &&
-            adPageForm.getValues('monthOfRegistration') &&
+          {adPageForm.getValues('dayOfRegistration') >= 1 &&
+            adPageForm.getValues('dayOfRegistration') <= 31 &&
+            adPageForm.getValues('monthOfRegistration') >= 1 &&
+            adPageForm.getValues('monthOfRegistration') <= 12 &&
             adPageForm.getValues('yearOfRegistration') >= 1900 && (
               <p className="text-sm lg:text-base font-light">
                 Please check the details of the vehicle before publishing the ad. You can change mistakes regarding VIN,
@@ -347,8 +351,10 @@ const Ad = ({ title }: AdPageProps) => {
             )}
           <div
             className={`${
-              adPageForm.getValues('dayOfRegistration') &&
-              adPageForm.getValues('monthOfRegistration') &&
+              adPageForm.getValues('dayOfRegistration') >= 1 &&
+              adPageForm.getValues('dayOfRegistration') <= 31 &&
+              adPageForm.getValues('monthOfRegistration') >= 1 &&
+              adPageForm.getValues('monthOfRegistration') <= 12 &&
               adPageForm.getValues('yearOfRegistration') >= 1900
                 ? 'flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5'
                 : 'hidden'
@@ -576,10 +582,10 @@ const Ad = ({ title }: AdPageProps) => {
             </div>
           </div>
           {adPageForm.getValues('polluationNorm') && <AdSectionHeader title="Body type details" />}
-          <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5">
+          <div className="flex flex-col gap-5 w-full lg:grid lg:grid-cols-2">
             <div
               className={`
-            ${adPageForm.getValues('polluationNorm') ? 'flex flex-col w-full lg:flex-1 col-span-2' : 'hidden'}
+            ${adPageForm.getValues('polluationNorm') ? 'flex flex-col w-full lg:flex-1 lg:col-span-1' : 'hidden'}
           `}
             >
               <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
@@ -646,12 +652,6 @@ const Ad = ({ title }: AdPageProps) => {
                 )}
               />
             </div>
-          </div>
-          <div
-            className={`
-          ${adPageForm.getValues('colorType') ? 'flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5' : 'hidden'}
-        `}
-          >
             <div className="flex flex-col w-full lg:flex-1">
               <Label
                 disabled={loading || !adPageForm.getValues('colorType')}
@@ -675,6 +675,16 @@ const Ad = ({ title }: AdPageProps) => {
               />
             </div>
           </div>
+          {/* <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5"> */}
+
+          {/* </div> */}
+          {/* <div
+            className={`
+          ${adPageForm.getValues('colorType') ? 'flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5' : 'hidden'}
+        `}
+          > */}
+
+          {/* </div> */}
           {adPageForm.getValues('seats') && (
             <Controller
               name={'images'}
@@ -752,27 +762,29 @@ const Ad = ({ title }: AdPageProps) => {
           </div>
           {adPageForm.getValues('seats') && <AdSectionHeaderWithImage title="Vehicle historic" />}
           {adPageForm.getValues('seats') && <p className="text-base lg:text-xl font-light">Origin of the vehicle</p>}
-          <div className={`${adPageForm.getValues('seats') ? 'flex flex-col w-full lg:flex-1' : 'hidden'}`}>
-            <Label
-              disabled={loading || !adPageForm.getValues('seats')}
-              className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
-            >
-              Vehicle origin*
-            </Label>
-            <Controller
-              control={adPageForm.control}
-              name="vehicleOrigin"
-              render={({ field: { onChange } }) => (
-                <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
-                  dataSource={countriesDictionary}
-                  cachedValue={adPageForm.watch('vehicleOrigin') || ''}
-                  classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
-                  error={adPageForm.formState.errors.vehicleOrigin?.message}
-                  disabled={loading || !adPageForm.getValues('seats')}
-                />
-              )}
-            />
+          <div className="flex flex-col gap-5 w-full lg:grid lg:grid-cols-2">
+            <div className={`${adPageForm.getValues('seats') ? 'flex flex-col w-full lg:flex-1' : 'hidden'}`}>
+              <Label
+                disabled={loading || !adPageForm.getValues('seats')}
+                className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
+              >
+                Vehicle origin*
+              </Label>
+              <Controller
+                control={adPageForm.control}
+                name="vehicleOrigin"
+                render={({ field: { onChange } }) => (
+                  <Select
+                    onChange={(e: { name: string }) => onChange(e.name)}
+                    dataSource={countriesDictionary}
+                    cachedValue={adPageForm.watch('vehicleOrigin') || ''}
+                    classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
+                    error={adPageForm.formState.errors.vehicleOrigin?.message}
+                    disabled={loading || !adPageForm.getValues('seats')}
+                  />
+                )}
+              />
+            </div>
           </div>
           {/* {adPageForm.getValues('seats') && <p className="mt-7 text-base lg:text-xl font-light">Vehicle Status</p>} */}
           {adPageForm.getValues('seats') && <AdSectionHeaderWithImage title="Vehicle Status" labelText="OPTIONAL" />}
