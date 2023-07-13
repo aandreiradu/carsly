@@ -57,7 +57,7 @@ export const adSchema = z.object({
     .min(1900, { message: 'Year of registration should be greater than or equal to 1900' }),
 
   // Technical Details
-  year: z.string({
+  year: z.coerce.number({
     required_error: 'Please select the year',
     invalid_type_error: `Please input a valid year. Accepted values 1900 - ${new Date().getFullYear()}`,
   }),
@@ -87,8 +87,8 @@ export const adSchema = z.object({
     .min(1, { message: 'Value should be greater than or equal to 1' }),
   engineSize: z.coerce
     .number({
-      description: 'Please insert the number of horse powers',
-      required_error: 'Please insert the number of horse powers',
+      description: 'Please insert the engine size',
+      required_error: 'Please insert the engine size',
       invalid_type_error: 'Please insert a positive number',
     })
     .min(1, { message: 'Value should be greater than or equal to 1' }),
@@ -200,7 +200,7 @@ export const adSchema = z.object({
     .string({
       description: 'Please insert the phone number of the seller',
       required_error: 'Please insert the phone number of the seller',
-      invalid_type_error: 'Seller phone number should cointain at least 10 character',
+      invalid_type_error: 'Seller phone number should cointain at least 10 characters',
     })
     .min(10, { message: 'Please insert the phone number of the seller' }),
 });

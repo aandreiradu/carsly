@@ -16,7 +16,7 @@ export class SignInDTO {
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(1, {
+  @MinLength(4, {
     message: 'Password must be longer than or equal to 4 characters',
   })
   @MaxLength(35, {

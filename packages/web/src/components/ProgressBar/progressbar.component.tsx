@@ -7,7 +7,6 @@ type ProgressBarProps = {
 };
 
 const ProgressBar = ({ currentLevel, maxLevel, className }: ProgressBarProps) => {
-  // const [completed, setCompleted] = useState(false);
   const [progress, setProgress] = useState(currentLevel || 0);
 
   // useEffect(() => {

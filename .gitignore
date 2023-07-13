@@ -146,3 +146,5 @@ dbml
 seed.ts
 seed.js
 data.ts
+uploads
+./uploads

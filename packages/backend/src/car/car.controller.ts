@@ -11,7 +11,7 @@ import {
 import { CarService } from './car.service';
 import { CreateCarBrandDTO } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { SuccessResponse } from 'config/types';
+import { SuccessResponse } from 'src/config/types';
 import { CreateCarModelDTO } from './dto/create-car-model.dto';
 
 @Controller('/api/car')

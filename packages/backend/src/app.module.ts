@@ -6,12 +6,14 @@ import { AtGuard } from './guards';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { CarModule } from './car/car.module';
+import { AdsModule } from './ads/ads.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     PrismaModule,
     CarModule,
+    AdsModule,
   ],
   providers: [
     {

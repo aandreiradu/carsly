@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { VehicleBodyType } from '../types';
+import { VehicleBodyType } from '@prisma/client';
 
 export class CreateCarModelDTO {
   @IsNotEmpty()

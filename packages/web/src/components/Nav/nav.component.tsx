@@ -11,11 +11,17 @@ const navigationLinks: Omit<SidebarLinkProps, 'icon'>[] = [
     href: '/',
     isActive: true,
   },
+  // {
+  //   label: 'Sell Now',
+  //   isLink: false,
+  //   isActive: false,
+  //   setShowComponent: () => {},
+  // },
   {
     label: 'Sell Now',
-    isLink: false,
+    isLink: true,
     isActive: false,
-    setShowComponent: () => {},
+    href: '/auto/add',
   },
   {
     label: 'My Profile',
