@@ -13,7 +13,7 @@ export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
       secretOrKey: config.getOrThrow<string>('__RT_SECRET'),
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          let data = request?.cookies['CARSLY_REFRESH_TOKEN'];
+          const data = request?.cookies['CARSLY_REFRESH_TOKEN'];
           console.log('Rt strategy is rt', data);
           if (!data) {
             return null;

@@ -6,7 +6,6 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class AtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(config: ConfigService) {
-    console.log('this is at strategy');
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: config.get('__AT_SECRET'),

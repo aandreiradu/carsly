@@ -2,8 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCarBrandDTO, CreateCarDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCarModelDTO } from './dto/create-car-model.dto';
-import { VehicleBodyType } from './types';
 import { capitalizeAll } from 'src/utils/helpers';
+import { VehicleBodyType } from '@prisma/client';
 
 @Injectable()
 export class CarService {
