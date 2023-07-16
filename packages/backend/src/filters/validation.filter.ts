@@ -6,16 +6,15 @@ import {
   ForbiddenException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { removeFile } from 'src/utils/removeFile';
 
 @Catch()
 export class ValidationFilter implements ExceptionFilter {
   catch(exception, host: ArgumentsHost) {
     // TODO: in case of DTO validation failure, remove the files
-    console.log('exception', exception);
+    console.log('exception ValidationFilter', exception);
     const response = host.switchToHttp().getResponse();
     const req = host.switchToHttp().getRequest();
-    console.log('files', req.files);
-    console.log('inserted', req.fileInsert);
     if (exception instanceof BadRequestException) {
       if (exception.message === 'Unexpected field') {
         return response.status(exception.getStatus()).json({
@@ -23,6 +22,24 @@ export class ValidationFilter implements ExceptionFilter {
           message: 'Invalid file extension detected or size exeeded',
         });
       }
+
+      /* delete inserted file */
+      if (req?.fileInsert && req?.files?.length > 0) {
+        let lastFile;
+        req?.files?.forEach((file) => {
+          try {
+            console.log('lastFile este', lastFile);
+            if (file?.filename && lastFile !== file.filename) {
+              removeFile(file.filename);
+              lastFile = file?.filename;
+            }
+          } catch (error) {
+            console.log('remove file error', error);
+            return;
+          }
+        });
+      }
+
       return response
         .status(exception.getStatus())
         .json(exception.getResponse());
