@@ -23,7 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             htmlFor={id}
             className={`
             text-sm visible ${labelClasses}
-            ${disabled && 'invisible opacity-20 cursor-not-allowed transition-opacity'} 
+            ${disabled && 'hidden opacity-20 cursor-not-allowed transition-opacity'} 
             ${classNames(error ? '!text-red-500' : '')}`}
           >
             {label}
@@ -35,7 +35,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           className={`
               visible
               ${classNames('focus:ring-0', error ? '!border-red-500' : '', className ? className : '')}
-              ${disabled && 'invisible opacity-50 cursor-not-allowed'}
+              ${disabled && 'hidden opacity-50 cursor-not-allowed'}
           `}
           type={type || 'text'}
           spellCheck="false"

@@ -21,7 +21,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
     const handleOpen = () => setIsOpen((prev) => !prev);
 
     return (
-      <div className={`relative h-full visible ${disabled && 'invisible'}`} onClick={handleOpen}>
+      <div className={`relative h-full visible ${disabled && 'hidden'}`} onClick={handleOpen}>
         <Listbox
           ref={ref}
           value={selected || cachedValue}
@@ -37,7 +37,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
                       pl-1 pr-10 text-left  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 
                       focus-visible:ring-white focus-visible:ring-opacity-75 
                       focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm
-                      ${disabled && 'invisible opacity-50 cursor-not-allowed'}        
+                      ${disabled && 'hidden opacity-50 cursor-not-allowed'}        
               `}
             >
               <span className="block truncate px-2 ">{cachedValue}</span>
