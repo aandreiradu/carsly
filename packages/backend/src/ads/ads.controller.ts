@@ -35,7 +35,9 @@ export class AdsController {
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() dto: CreateAdDTO,
   ) {
-    files.forEach((file) => console.log('fileee', file));
+    console.log('dto', dto);
+    console.log('files', files);
+    files?.forEach((file) => console.log('fileee', file));
     return 'success';
   }
 }

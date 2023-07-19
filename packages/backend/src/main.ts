@@ -20,12 +20,17 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
-        return new BadRequestException(
-          validationErrors.map((error) => ({
-            field: error.property,
-            error: Object.values(error.constraints).join(', '),
-          })),
-        );
+        const errors = validationErrors.map((error) => ({
+          field: error.property,
+          error: Object.values(error.constraints).join(', '),
+        }));
+        return new BadRequestException(errors);
+        // return new BadRequestException(
+        //   validationErrors.map((error) => ({
+        //     field: error.property,
+        //     error: Object.values(error.constraints).join(', '),
+        //   })),
+        // );
       },
       whitelist: true,
     }),

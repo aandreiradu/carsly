@@ -1,4 +1,5 @@
 import { VehicleBodyType } from '@prisma/client';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -43,18 +44,21 @@ export class CreateAdDTO {
   @Min(1, {
     message: 'The number of kilometers should be greater or equal than 1',
   })
+  @Type(() => Number)
   KM: number;
 
   @IsNotEmpty()
   @IsNumber({ allowNaN: false })
   @Min(1, { message: 'Day of registration should be between 1 - 31' })
   @Max(31, { message: 'Day of registration should be between 1 - 31' })
+  @Type(() => Number)
   dayOfRegistration: number;
 
   @IsNotEmpty()
   @IsNumber({ allowNaN: false })
   @Min(1, { message: 'Month of registration should be between 1 - 12' })
   @Max(31, { message: 'Month of registration should be between 1 - 12' })
+  @Type(() => Number)
   monthOfRegistration: number;
 
   @IsNotEmpty()
@@ -62,6 +66,7 @@ export class CreateAdDTO {
   @Min(1900, {
     message: 'Year of registration should be greater than or equal to 1900',
   })
+  @Type(() => Number)
   yearOfRegistration: number;
 
   @IsNotEmpty()
@@ -70,6 +75,7 @@ export class CreateAdDTO {
     message:
       'Please input a valid year. Accepted values 1900 - ${new Date().getFullYear()}',
   })
+  @Type(() => Number)
   year: number;
 
   @IsNotEmpty()
@@ -87,16 +93,19 @@ export class CreateAdDTO {
   @IsNotEmpty()
   @IsNumber({ allowNaN: false })
   @Min(1, { message: 'Value should be greater than or equal to 1' })
+  @Type(() => Number)
   power: number;
 
   @IsNotEmpty()
   @IsNumber({ allowNaN: false })
   @Min(1, { message: 'Please insert the engine size' })
+  @Type(() => Number)
   engineSize: number;
 
   @IsNotEmpty()
   @IsNumber()
   @Min(1, { message: 'Please select the number of doors' })
+  @Type(() => Number)
   noOfDoors: number;
 
   @IsNotEmpty()
@@ -112,8 +121,9 @@ export class CreateAdDTO {
   polluationNorm: string;
 
   @IsOptional()
-  @IsNumber()
+  @IsNumber({ allowNaN: false })
   @Min(1, { message: 'The value should be greater than or equal to 1' })
+  @Type(() => Number)
   co2emissions: number;
 
   @IsNotEmpty()
@@ -130,6 +140,7 @@ export class CreateAdDTO {
 
   @IsNumber()
   @Min(1, { message: 'Please select the number of seats' })
+  @Type(() => Number)
   seats: number;
 
   @IsOptional()
@@ -151,29 +162,37 @@ export class CreateAdDTO {
 
   @IsOptional()
   @IsBoolean()
+  @Type(() => Boolean)
   isFirstOwner: boolean;
 
   @IsOptional()
   @IsBoolean()
+  @Type(() => Boolean)
   isWithoutAccident: boolean;
+
   @IsOptional()
   @IsBoolean()
+  @Type(() => Boolean)
   isRegistered: boolean;
 
   @IsOptional()
   @IsBoolean()
+  @Type(() => Boolean)
   isServiceCardAvailable: boolean;
 
   @IsOptional()
   @IsBoolean()
+  @Type(() => Boolean)
   isVintageCar: boolean;
 
   @IsOptional()
   @IsBoolean()
+  @Type(() => Boolean)
   hasTuning: boolean;
 
   @IsNumber()
   @Min(1, { message: 'The price should be a positive number' })
+  @Type(() => Number)
   price: number;
 
   @IsNotEmpty()
@@ -182,10 +201,12 @@ export class CreateAdDTO {
 
   @IsOptional()
   @IsBoolean()
+  @Type(() => Boolean)
   isNegotiable: boolean;
 
   @IsOptional()
   @IsBoolean()
+  @Type(() => Boolean)
   isLeasing: boolean;
 
   @IsNotEmpty()
@@ -204,4 +225,7 @@ export class CreateAdDTO {
     message: 'Seller phone number should cointain at least 10 characters',
   })
   sellerPhoneNumber: string;
+
+  @IsOptional()
+  files: any;
 }

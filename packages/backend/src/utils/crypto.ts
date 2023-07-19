@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import crypto, {
+import {
   randomBytes,
   createDecipheriv,
   createCipheriv,
@@ -8,8 +8,6 @@ import crypto, {
 
 @Injectable()
 export class CryptoService {
-  constructor() {}
-
   decrypt = (encryptedText, password) => {
     try {
       const textParts = encryptedText.split(':');
