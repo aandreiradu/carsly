@@ -131,8 +131,8 @@ const Ad = ({ title }: AdPageProps) => {
     [adPageForm.getValues('brand')],
   );
 
-  console.log('watchh', adPageForm.watch());
-  console.log(adPageForm.formState.errors);
+  // console.log('watchh', adPageForm.watch());
+  // console.log(adPageForm.formState.errors);
 
   if (Object.keys(adPageForm.formState.errors)?.length > 0 && adPageForm.formState.isSubmitting) {
     topViewRef.current?.scrollIntoView({ behavior: 'smooth' });
