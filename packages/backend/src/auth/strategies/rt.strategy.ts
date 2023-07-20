@@ -8,13 +8,11 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 @Injectable()
 export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor(config: ConfigService) {
-    console.log('this is rt strategy');
     super({
       secretOrKey: config.getOrThrow<string>('__RT_SECRET'),
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
           const data = request?.cookies['CARSLY_REFRESH_TOKEN'];
-          console.log('Rt strategy is rt', data);
           if (!data) {
             return null;
           }

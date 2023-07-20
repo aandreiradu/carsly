@@ -37,7 +37,8 @@ export class AdsController {
   ) {
     console.log('dto', dto);
     console.log('files', files);
-    files?.forEach((file) => console.log('fileee', file));
+    console.log('files dto', dto.files as File);
+
     return 'success';
   }
 }

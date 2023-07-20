@@ -7,7 +7,7 @@ import AdSectionHeader from '../../components/Ad/adSectionHeader.component';
 import AdSectionHeaderWithImage from '../../components/Ad/adSectionHeaderWithImage.component';
 import { useZodForm } from '../../hooks/useZodForm/useZodForm.hook';
 import { AdProps, adSchema } from '../../schema/ad.schema';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import Select from '../../components/UI/Select/select.component';
 import { noOfSeatsDictionary, sellNowYearsSorted } from '../../config/settings';
@@ -131,16 +131,23 @@ const Ad = ({ title }: AdPageProps) => {
     [adPageForm.getValues('brand')],
   );
 
-  // console.log('watchh', adPageForm.watch());
-  // console.log(adPageForm.formState.errors);
-
   if (Object.keys(adPageForm.formState.errors)?.length > 0 && adPageForm.formState.isSubmitting) {
     topViewRef.current?.scrollIntoView({ behavior: 'smooth' });
   }
 
   const onSubmit: SubmitHandler<AdProps> = async (data) => {
     const formData = buildAdPageFormData<AdProps>(data);
+
+    console.log('f', data.files);
     console.log('formData', formData);
+
+    for (const [key, val] of formData.entries()) {
+      console.log(key, val);
+
+      if (key === 'images') {
+        console.log('qqq', val);
+      }
+    }
 
     await createAdRequest('/api/ad', {
       method: 'POST',
@@ -169,7 +176,6 @@ const Ad = ({ title }: AdPageProps) => {
     <>
       <div ref={topViewRef}></div>
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
-      {/* <FormProvider {...methods}> */}
       <form
         ref={formRef}
         id="adForm"
@@ -291,7 +297,7 @@ const Ad = ({ title }: AdPageProps) => {
         </div>
         <div
           className={`${
-            adPageForm?.getValues('VIN')?.length === 13 && adPageForm?.getValues('KM')
+            adPageForm?.watch('VIN')?.length === 13 && adPageForm?.watch('KM') && adPageForm?.watch('KM') >= 1
               ? 'flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5'
               : 'hidden'
           }`}
@@ -338,17 +344,17 @@ const Ad = ({ title }: AdPageProps) => {
             </div>
           </div>
         </div>
-        {adPageForm.getValues('dayOfRegistration') >= 1 &&
-          adPageForm.getValues('dayOfRegistration') <= 31 &&
-          adPageForm.getValues('monthOfRegistration') >= 1 &&
-          adPageForm.getValues('monthOfRegistration') <= 12 &&
-          adPageForm.getValues('yearOfRegistration') >= 1900 && <AdSectionHeader title="Technical details" />}
+        {adPageForm.watch('dayOfRegistration') >= 1 &&
+          adPageForm.watch('dayOfRegistration') <= 31 &&
+          adPageForm.watch('monthOfRegistration') >= 1 &&
+          adPageForm.watch('monthOfRegistration') <= 12 &&
+          adPageForm.watch('yearOfRegistration') >= 1900 && <AdSectionHeader title="Technical details" />}
 
-        {adPageForm.getValues('dayOfRegistration') >= 1 &&
-          adPageForm.getValues('dayOfRegistration') <= 31 &&
-          adPageForm.getValues('monthOfRegistration') >= 1 &&
-          adPageForm.getValues('monthOfRegistration') <= 12 &&
-          adPageForm.getValues('yearOfRegistration') >= 1900 && (
+        {adPageForm.watch('dayOfRegistration') >= 1 &&
+          adPageForm.watch('dayOfRegistration') <= 31 &&
+          adPageForm.watch('monthOfRegistration') >= 1 &&
+          adPageForm.watch('monthOfRegistration') <= 12 &&
+          adPageForm.watch('yearOfRegistration') >= 1900 && (
             <p className="text-sm lg:text-base font-light">
               Please check the details of the vehicle before publishing the ad. You can change mistakes regarding VIN, make,
               model, year <b>only during the first 24 hours from the moment of adding the ad.</b>
@@ -356,11 +362,11 @@ const Ad = ({ title }: AdPageProps) => {
           )}
         <div
           className={`${
-            adPageForm.getValues('dayOfRegistration') >= 1 &&
-            adPageForm.getValues('dayOfRegistration') <= 31 &&
-            adPageForm.getValues('monthOfRegistration') >= 1 &&
-            adPageForm.getValues('monthOfRegistration') <= 12 &&
-            adPageForm.getValues('yearOfRegistration') >= 1900
+            adPageForm.watch('dayOfRegistration') >= 1 &&
+            adPageForm.watch('dayOfRegistration') <= 31 &&
+            adPageForm.watch('monthOfRegistration') >= 1 &&
+            adPageForm.watch('monthOfRegistration') <= 12 &&
+            adPageForm.watch('yearOfRegistration') >= 1900
               ? 'flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5'
               : 'hidden'
           }`}
@@ -385,7 +391,7 @@ const Ad = ({ title }: AdPageProps) => {
           </div>
           <div className="flex flex-col w-full lg:flex-1">
             <Label
-              disabled={loading || !adPageForm.getValues('year')}
+              disabled={loading || !adPageForm.watch('year')}
               className={`my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1`}
             >
               Brand*
@@ -403,14 +409,14 @@ const Ad = ({ title }: AdPageProps) => {
                   cachedValue={adPageForm.watch('brand') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-full h-[41px]"
                   error={adPageForm.formState.errors.brand?.message}
-                  disabled={loading || !adPageForm.getValues('year')}
+                  disabled={loading || !adPageForm.watch('year')}
                 />
               )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
             <Label
-              disabled={loading || (!adPageForm.getValues('brand') && cachedModels.length === 0)}
+              disabled={loading || (!adPageForm.watch('brand') && cachedModels.length === 0)}
               className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
             >
               Model*
@@ -425,16 +431,14 @@ const Ad = ({ title }: AdPageProps) => {
                   cachedValue={adPageForm.watch('model') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.model?.message}
-                  disabled={
-                    allModels[adPageForm.getValues('brand')]?.length === 0 || !adPageForm.getValues('brand') || loading
-                  }
+                  disabled={allModels[adPageForm.watch('brand')]?.length === 0 || !adPageForm.watch('brand') || loading}
                 />
               )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
             <Label
-              disabled={loading || !adPageForm.getValues('model')}
+              disabled={loading || !adPageForm.watch('model')}
               className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
             >
               Fuel*
@@ -446,9 +450,7 @@ const Ad = ({ title }: AdPageProps) => {
                 <Select
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={fuelTypeDictionary}
-                  disabled={
-                    !adPageForm.getValues('model') || allModels[adPageForm.getValues('brand')]?.length === 0 || loading
-                  }
+                  disabled={!adPageForm.watch('model') || allModels[adPageForm.watch('brand')]?.length === 0 || loading}
                   cachedValue={adPageForm.watch('fuel') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.fuel?.message}
@@ -466,7 +468,7 @@ const Ad = ({ title }: AdPageProps) => {
               placeholder="Ex: 1 395 cm3"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.engineSize?.message}
-              disabled={!adPageForm.getValues('fuel')}
+              disabled={!adPageForm.watch('fuel')}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
@@ -480,13 +482,13 @@ const Ad = ({ title }: AdPageProps) => {
               placeholder="Ex: 150"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.power?.message}
-              disabled={!adPageForm.getValues('engineSize')}
+              disabled={!adPageForm.watch('engineSize')}
             />
           </div>
 
           <div className="flex flex-col w-full lg:flex-1">
             <Label
-              disabled={loading || !adPageForm.getValues('engineSize')}
+              disabled={loading || !adPageForm.watch('engineSize')}
               className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
             >
               No of doors*
@@ -501,14 +503,14 @@ const Ad = ({ title }: AdPageProps) => {
                   cachedValue={adPageForm.watch('noOfDoors') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.noOfDoors?.message}
-                  disabled={loading || !adPageForm.getValues('engineSize')}
+                  disabled={loading || !adPageForm.watch('engineSize')}
                 />
               )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
             <Label
-              disabled={loading || !adPageForm.getValues('noOfDoors')}
+              disabled={loading || !adPageForm.watch('noOfDoors')}
               className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
             >
               Gearbox*
@@ -523,14 +525,14 @@ const Ad = ({ title }: AdPageProps) => {
                   cachedValue={adPageForm.watch('gearbox') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.gearbox?.message}
-                  disabled={loading || !adPageForm.getValues('noOfDoors')}
+                  disabled={loading || !adPageForm.watch('noOfDoors')}
                 />
               )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
             <Label
-              disabled={loading || !adPageForm.getValues('gearbox')}
+              disabled={loading || !adPageForm.watch('gearbox')}
               className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
             >
               Transmission*
@@ -545,14 +547,14 @@ const Ad = ({ title }: AdPageProps) => {
                   cachedValue={adPageForm.watch('transmission') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.transmission?.message}
-                  disabled={loading || !adPageForm.getValues('gearbox')}
+                  disabled={loading || !adPageForm.watch('gearbox')}
                 />
               )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
             <Label
-              disabled={loading || !adPageForm.getValues('transmission')}
+              disabled={loading || !adPageForm.watch('transmission')}
               className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
             >
               Polluation Norm*
@@ -567,7 +569,7 @@ const Ad = ({ title }: AdPageProps) => {
                   cachedValue={adPageForm.watch('polluationNorm') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.polluationNorm?.message}
-                  disabled={loading || !adPageForm.getValues('transmission')}
+                  disabled={loading || !adPageForm.watch('transmission')}
                 />
               )}
             />
@@ -582,16 +584,16 @@ const Ad = ({ title }: AdPageProps) => {
               placeholder="g/km"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.co2emissions?.message}
-              disabled={loading || !adPageForm.getValues('polluationNorm')}
+              disabled={loading || !adPageForm.watch('polluationNorm')}
               required={false}
             />
           </div>
         </div>
-        {adPageForm.getValues('polluationNorm') && <AdSectionHeader title="Body type details" />}
+        {adPageForm.watch('polluationNorm') && <AdSectionHeader title="Body type details" />}
         <div className="flex flex-col gap-5 w-full lg:grid lg:grid-cols-2">
           <div
             className={`
-            ${adPageForm.getValues('polluationNorm') ? 'flex flex-col w-full lg:flex-1 lg:col-span-1' : 'hidden'}
+            ${adPageForm.watch('polluationNorm') ? 'flex flex-col w-full lg:flex-1 lg:col-span-1' : 'hidden'}
           `}
           >
             <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
@@ -607,14 +609,14 @@ const Ad = ({ title }: AdPageProps) => {
                   cachedValue={adPageForm.watch('bodyType') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.bodyType?.message}
-                  disabled={loading || !adPageForm.getValues('polluationNorm')}
+                  disabled={loading || !adPageForm.watch('polluationNorm')}
                 />
               )}
             />
           </div>
           <div
             className={`
-            ${adPageForm.getValues('bodyType') ? 'flex flex-col w-full lg:flex-1' : 'hidden'}
+            ${adPageForm.watch('bodyType') ? 'flex flex-col w-full lg:flex-1' : 'hidden'}
           `}
           >
             <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
@@ -630,14 +632,14 @@ const Ad = ({ title }: AdPageProps) => {
                   cachedValue={adPageForm.watch('color') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.color?.message}
-                  disabled={loading || !adPageForm.getValues('bodyType')}
+                  disabled={loading || !adPageForm.watch('bodyType')}
                 />
               )}
             />
           </div>
           <div
             className={`
-            ${adPageForm.getValues('color') ? 'flex flex-col w-full lg:flex-1' : 'hidden'}
+            ${adPageForm.watch('color') ? 'flex flex-col w-full lg:flex-1' : 'hidden'}
           `}
           >
             <Label className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1">
@@ -653,14 +655,14 @@ const Ad = ({ title }: AdPageProps) => {
                   cachedValue={adPageForm.watch('colorType') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.colorType?.message}
-                  disabled={loading || !adPageForm.getValues('color')}
+                  disabled={loading || !adPageForm.watch('color')}
                 />
               )}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
             <Label
-              disabled={loading || !adPageForm.getValues('colorType')}
+              disabled={loading || !adPageForm.watch('colorType')}
               className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
             >
               Seats*
@@ -675,25 +677,15 @@ const Ad = ({ title }: AdPageProps) => {
                   cachedValue={adPageForm.watch('seats') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.seats?.message}
-                  disabled={loading || !adPageForm.getValues('colorType')}
+                  disabled={loading || !adPageForm.watch('colorType')}
                 />
               )}
             />
           </div>
         </div>
-        {/* <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5"> */}
-
-        {/* </div> */}
-        {/* <div
-            className={`
-          ${adPageForm.getValues('colorType') ? 'flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5' : 'hidden'}
-        `}
-          > */}
-
-        {/* </div> */}
-        {adPageForm.getValues('seats') && (
+        {adPageForm.watch('seats') && (
           <Controller
-            name={'images'}
+            name={'files'}
             control={adPageForm.control}
             render={() => (
               <File
@@ -704,14 +696,14 @@ const Ad = ({ title }: AdPageProps) => {
                 withDragDrop={false}
                 onChange={(option) => {
                   if (option) {
-                    adPageForm.setValue('images', option);
+                    adPageForm.setValue('files', option);
                   }
                 }}
               />
             )}
           />
         )}
-        {adPageForm.getValues('seats') && (
+        {adPageForm.watch('seats') && (
           <div className="flex space-x-4 w-full my-5">
             <Lightbulb className="w-10 h-10 lg:h-6 lg:w-6" />
             <span className="text-base font-light">
@@ -719,7 +711,7 @@ const Ad = ({ title }: AdPageProps) => {
             </span>
           </div>
         )}
-        <div className={`${adPageForm.getValues('seats') ? 'flex flex-col w-full lg:flex-1' : 'hidden'}`}>
+        <div className={`${adPageForm.watch('seats') ? 'flex flex-col w-full lg:flex-1' : 'hidden'}`}>
           <Input
             {...adPageForm.register('youtubeVideo')}
             label="Video Youtube "
@@ -732,8 +724,8 @@ const Ad = ({ title }: AdPageProps) => {
             required={false}
           />
         </div>
-        {adPageForm.getValues('seats') && <AdSectionHeaderWithImage title="Vehicle description" />}
-        <div className={`${adPageForm.getValues('seats') ? 'flex flex-col w-full lg:flex-1' : 'hidden'}`}>
+        {adPageForm.watch('seats') && <AdSectionHeaderWithImage title="Vehicle description" />}
+        <div className={`${adPageForm.watch('seats') ? 'flex flex-col w-full lg:flex-1' : 'hidden'}`}>
           <Input
             {...adPageForm.register('adTitle')}
             label="Title*"
@@ -746,7 +738,7 @@ const Ad = ({ title }: AdPageProps) => {
             error={adPageForm.formState.errors.adTitle?.message}
           />
         </div>
-        <div className={`${adPageForm.getValues('seats') ? 'flex flex-col w-full lg:flex-1 my-8' : 'hidden'}`}>
+        <div className={`${adPageForm.watch('seats') ? 'flex flex-col w-full lg:flex-1 my-8' : 'hidden'}`}>
           <Controller
             name={'description'}
             control={adPageForm.control}
@@ -766,12 +758,12 @@ const Ad = ({ title }: AdPageProps) => {
             )}
           />
         </div>
-        {adPageForm.getValues('seats') && <AdSectionHeaderWithImage title="Vehicle historic" />}
-        {adPageForm.getValues('seats') && <p className="text-base lg:text-xl font-light">Origin of the vehicle</p>}
+        {adPageForm.watch('seats') && <AdSectionHeaderWithImage title="Vehicle historic" />}
+        {adPageForm.watch('seats') && <p className="text-base lg:text-xl font-light">Origin of the vehicle</p>}
         <div className="flex flex-col gap-5 w-full lg:grid lg:grid-cols-2">
-          <div className={`${adPageForm.getValues('seats') ? 'flex flex-col w-full lg:flex-1' : 'hidden'}`}>
+          <div className={`${adPageForm.watch('seats') ? 'flex flex-col w-full lg:flex-1' : 'hidden'}`}>
             <Label
-              disabled={loading || !adPageForm.getValues('seats')}
+              disabled={loading || !adPageForm.watch('seats')}
               className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
             >
               Vehicle origin*
@@ -786,15 +778,14 @@ const Ad = ({ title }: AdPageProps) => {
                   cachedValue={adPageForm.watch('vehicleOrigin') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.vehicleOrigin?.message}
-                  disabled={loading || !adPageForm.getValues('seats')}
+                  disabled={loading || !adPageForm.watch('seats')}
                 />
               )}
             />
           </div>
         </div>
-        {/* {adPageForm.getValues('seats') && <p className="mt-7 text-base lg:text-xl font-light">Vehicle Status</p>} */}
-        {adPageForm.getValues('seats') && <AdSectionHeaderWithImage title="Vehicle Status" labelText="OPTIONAL" />}
-        {adPageForm.getValues('seats') && (
+        {adPageForm.watch('seats') && <AdSectionHeaderWithImage title="Vehicle Status" labelText="OPTIONAL" />}
+        {adPageForm.watch('seats') && (
           <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5">
             <Controller
               control={adPageForm.control}
@@ -888,12 +879,10 @@ const Ad = ({ title }: AdPageProps) => {
             />
           </div>
         )}
-        {adPageForm.getValues('vehicleOrigin') && <AdSectionHeader title="Price" />}
+        {adPageForm.watch('vehicleOrigin') && <AdSectionHeader title="Price" />}
         <div
           className={`
-          ${
-            adPageForm.getValues('vehicleOrigin') ? 'flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5' : 'hidden'
-          }
+          ${adPageForm.watch('vehicleOrigin') ? 'flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-5' : 'hidden'}
           `}
         >
           <div className="flex flex-col w-full lg:flex-1">
@@ -906,12 +895,12 @@ const Ad = ({ title }: AdPageProps) => {
               placeholder="Ex: 8000 EUR"
               className="border-none bg-gray-200 rounded-lg"
               error={adPageForm.formState.errors.price?.message}
-              disabled={loading || !adPageForm.getValues('vehicleOrigin')}
+              disabled={loading || !adPageForm.watch('vehicleOrigin')}
             />
           </div>
           <div className="flex flex-col w-full lg:flex-1">
             <Label
-              disabled={loading || !adPageForm.getValues('price')}
+              disabled={loading || !adPageForm.watch('price')}
               className="my-2 text-sm text-black border-none focus:outline-none active:outline-none bg-transparent px-1"
             >
               Currency*
@@ -926,14 +915,14 @@ const Ad = ({ title }: AdPageProps) => {
                   cachedValue={adPageForm.watch('currency') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.currency?.message}
-                  disabled={loading || !adPageForm.getValues('price')}
+                  disabled={loading || !adPageForm.watch('price')}
                 />
               )}
             />
           </div>
         </div>
-        {adPageForm.getValues('price') && <AdSectionHeader title="Price details" />}
-        {adPageForm.getValues('price') && (
+        {adPageForm.watch('price') && <AdSectionHeader title="Price details" />}
+        {adPageForm.watch('price') && (
           <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5">
             <Controller
               control={adPageForm.control}
@@ -968,8 +957,8 @@ const Ad = ({ title }: AdPageProps) => {
             />
           </div>
         )}
-        {adPageForm.getValues('price') && <AdSectionHeader title="Seller details" />}
-        {adPageForm.getValues('price') && (
+        {adPageForm.watch('price') && <AdSectionHeader title="Seller details" />}
+        {adPageForm.watch('price') && (
           <div className="flex flex-col lg:flex-none lg:grid lg:grid-cols-2 gap-5 mt-2">
             <div className="flex flex-col w-full lg:flex-1">
               <Input
@@ -980,7 +969,7 @@ const Ad = ({ title }: AdPageProps) => {
                 type="text"
                 className="border-none bg-gray-200 rounded-lg"
                 error={adPageForm.formState.errors.sellerFullName?.message}
-                disabled={loading || !adPageForm.getValues('currency')}
+                disabled={loading || !adPageForm.watch('currency')}
               />
             </div>
             <div className="flex flex-col w-full lg:flex-1">
@@ -992,7 +981,7 @@ const Ad = ({ title }: AdPageProps) => {
                 type="text"
                 className="border-none bg-gray-200 rounded-lg"
                 error={adPageForm.formState.errors.sellerCity?.message}
-                disabled={loading || !adPageForm.getValues('sellerFullName')}
+                disabled={loading || !adPageForm.watch('sellerFullName')}
               />
             </div>
             <div className="flex flex-col w-full lg:flex-1">
@@ -1004,7 +993,7 @@ const Ad = ({ title }: AdPageProps) => {
                 type="text"
                 className="border-none bg-gray-200 rounded-lg"
                 error={adPageForm.formState.errors.sellerPhoneNumber?.message}
-                disabled={loading || !adPageForm.getValues('sellerCity')}
+                disabled={loading || !adPageForm.watch('sellerCity')}
               />
             </div>
           </div>
@@ -1012,14 +1001,12 @@ const Ad = ({ title }: AdPageProps) => {
         <button
           form="adForm"
           type="submit"
-          disabled={
-            !adPageForm.getValues('sellerPhoneNumber') && !Boolean(adPageForm.getValues('sellerPhoneNumber')?.length < 10)
-          }
+          disabled={!adPageForm.watch('sellerPhoneNumber') && !Boolean(adPageForm.watch('sellerPhoneNumber')?.length < 10)}
           className={`
             flex opacity-100 bg-indigo-500 hover:bg-indigo-800 shadow-md hover:transition-colors text-white items-center justify-center my-5 py-2 px-3 lg:w-48 mx-auto text-xl rounded-lg lg:my-10 lg:py-3 lg:px-5
             ${
-              !adPageForm.getValues('sellerPhoneNumber') &&
-              !Boolean(adPageForm.getValues('sellerPhoneNumber')?.length < 10) &&
+              !adPageForm.watch('sellerPhoneNumber') &&
+              !Boolean(adPageForm.watch('sellerPhoneNumber')?.length < 10) &&
               'opacity-50 bg-gray-500 cursor-not-allowed'
             }
             `}
@@ -1027,7 +1014,6 @@ const Ad = ({ title }: AdPageProps) => {
           Submit
         </button>
       </form>
-      {/* </FormProvider> */}
     </>
   );
 };
