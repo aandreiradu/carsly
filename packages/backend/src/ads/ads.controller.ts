@@ -7,11 +7,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AdsService } from './ads.service';
-import {
-  FileFieldsInterceptor,
-  FilesInterceptor,
-} from '@nestjs/platform-express';
-import { Public } from 'src/decorators';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { fileFilter, storage } from 'src/config/file-upload';
 //import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
@@ -22,41 +18,16 @@ import { ValidationFilter } from 'src/filters/validation.filter';
 export class AdsController {
   constructor(private adsService: AdsService) {}
 
-  // @Public()
-  // @Post()
-  // @UseFilters(ValidationFilter)
-  // @UseInterceptors(
-  //   FilesInterceptor('files', 5, {
-  //     storage: diskStorage(storage),
-  //     fileFilter,
-  //     limits: {
-  //       fieldSize: 2500,
-  //     },
-  //   }),
-  // )
-  // async createAd(
-  //   @UploadedFiles() files: Array<Express.Multer.File>,
-  //   @Body() dto: CreateAdDTO,
-  // ) {
-  //   console.log('dto', dto);
-  //   console.log('files', files);
-  //   // console.log('headers', req.headers);
-
-  //   return {
-  //     message: 'success',
-  //   };
-  // }
-  @Public()
   @Post()
   @UseFilters(ValidationFilter)
   @UseInterceptors(
     FileFieldsInterceptor(
       [
-        { name: 'imageOne', maxCount: 1 },
-        { name: 'imageTwo', maxCount: 1 },
-        { name: 'imageThree', maxCount: 1 },
-        { name: 'imageFour', maxCount: 1 },
-        { name: 'imageFive', maxCount: 1 },
+        { name: 'image-1', maxCount: 1 },
+        { name: 'image-2', maxCount: 1 },
+        { name: 'image-3', maxCount: 1 },
+        { name: 'image-4', maxCount: 1 },
+        { name: 'image-5', maxCount: 1 },
       ],
       {
         fileFilter,
@@ -66,16 +37,11 @@ export class AdsController {
   )
   async createAd(
     @UploadedFiles()
-    files: {
-      imageOne?: Express.Multer.File[];
-      imageTwo?: Express.Multer.File[];
-    },
+    files,
     @Body() dto: CreateAdDTO,
   ) {
     console.log('dto', dto);
     console.log('files', files);
-    // console.log('headers', req.headers);
-
     return {
       message: 'success',
     };

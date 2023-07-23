@@ -25,19 +25,22 @@ export class ValidationFilter implements ExceptionFilter {
       }
 
       /* delete inserted file */
-      if (req?.fileInsert && req?.files?.length > 0) {
+      if (req?.fileInsert && Object.keys(req?.files).length > 0) {
         let lastFile;
-        req?.files?.forEach((file) => {
+        for (const it in req.files) {
           try {
-            if (file?.filename && lastFile !== file.filename) {
-              removeFile(file.filename);
-              lastFile = file?.filename;
+            if (
+              req.files[it][0]?.filename &&
+              lastFile !== req.files[it][0].filename
+            ) {
+              removeFile(req.files[it][0].filename);
+              lastFile = req.files[it][0]?.filename;
             }
           } catch (error) {
             console.log('remove file error', error);
             return;
           }
-        });
+        }
       }
 
       return response

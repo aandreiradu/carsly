@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getAllModels, selectCarsBrands, selectModelsByBrandDataSource } from '../../store/cars/cars.selector';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { CarsBrandsSuccess } from '../../types/index.types';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { setCarsBrands, setModelsByBrand } from '../../store/cars/cars.slice';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
@@ -52,7 +52,6 @@ const Ad = ({ title }: AdPageProps) => {
   const carsBrands = useSelector(selectCarsBrands);
   const cachedModels = useSelector(selectModelsByBrandDataSource(adPageForm.getValues('brand')));
   const allModels = useSelector(getAllModels());
-  const [images, setImages] = useState<File[]>([]);
 
   const handleIsDamaged = (args: boolean) => {
     adPageForm.setValue('isImported', args);
@@ -138,14 +137,20 @@ const Ad = ({ title }: AdPageProps) => {
 
   const onSubmit: SubmitHandler<AdProps> = async (data) => {
     const formData = buildAdPageFormData<AdProps>(data);
-    //@ts-ignore
-    formData.append('files', images);
+    for (let i = 0; i < data.files?.length; i++) {
+      formData.append(`image-${i + 1}`, data.files[i]);
+    }
+    formData.delete('files');
 
     await createAdRequest('/api/ad', {
       method: 'POST',
       withCredentials: true,
       data: formData,
     });
+
+    /*
+     *  todo: handle successfully response + errors
+     */
   };
 
   const fetchModelsByBrand = useCallback(
@@ -685,9 +690,7 @@ const Ad = ({ title }: AdPageProps) => {
                 onChange={(option) => {
                   if (option) {
                     console.log('optionnn', option);
-                    // adPageForm.setValue('files', option[0] as File[]);
-
-                    setImages(option as File[]);
+                    adPageForm.setValue('files', option);
                   }
                 }}
               />

@@ -85,8 +85,8 @@ const FileComponent = ({
       }
 
       if (validImages.length) {
-        setImageFiles((prev) => [...prev, ...files]);
-        return [...imageFiles, ...files];
+        setImageFiles((prev) => [...prev, ...validImages]);
+        return [...imageFiles, ...validImages];
       }
 
       /*
