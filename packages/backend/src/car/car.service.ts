@@ -27,6 +27,9 @@ export class CarService {
         yearOfEst: true,
         logoUrl: true,
       },
+      orderBy: {
+        name: 'asc',
+      },
     });
 
     return queryData.map((d) => ({

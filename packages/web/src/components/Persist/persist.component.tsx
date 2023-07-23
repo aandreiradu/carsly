@@ -14,10 +14,8 @@ const Persist = () => {
 
   const checkRefreshToken = useCallback(async () => {
     try {
-      // console.log('calling refresh from persist componenet');
       await refresh();
     } catch (error) {
-      // console.log('error checkRefreshToken', error);
       if (error instanceof AxiosError) {
         const { message } = error?.response?.data;
         if (message === 'Unauthorized') {
@@ -32,8 +30,6 @@ const Persist = () => {
   }, []);
 
   useEffect(() => {
-    // console.log('Running Persist effect', isAuth);
-
     !isAuth ? checkRefreshToken() : setIsLoading(false);
 
     return () => {
@@ -41,7 +37,9 @@ const Persist = () => {
     };
   }, []);
 
-  return <>{isLoading ? 'Loading...' : <Outlet />}</>;
+  if (isLoading) return null;
+
+  return <Outlet />;
 };
 
 export default Persist;

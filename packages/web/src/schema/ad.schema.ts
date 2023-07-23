@@ -140,7 +140,7 @@ export const adSchema = z.object({
     invalid_type_error: 'Please select the number of seats',
   }),
 
-  images: z.any(),
+  files: z.any(),
 
   youtubeVideo: z
     .string()

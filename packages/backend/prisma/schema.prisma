@@ -99,6 +99,18 @@ enum VehicleBodyType {
   muscle_car
   convertible
   hatchback
+  Cabriolet
+  Roadster
+  Estate
+  Saloon
+  Small
+  Sport
+  Coupe
+  SUV
+  Off_road
+  Pickup_truck
+  Van
+  Minibus
 }
 
 enum VehicleCategory {

@@ -7,8 +7,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AdsService } from './ads.service';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { Public } from 'src/decorators';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { fileFilter, storage } from 'src/config/file-upload';
 //import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
@@ -19,23 +18,32 @@ import { ValidationFilter } from 'src/filters/validation.filter';
 export class AdsController {
   constructor(private adsService: AdsService) {}
 
-  @Public()
   @Post()
   @UseFilters(ValidationFilter)
   @UseInterceptors(
-    FilesInterceptor('files', 5, {
-      storage: diskStorage(storage),
-      fileFilter,
-      limits: {
-        fieldSize: 2500,
+    FileFieldsInterceptor(
+      [
+        { name: 'image-1', maxCount: 1 },
+        { name: 'image-2', maxCount: 1 },
+        { name: 'image-3', maxCount: 1 },
+        { name: 'image-4', maxCount: 1 },
+        { name: 'image-5', maxCount: 1 },
+      ],
+      {
+        fileFilter,
+        storage: diskStorage(storage),
       },
-    }),
+    ),
   )
   async createAd(
-    @UploadedFiles() files: Array<Express.Multer.File>,
+    @UploadedFiles()
+    files,
     @Body() dto: CreateAdDTO,
   ) {
-    files.forEach((file) => console.log('fileee', file));
-    return 'success';
+    console.log('dto', dto);
+    console.log('files', files);
+    return {
+      message: 'success',
+    };
   }
 }

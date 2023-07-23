@@ -15,6 +15,98 @@ import TopLevelNotification, {
 import { selectCarsBrands } from '../../store/cars/cars.selector';
 
 const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Newest'];
+const mercedesModels = [
+  {
+    name: 'C-Class',
+    brand: 'Mercedes Benz',
+    bodyType: 'Sedan',
+  },
+  {
+    name: 'E-Class',
+    brand: 'Mercedes Benz',
+    bodyType: 'Sedan',
+  },
+  {
+    name: 'S-Class',
+    brand: 'Mercedes Benz',
+    bodyType: 'Sedan',
+  },
+  {
+    name: 'GLA',
+    brand: 'Mercedes Benz',
+    bodyType: 'SUV',
+  },
+  {
+    name: 'GLC',
+    brand: 'Mercedes Benz',
+    bodyType: 'SUV',
+  },
+  {
+    name: 'GLE',
+    brand: 'Mercedes Benz',
+    bodyType: 'SUV',
+  },
+  {
+    name: 'CLA',
+    brand: 'Mercedes Benz',
+    bodyType: 'Coupe',
+  },
+  {
+    name: 'C-Class Coupe',
+    brand: 'Mercedes Benz',
+    bodyType: 'Coupe',
+  },
+  {
+    name: 'E-Class Coupe',
+    brand: 'Mercedes Benz',
+    bodyType: 'Coupe',
+  },
+  {
+    name: 'AMG GT',
+    brand: 'Mercedes Benz',
+    bodyType: 'Coupe',
+  },
+  {
+    name: 'A-Class',
+    brand: 'Mercedes Benz',
+    bodyType: 'Hatchback',
+  },
+  {
+    name: 'B-Class',
+    brand: 'Mercedes Benz',
+    bodyType: 'Hatchback',
+  },
+  {
+    name: 'GLB',
+    brand: 'Mercedes Benz',
+    bodyType: 'SUV',
+  },
+  {
+    name: 'GLS',
+    brand: 'Mercedes Benz',
+    bodyType: 'SUV',
+  },
+  {
+    name: 'S-Class Coupe',
+    brand: 'Mercedes Benz',
+    bodyType: 'Coupe',
+  },
+  {
+    name: 'G-Class',
+    brand: 'Mercedes Benz',
+    bodyType: 'SUV',
+  },
+  {
+    name: 'SLC',
+    brand: 'Mercedes Benz',
+    bodyType: 'Convertible',
+  },
+  {
+    name: 'SL-Class',
+    brand: 'Mercedes Benz',
+    bodyType: 'Convertible',
+  },
+];
 
 const Home = () => {
   const carsBrands = useSelector(selectCarsBrands);
@@ -22,6 +114,7 @@ const Home = () => {
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const dispatch = useDispatch();
   const { sendRequest, error } = useHttpRequest<CarsBrandsSuccess>();
+  const { sendRequest: SR, error: Err } = useHttpRequest();
   const [showComponet, setShowComponent] = useState<ShowComponentProps>({ show: false, componentName: '' });
 
   useEffect(() => {
@@ -54,6 +147,20 @@ const Home = () => {
     }
   }
 
+  const insertModels = () => {
+    mercedesModels.forEach(async (model) => {
+      await SR('/api/car/carmodel', {
+        withCredentials: true,
+        data: {
+          ...model,
+          bodyType: model.bodyType.toLowerCase(),
+          brand: model.brand.toLowerCase(),
+        },
+        method: 'POST',
+      });
+    });
+  };
+
   return (
     <MainLayout>
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
@@ -64,7 +171,7 @@ const Home = () => {
         {/* LEFT */}
         <div className="flex md:h-full w-full shadow-xl bg-default-gray rounded-2xl md:max-h-[800px] md:my-auto py-3 px-2 m-0 lg:m-5 lg:py-5 lg:px-6 md:max-w-[600px] xl:max-w-[1000px]">
           <div className="w-full h-full flex flex-col overflow-hidden">
-            <h1 className="text-white mb-4 font-kanit text-xl md:text-4xl font-bold tracking-widest">
+            <h1 onClick={insertModels} className="text-white mb-4 font-kanit text-xl md:text-4xl font-bold tracking-widest">
               Find your perfect car
             </h1>
             <Carousel className="flex text-center items-center w-full space-x-4 overflow-hidden overflow-x-auto">
