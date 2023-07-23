@@ -1,7 +1,7 @@
 import { ChangeEvent, ComponentPropsWithRef, useCallback, useEffect, useRef, useState } from 'react';
 import { cn } from '../Checkbox/checkbox.component';
 import TopLevelNotification, { TopLevelNotificationHandlers } from '../TopLevelNotification/topLevelNotification.component';
-import { Camera, Check, Info, Warning, X } from 'phosphor-react';
+import { Camera, Info, Warning, X } from 'phosphor-react';
 import AdSectionHeaderWithImage from '../../Ad/adSectionHeaderWithImage.component';
 import { dataUrlToFile } from '../../../utils/dataUrl-to-Files';
 
@@ -24,8 +24,6 @@ const FileComponent = ({
   withCountHeader,
   onChange,
 }: FileComponentProps) => {
-  // forwardRef<FileComponentHnadlers, FileComponentProps>(
-  //   ({ withDragDrop, maxAcceptedFiles, wrapperClasses, buttonClasses, withCountHeader }, ref) => {
   const notificaionRef = useRef<TopLevelNotificationHandlers>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -42,7 +40,7 @@ const FileComponent = ({
 
     let validImages: File[] = [];
 
-    if (files && files.length > 0) {
+    if (files?.length) {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         if (file.type.match(imageTypeRegex)) {
@@ -72,11 +70,9 @@ const FileComponent = ({
       /* 
         @check if the image is already added (avoid duplicates)
       */
-      console.log('e.target.name', files[0].name);
       let existing;
       for (let i = 0; i < files.length; i++) {
         existing = imageFiles.find((img) => img.name === files[i].name);
-        console.log('existing', existing);
         if (existing) {
           if (notificaionRef) {
             notificaionRef.current?.display({
@@ -89,8 +85,8 @@ const FileComponent = ({
       }
 
       if (validImages.length) {
-        setImageFiles((prev) => [...prev, ...validImages]);
-        return [...imageFiles, ...validImages];
+        setImageFiles((prev) => [...prev, ...files]);
+        return [...imageFiles, ...files];
       }
 
       /*
@@ -210,11 +206,10 @@ const FileComponent = ({
           ref={fileInputRef}
           type="file"
           hidden
-          accept="image/jpg image/png"
+          accept="image/jpg image/png image/jpeg"
           name="files"
           multiple
           onChange={(e) => {
-            console.log('e din componenta', e);
             const images = changeHandler(e);
             if (typeof onChange === 'function' && images?.length) {
               onChange(images);

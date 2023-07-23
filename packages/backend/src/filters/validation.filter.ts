@@ -11,12 +11,13 @@ import { removeFile } from 'src/utils/removeFile';
 @Catch()
 export class ValidationFilter implements ExceptionFilter {
   catch(exception, host: ArgumentsHost) {
-    // TODO: in case of DTO validation failure, remove the files
+    // in case of DTO validation failure, remove the files
     console.log('exception ValidationFilter', exception);
     const response = host.switchToHttp().getResponse();
     const req = host.switchToHttp().getRequest();
     if (exception instanceof BadRequestException) {
       if (exception.message === 'Unexpected field') {
+        console.log('exception files', exception.getResponse());
         return response.status(exception.getStatus()).json({
           ...Object(exception.getResponse()),
           message: 'Invalid file extension detected or size exeeded',
@@ -28,7 +29,6 @@ export class ValidationFilter implements ExceptionFilter {
         let lastFile;
         req?.files?.forEach((file) => {
           try {
-            console.log('lastFile este', lastFile);
             if (file?.filename && lastFile !== file.filename) {
               removeFile(file.filename);
               lastFile = file?.filename;

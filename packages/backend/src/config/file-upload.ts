@@ -16,15 +16,16 @@ export const storage = {
     }
   },
   filename: (_req, file, cb) => {
+    console.log('filename called');
     const fileName =
       file.fieldname + '-' + Date.now() + path.extname(file.originalname);
-    _req.files = [..._req?.files, fileName];
     _req.fileInsert = true;
     cb(null, fileName);
   },
 };
 
 export const fileFilter = (_req, file, callback) => {
+  console.log('fileFilter called', file);
   const acceptableExtensions = ['png', 'jpg', 'jpeg', 'jpg'];
   if (
     !acceptableExtensions.some(
@@ -40,6 +41,5 @@ export const fileFilter = (_req, file, callback) => {
       ),
     );
   }
-
   callback(null, true);
 };

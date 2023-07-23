@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getAllModels, selectCarsBrands, selectModelsByBrandDataSource } from '../../store/cars/cars.selector';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { CarsBrandsSuccess } from '../../types/index.types';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { setCarsBrands, setModelsByBrand } from '../../store/cars/cars.slice';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
@@ -52,6 +52,7 @@ const Ad = ({ title }: AdPageProps) => {
   const carsBrands = useSelector(selectCarsBrands);
   const cachedModels = useSelector(selectModelsByBrandDataSource(adPageForm.getValues('brand')));
   const allModels = useSelector(getAllModels());
+  const [images, setImages] = useState<File[]>([]);
 
   const handleIsDamaged = (args: boolean) => {
     adPageForm.setValue('isImported', args);
@@ -137,17 +138,8 @@ const Ad = ({ title }: AdPageProps) => {
 
   const onSubmit: SubmitHandler<AdProps> = async (data) => {
     const formData = buildAdPageFormData<AdProps>(data);
-
-    console.log('f', data.files);
-    console.log('formData', formData);
-
-    for (const [key, val] of formData.entries()) {
-      console.log(key, val);
-
-      if (key === 'images') {
-        console.log('qqq', val);
-      }
-    }
+    //@ts-ignore
+    formData.append('files', images);
 
     await createAdRequest('/api/ad', {
       method: 'POST',
@@ -167,16 +159,12 @@ const Ad = ({ title }: AdPageProps) => {
     [adPageForm.watch('brand')],
   );
 
-  console.log('eval this', {
-    len: adPageForm.getValues('sellerPhoneNumber')?.length < 10,
-    val: adPageForm.getValues('sellerPhoneNumber'),
-  });
-
   return (
     <>
       <div ref={topViewRef}></div>
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
       <form
+        encType="multipart/form-data"
         ref={formRef}
         id="adForm"
         onSubmit={adPageForm.handleSubmit(onSubmit)}
@@ -696,7 +684,10 @@ const Ad = ({ title }: AdPageProps) => {
                 withDragDrop={false}
                 onChange={(option) => {
                   if (option) {
-                    adPageForm.setValue('files', option);
+                    console.log('optionnn', option);
+                    // adPageForm.setValue('files', option[0] as File[]);
+
+                    setImages(option as File[]);
                   }
                 }}
               />
