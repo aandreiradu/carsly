@@ -23,7 +23,7 @@ export enum FuelType {
 export enum GearboxTypes {
   Manual = 'Manual',
   Automatic = 'Automatic',
-  SemiAutomatic = 'SemiAutomatic',
+  SemiAutomatic = 'Semi-Automatic',
 }
 
 export enum TransmissionTypes {

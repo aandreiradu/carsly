@@ -38,7 +38,7 @@ export class CarService {
     }));
   }
 
-  async getBrandByName(name: string): Promise<string> {
+  async getBrandIdByName(name: string): Promise<string> {
     const brandId = await this.prisma.carBrand.findFirst({
       where: {
         name: name.toLowerCase(),
@@ -59,7 +59,8 @@ export class CarService {
     brandId: string,
     model: string,
     bodyType: VehicleBodyType,
-  ) {
+  ): Promise<string | null> {
+    console.log('bodyType received', bodyType);
     /* 
       Based on the brandId & model & bodyType, this will check if an existing model is already inserted
     */
@@ -78,14 +79,13 @@ export class CarService {
   }
 
   async createModelByBrand(dto: CreateCarModelDTO) {
-    const brandId = await this.getBrandByName(dto.brand);
+    const brandId = await this.getBrandIdByName(dto.brand);
 
     const existingModel = await this.existingBrandModel(
       brandId,
       dto.name,
       dto.bodyType,
     );
-    console.log('existingModel', existingModel);
 
     if (existingModel) {
       throw new BadRequestException(

@@ -49,7 +49,9 @@ export class ValidationFilter implements ExceptionFilter {
     } else if (exception instanceof ForbiddenException) {
       return response.status(exception.getStatus()).json({
         ...Object(exception.getResponse()),
-        message: 'Invalid file extension detected or size exeeded',
+        message: req?.fileInsert
+          ? 'Invalid file extension detected or size exeeded'
+          : exception.message,
       });
     }
     return response.status(500).json(new InternalServerErrorException());

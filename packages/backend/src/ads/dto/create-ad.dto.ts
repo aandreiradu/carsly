@@ -1,4 +1,14 @@
-import { VehicleBodyType } from '@prisma/client';
+import {
+  VehicleBodyType,
+  CarsColors,
+  ColorTypes,
+  CountriesTypes,
+  CurrencyTypes,
+  FuelType,
+  GearboxTypes,
+  PolluationNormTypes,
+  TransmissionTypes,
+} from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
@@ -8,21 +18,14 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  Length,
   Max,
-  MaxLength,
   Min,
   MinLength,
 } from 'class-validator';
-import {
-  CarsColorsTypes,
-  ColorTypes,
-  CountriesTypes,
-  CurrencyTypes,
-  FuelType,
-  GearboxTypes,
-  PolluationNormTypes,
-  TransmissionTypes,
-} from 'src/car/types';
+// import {
+//   ,
+// } from 'src/car/types';
 
 export class CreateAdDTO {
   @IsOptional()
@@ -36,8 +39,7 @@ export class CreateAdDTO {
 
   @IsNotEmpty()
   @IsString()
-  @MaxLength(13, { message: 'VIN must not exceed 13 characters' })
-  @MinLength(13, { message: 'VIN must have 13 characters' })
+  @Length(13, 13, { message: 'VIN must have 13 characters' })
   VIN: string;
 
   @IsNumber({ allowNaN: false })
@@ -57,7 +59,7 @@ export class CreateAdDTO {
   @IsNotEmpty()
   @IsNumber({ allowNaN: false })
   @Min(1, { message: 'Month of registration should be between 1 - 12' })
-  @Max(31, { message: 'Month of registration should be between 1 - 12' })
+  @Max(12, { message: 'Month of registration should be between 1 - 12' })
   @Type(() => Number)
   monthOfRegistration: number;
 
@@ -72,8 +74,7 @@ export class CreateAdDTO {
   @IsNotEmpty()
   @IsNumber({ allowNaN: false })
   @Min(1900, {
-    message:
-      'Please input a valid year. Accepted values 1900 - ${new Date().getFullYear()}',
+    message: `Please input a valid year. Accepted values 1900 - ${new Date().getFullYear()}`,
   })
   @Type(() => Number)
   year: number;
@@ -83,12 +84,12 @@ export class CreateAdDTO {
   brand: string;
 
   @IsNotEmpty()
-  @IsString({ message: 'Please select the brand' })
+  @IsString({ message: 'Please select a model' })
   model: string;
 
   @IsNotEmpty()
   @IsEnum(FuelType, { message: 'Please select the fuel type' })
-  fuel: string;
+  fuel: FuelType;
 
   @IsNotEmpty()
   @IsNumber({ allowNaN: false })
@@ -110,15 +111,15 @@ export class CreateAdDTO {
 
   @IsNotEmpty()
   @IsEnum(GearboxTypes, { message: 'Please select the gearbox type' })
-  gearbox: string;
+  gearbox: GearboxTypes;
 
   @IsNotEmpty()
   @IsEnum(TransmissionTypes, { message: 'Please select the transmission type' })
-  transmission: string;
+  transmission: TransmissionTypes;
 
   @IsNotEmpty()
   @IsEnum(PolluationNormTypes, { message: 'Please select the polluation norm' })
-  polluationNorm: string;
+  polluationNorm: PolluationNormTypes;
 
   @IsOptional()
   @IsNumber({ allowNaN: false })
@@ -128,15 +129,15 @@ export class CreateAdDTO {
 
   @IsNotEmpty()
   @IsEnum(VehicleBodyType, { message: 'Please select a vehicle body type' })
-  bodyType: string;
+  bodyType: VehicleBodyType;
 
   @IsNotEmpty()
-  @IsEnum(CarsColorsTypes, { message: 'Please select a color' })
-  color: string;
+  @IsEnum(CarsColors, { message: 'Please select a color' })
+  color: CarsColors;
 
   @IsNotEmpty()
   @IsEnum(ColorTypes, { message: 'Please select a color type' })
-  colorType: string;
+  colorType: ColorTypes;
 
   @IsNumber()
   @Min(1, { message: 'Please select the number of seats' })
@@ -144,7 +145,8 @@ export class CreateAdDTO {
   seats: number;
 
   @IsOptional()
-  @IsUrl()
+  @IsUrl({}, { message: 'Invalid URL format' })
+  @Transform((tr) => (!tr.value ? null : tr.value))
   youtubeVideo: string;
 
   @IsNotEmpty()
@@ -158,7 +160,7 @@ export class CreateAdDTO {
 
   @IsNotEmpty()
   @IsEnum(CountriesTypes, { message: 'Please select a country' })
-  vehicleOrigin: string;
+  vehicleOrigin: CountriesTypes;
 
   @IsOptional()
   @IsBoolean()
@@ -197,7 +199,7 @@ export class CreateAdDTO {
 
   @IsNotEmpty()
   @IsEnum(CurrencyTypes, { message: 'Please select the currency' })
-  currency: string;
+  currency: CurrencyTypes;
 
   @IsOptional()
   @IsBoolean()
