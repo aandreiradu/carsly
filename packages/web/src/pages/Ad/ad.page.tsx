@@ -142,15 +142,26 @@ const Ad = ({ title }: AdPageProps) => {
     }
     formData.delete('files');
 
-    await createAdRequest('/api/ad', {
+    const responseAd = await createAdRequest('/api/ad', {
       method: 'POST',
       withCredentials: true,
       data: formData,
     });
 
-    /*
-     *  todo: handle successfully response + errors
-     */
+    if (responseAd) {
+      const {
+        status,
+        data: { message },
+      } = responseAd;
+      if (status === 400 && message?.length > 0) {
+        for (let i = 0; i < message.length; i++) {
+          adPageForm.setError(message[i]?.field, {
+            message: message[i].error.split(',')[0],
+          });
+        }
+        return;
+      }
+    }
   };
 
   const fetchModelsByBrand = useCallback(

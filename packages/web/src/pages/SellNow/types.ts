@@ -252,7 +252,7 @@ export const fuelTypeDictionary = Object.values(FuelType).map((q) => ({ name: q 
 
 export const gearboxDictionary = Object.values(GearboxTypes).map((q) => ({ name: q }));
 
-export const transmissionDictionary = Object.values(TransmissionTypes).map((q) => ({ name: q }));
+export const transmissionDictionary = Object.values(TransmissionTypes).map((q) => ({ name: q, label: q }));
 
 export const polluationNormDictionary = Object.values(PolluationNormTypes).map((q) => ({ name: q }));
 
