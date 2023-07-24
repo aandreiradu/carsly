@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   ConflictException,
-  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -89,10 +88,6 @@ export class AuthService {
     /* hash the rt before updating in the db */
 
     const hashRT = await this.hashData(tokens.refreshToken);
-
-    console.log('did tokens changed??', tokens);
-
-    console.log('hashRT', hashRT);
 
     await this.updateRT(hashRT, user.id);
 

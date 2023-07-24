@@ -25,13 +25,6 @@ model User {
   @@map("users")
 }
 
-model CarTransmision {
-  id   String @id @default(uuid())
-  name String @unique
-
-  @@map("cars_transmision")
-}
-
 model CarBrand {
   id          String     @id @default(uuid())
   name        String     @unique
@@ -39,8 +32,19 @@ model CarBrand {
   logoUrl     String?
   yearOfEst   DateTime?
   CarModel    CarModel[]
+  Ad          Ad[]
 
   @@map("cars_brand")
+}
+
+model AdImage {
+  id   String @id @default(uuid())
+  path String
+
+  Ad   Ad     @relation(fields: [adId], references: [id])
+  adId String
+
+  @@map("image")
 }
 
 model CarModel {
@@ -58,23 +62,60 @@ model CarModel {
 }
 
 model Ad {
-  id   String @id @default(uuid())
-  name String
+  id String @id @default(uuid())
 
-  year          DateTime
-  price         Float
-  mileage       Float
-  fuelType      FuelType
-  powerCategory PowerCategory
-  power         Float
-  engineSize    Float
-  color         String
+  isDamaged        Boolean? @default(false)
+  isRightHandDrive Boolean? @default(false)
+  isImported       Boolean? @default(false)
 
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+  VIN                 String
+  KM                  Float
+  dayOfRegistration   String
+  monthOfRegistration String
+  yearOfRegistration  String
+  year                DateTime
+
+  carBrandId String
+  brand      CarBrand @relation(fields: [carBrandId], references: [id])
 
   carModel   CarModel @relation(fields: [carModelId], references: [id])
   carModelId String
+
+  fuelType       FuelType
+  power          Float
+  engineSize     Float
+  noOfDoors      Int
+  gearbox        GearboxTypes
+  transmission   TransmissionTypes
+  polluationNorm PolluationNormTypes
+  co2emissions   Float?
+  bodyType       VehicleBodyType
+  color          CarsColors
+  colorType      ColorTypes
+  seats          Int
+
+  images                 AdImage[]
+  youtubeVideo           String?
+  title                  String
+  description            String?
+  vehicleOrigin          CountriesTypes
+  isFirstOwner           Boolean?       @default(false)
+  isWithoutAccident      Boolean?       @default(false)
+  isRegistered           Boolean?       @default(false)
+  isServiceCardAvailable Boolean?       @default(false)
+  isVintageCar           Boolean?       @default(false)
+  hasTuning              Boolean?       @default(false)
+
+  price             Float
+  currency          CurrencyTypes
+  isNegotiable      Boolean?      @default(false)
+  isLeasing         Boolean?      @default(false)
+  sellerFullName    String
+  sellerCity        String
+  sellerPhoneNumber String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -126,11 +167,220 @@ enum PowerCategory {
 }
 
 enum FuelType {
-  petrol
-  electric
+  Petrol
+  Electric
   LPG
   CNG
-  hybrid
-  diesel
-  hydrogen
+  Hybrid
+  Diesel
+  Hydrogen
+}
+
+enum GearboxTypes {
+  Manual
+  Automatic
+  SemiAutomatic
+}
+
+enum TransmissionTypes {
+  fourByFourAutomatic
+  fourByFourManual
+  rear
+  front
+}
+
+enum PolluationNormTypes {
+  ParticleFilter
+  Euro_1
+  Euro_2
+  Euro_3
+  Euro_4
+  Euro_5
+  Euro_5a
+  Euro_5b
+  Euro_6
+  Euro_6b
+  Euro_6c
+  Euro_6d
+  Euro_6d_temp
+  Non_euro
+}
+
+enum CarsColors {
+  White
+  Blue
+  Silver
+  Beige
+  Yellow
+  Gray
+  Brown
+  Black
+  Orange
+  Red
+  Green
+  Others
+}
+
+enum ColorTypes {
+  Matte
+  Metallic
+  Pearl
+}
+
+enum CountriesTypes {
+  AFGHANISTAN
+  ALBANIA
+  ALGERIA
+  ANDORRA
+  ANGOLA
+  ANTIGUA_AND_BARBUDA
+  ARGENTINA
+  ARMENIA
+  AUSTRALIA
+  AUSTRIA
+  AZERBAIJAN
+  BAHAMAS
+  BAHRAIN
+  BANGLADESH
+  BARBADOS
+  BELARUS
+  BELGIUM
+  BELIZE
+  BENIN
+  BHUTAN
+  BOLIVIA
+  BOSNIA_AND_HERZEGOVINA
+  BOTSWANA
+  BRAZIL
+  BRUNEI
+  BULGARIA
+  BURKINA_FASO
+  BURUNDI
+  COTE_DIVOIRE
+  CABO_VERDE
+  CAMBODIA
+  CAMEROON
+  CANADA
+  CENTRAL_AFRICAN_REPUBLIC
+  CHAD
+  CHILE
+  CHINA
+  COLOMBIA
+  COMOROS
+  CONGO
+  COSTA_RICA
+  CROATIA
+  CUBA
+  CYPRUS
+  CZECH_REPUBLIC
+  DEMOCRATIC_REPUBLIC_OF_THE_CONGO
+  DENMARK
+  DJIBOUTI
+  DOMINICA
+  DOMINICAN_REPUBLIC
+  ECUADOR
+  EGYPT
+  EL_SALVADOR
+  EQUATORIAL_GUINEA
+  ERITREA
+  ESTONIA
+  ESWATINI
+  ETHIOPIA
+  FIJI
+  FINLAND
+  FRANCE
+  GABON
+  GAMBIA
+  GEORGIA
+  GERMANY
+  GHANA
+  GREECE
+  GRENADA
+  GUATEMALA
+  GUINEA
+  GUINEA_BISSAU
+  GUYANA
+  HAITI
+  HOLY_SEE
+  HONDURAS
+  HUNGARY
+  ICELAND
+  INDIA
+  INDONESIA
+  IRAN
+  IRAQ
+  IRELAND
+  ISRAEL
+  ITALY
+  JAMAICA
+  JAPAN
+  JORDAN
+  KAZAKHSTAN
+  KENYA
+  KIRIBATI
+  KUWAIT
+  KYRGYZSTAN
+  LAOS
+  LATVIA
+  LEBANON
+  LESOTHO
+  LIBERIA
+  LIBYA
+  LIECHTENSTEIN
+  LITHUANIA
+  LUXEMBOURG
+  MADAGASCAR
+  MALAWI
+  MALAYSIA
+  MALDIVES
+  MALI
+  MALTA
+  MARSHALL_ISLANDS
+  MAURITANIA
+  MAURITIUS
+  MEXICO
+  MICRONESIA
+  MOLDOVA
+  MONACO
+  MONGOLIA
+  MONTENEGRO
+  MOROCCO
+  MOZAMBIQUE
+  MYANMAR
+  NAMIBIA
+  NAURU
+  NEPAL
+  NETHERLANDS
+  NEW_ZEALAND
+  NICARAGUA
+  NIGER
+  NIGERIA
+  NORTH_KOREA
+  NORTH_MACEDONIA
+  NORWAY
+  OMAN
+  PAKISTAN
+  PALAU
+  PALESTINE_STATE
+  PANAMA
+  PAPUA_NEW_GUINEA
+  PARAGUAY
+  PERU
+  PHILIPPINES
+  POLAND
+  PORTUGAL
+  QATAR
+  ROMANIA
+  RUSSIA
+  RWANDA
+  SAINT_KITTS_AND_NEVIS
+  SAINT_LUCIA
+  SAINT_VINCENT_AND_THE_GRENADINES
+  SAMOA
+}
+
+enum CurrencyTypes {
+  EUR
+  RON
+  USD
 }

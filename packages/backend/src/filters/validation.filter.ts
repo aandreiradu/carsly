@@ -12,9 +12,10 @@ import { removeFile } from 'src/utils/removeFile';
 export class ValidationFilter implements ExceptionFilter {
   catch(exception, host: ArgumentsHost) {
     // in case of DTO validation failure, remove the files
-    console.log('exception ValidationFilter', exception);
+    console.log('exception ValidationFilter', JSON.stringify(exception));
     const response = host.switchToHttp().getResponse();
     const req = host.switchToHttp().getRequest();
+
     if (exception instanceof BadRequestException) {
       if (exception.message === 'Unexpected field') {
         console.log('exception files', exception.getResponse());
@@ -43,13 +44,17 @@ export class ValidationFilter implements ExceptionFilter {
         }
       }
 
+      console.log(exception.getResponse());
       return response
         .status(exception.getStatus())
         .json(exception.getResponse());
     } else if (exception instanceof ForbiddenException) {
+      console.log('ForbiddenException', exception.getResponse());
       return response.status(exception.getStatus()).json({
         ...Object(exception.getResponse()),
-        message: 'Invalid file extension detected or size exeeded',
+        message: req?.fileInsert
+          ? 'Invalid file extension detected or size exeeded'
+          : exception.message,
       });
     }
     return response.status(500).json(new InternalServerErrorException());

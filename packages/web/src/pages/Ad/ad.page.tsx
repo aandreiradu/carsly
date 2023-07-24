@@ -1,4 +1,4 @@
-import { Info, Lightbulb, Warning } from 'phosphor-react';
+import { Check, Info, Lightbulb, Warning } from 'phosphor-react';
 import Checkbox from '../../components/UI/Checkbox/checkbox.component';
 import { AdPageProps } from '../../types/ad.types';
 import { Input } from '../../components/UI/Input/input.component';
@@ -81,7 +81,7 @@ const Ad = ({ title }: AdPageProps) => {
     console.error('error ad', error);
     if (topLevelNotificationRef) {
       topLevelNotificationRef.current?.display({
-        icon: <Info className="w-14 h-8 text-red-600-400" />,
+        icon: <Info className="w-14 h-8 text-red-600" />,
         message: `${error.message ?? 'Someting went wrong. Please try again later'}`,
       });
     }
@@ -142,15 +142,35 @@ const Ad = ({ title }: AdPageProps) => {
     }
     formData.delete('files');
 
-    await createAdRequest('/api/ad', {
+    const responseAd = await createAdRequest('/api/ad', {
       method: 'POST',
       withCredentials: true,
       data: formData,
     });
 
-    /*
-     *  todo: handle successfully response + errors
-     */
+    if (responseAd) {
+      const {
+        status,
+        data: { message },
+      } = responseAd;
+      if (status === 400 && message?.length > 0) {
+        for (let i = 0; i < message.length; i++) {
+          adPageForm.setError(message[i]?.field, {
+            message: message[i].error.split(',')[0],
+          });
+        }
+        return;
+      }
+
+      if (status === 201) {
+        if (topLevelNotificationRef) {
+          topLevelNotificationRef.current?.display({
+            icon: <Check className="w-14 h-8 text-green-500" />,
+            message: `Ad created successfully`,
+          });
+        }
+      }
+    }
   };
 
   const fetchModelsByBrand = useCallback(

@@ -28,7 +28,7 @@ export class CarController {
         dto.yearOfEst = new Date(dto.yearOfEst).toISOString();
       }
 
-      await this.carsService.getBrandByName(dto.name);
+      await this.carsService.getBrandIdByName(dto.name);
 
       await this.carsService.createCarBrand(dto);
       return {

@@ -10,7 +10,6 @@ import { AdsService } from './ads.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { fileFilter, storage } from 'src/config/file-upload';
-//import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 import { CreateAdDTO } from './dto/create-ad.dto';
 import { ValidationFilter } from 'src/filters/validation.filter';
 
@@ -35,15 +34,8 @@ export class AdsController {
       },
     ),
   )
-  async createAd(
-    @UploadedFiles()
-    files,
-    @Body() dto: CreateAdDTO,
-  ) {
-    console.log('dto', dto);
-    console.log('files', files);
-    return {
-      message: 'success',
-    };
+
+  async createAd(@UploadedFiles() files, @Body() dto: CreateAdDTO) {
+    return this.adsService.createAd(dto);
   }
 }
