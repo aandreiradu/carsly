@@ -34,6 +34,7 @@ export class AdsController {
       },
     ),
   )
+
   async createAd(@UploadedFiles() files, @Body() dto: CreateAdDTO) {
     return this.adsService.createAd(dto);
   }
