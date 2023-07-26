@@ -70,16 +70,10 @@ model Ad {
 
   VIN                 String
   KM                  Float
-  dayOfRegistration   String
-  monthOfRegistration String
-  yearOfRegistration  String
-  year                DateTime
-
-  carBrandId String
-  brand      CarBrand @relation(fields: [carBrandId], references: [id])
-
-  carModel   CarModel @relation(fields: [carModelId], references: [id])
-  carModelId String
+  dayOfRegistration   Int
+  monthOfRegistration Int
+  yearOfRegistration  Int
+  year                Int
 
   fuelType       FuelType
   power          Float
@@ -94,7 +88,6 @@ model Ad {
   colorType      ColorTypes
   seats          Int
 
-  images                 AdImage[]
   youtubeVideo           String?
   title                  String
   description            String?
@@ -113,12 +106,16 @@ model Ad {
   sellerFullName    String
   sellerCity        String
   sellerPhoneNumber String
+  images            AdImage[]
 
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  CarBrand   CarBrand @relation(fields: [carBrandId], references: [id])
+  carBrandId String
+  CarModel   CarModel @relation(fields: [carModelId], references: [id])
+  carModelId String
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
 
   @@map("ad")
 }
