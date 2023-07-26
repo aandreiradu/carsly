@@ -12,7 +12,11 @@ export const removeFile = (fileName: string, filePath?: string) => {
     try {
       fs.unlinkSync(path.join(__dirname, '../..', './uploads'));
     } catch (error) {
-      throw error;
+      console.log(
+        'Cannot remove file',
+        path.join(__dirname, '../..', './uploads'),
+      );
+      return error;
     }
   }
 
@@ -21,7 +25,11 @@ export const removeFile = (fileName: string, filePath?: string) => {
     (err) => {
       if (err) {
         console.error(err);
-        throw err;
+        console.log(
+          'Cannot remove file',
+          path.join(__dirname, '../..', './uploads'),
+        );
+        return err;
       }
     },
   );

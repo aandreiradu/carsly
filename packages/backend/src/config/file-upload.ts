@@ -1,4 +1,4 @@
-import { ForbiddenException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -37,8 +37,8 @@ export const fileFilter = (_req, file, callback) => {
     )
   ) {
     return callback(
-      new ForbiddenException(
-        `Extension not allowed, accepted extensions are ${acceptableExtensions.join(
+      new BadRequestException(
+        `Extension not allowed. Allowed extensions: ${acceptableExtensions.join(
           ',',
         )}`,
       ),
