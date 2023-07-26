@@ -4,6 +4,7 @@ import * as fs from 'fs';
 
 export const storage = {
   destination: async (_req, _file, cb) => {
+    console.log('file here', _file);
     try {
       fs.accessSync(
         path.join(__dirname, '..', '../uploads'),
@@ -24,6 +25,11 @@ export const storage = {
       Date.now() +
       path.extname(file.originalname);
     _req.fileInsert = true;
+
+    !_req.filesPaths?.length
+      ? (_req.filesPaths = [fileName])
+      : _req.filesPaths.push(fileName);
+
     cb(null, fileName);
   },
 };

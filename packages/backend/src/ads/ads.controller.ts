@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Post,
+  Req,
   UploadedFiles,
   UseFilters,
   UseInterceptors,
@@ -12,11 +14,13 @@ import { diskStorage } from 'multer';
 import { fileFilter, storage } from 'src/config/file-upload';
 import { CreateAdDTO } from './dto/create-ad.dto';
 import { ValidationFilter } from 'src/filters/validation.filter';
+import { Public } from 'src/decorators';
 
 @Controller('/api/ad')
 export class AdsController {
   constructor(private adsService: AdsService) {}
 
+  @Public()
   @Post()
   @UseFilters(ValidationFilter)
   @UseInterceptors(
@@ -34,8 +38,16 @@ export class AdsController {
       },
     ),
   )
+  async createAd(@Body() dto: CreateAdDTO, @Req() req) {
+    const filePaths = [];
+    for (const i in req?.files) {
+      filePaths.push(req?.files[i][0]?.filename || '');
+    }
 
-  async createAd(@UploadedFiles() files, @Body() dto: CreateAdDTO) {
-    return this.adsService.createAd(dto);
+    return this.adsService.createAd({
+      ...dto,
+      userId: req?.user?.sub,
+      filePaths,
+    });
   }
 }

@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateCarBrandDTO, CreateCarDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCarModelDTO } from './dto/create-car-model.dto';
@@ -39,9 +43,10 @@ export class CarService {
   }
 
   async getBrandIdByName(name: string): Promise<string> {
+    console.log('getBrandIdByName args', name);
     const brandId = await this.prisma.carBrand.findFirst({
       where: {
-        name: name.toLowerCase(),
+        name: name?.toLowerCase(),
       },
       select: {
         id: true,
@@ -74,6 +79,12 @@ export class CarService {
         id: true,
       },
     });
+
+    if (!existingModelQuery) {
+      throw new BadRequestException(
+        'Could not identify the model based on provided brand',
+      );
+    }
 
     return existingModelQuery?.id ?? null;
   }

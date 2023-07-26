@@ -23,9 +23,6 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-// import {
-//   ,
-// } from 'src/car/types';
 
 export class CreateAdDTO {
   @IsOptional()
@@ -46,6 +43,7 @@ export class CreateAdDTO {
   @Min(1, {
     message: 'The number of kilometers should be greater or equal than 1',
   })
+  @Max(2000000, { message: 'The number of KM should not exceed 2 million' })
   @Type(() => Number)
   KM: number;
 
@@ -122,8 +120,9 @@ export class CreateAdDTO {
   polluationNorm: PolluationNormTypes;
 
   @IsOptional()
-  @IsNumber({ allowNaN: false })
-  @Min(1, { message: 'The value should be greater than or equal to 1' })
+  @IsNumber()
+  @Min(0, { message: 'CO2 emissions must be greater than 0' })
+  @Max(200, { message: 'CO2 emissions must be lower than 200' })
   @Type(() => Number)
   co2emissions: number;
 
@@ -149,8 +148,8 @@ export class CreateAdDTO {
   @Transform((tr) => (!tr.value ? null : tr.value))
   youtubeVideo: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'Title must be a string' })
+  @IsString({ message: 'Title must be a string' })
   adTitle: string;
 
   @IsOptional()
@@ -229,5 +228,5 @@ export class CreateAdDTO {
   sellerPhoneNumber: string;
 
   @IsOptional()
-  files: any;
+  images: any;
 }

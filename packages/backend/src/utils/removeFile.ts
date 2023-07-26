@@ -3,19 +3,10 @@ import * as fs from 'fs';
 
 export const removeFile = (fileName: string, filePath?: string) => {
   if (filePath) {
-    // fs.unlink(path.join(__dirname, '../..', './uploads', fileName), (err) => {
-    //   if (err) {
-    //     throw err;
-    //   }
-    // });
-
     try {
-      fs.unlinkSync(path.join(__dirname, '../..', './uploads'));
+      fs.unlinkSync(filePath);
     } catch (error) {
-      console.log(
-        'Cannot remove file',
-        path.join(__dirname, '../..', './uploads'),
-      );
+      console.log('Cannot remove file', filePath);
       return error;
     }
   }

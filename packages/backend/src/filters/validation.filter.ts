@@ -15,14 +15,17 @@ export class ValidationFilter implements ExceptionFilter {
     console.log('exception ValidationFilter', JSON.stringify(exception));
     const response = host.switchToHttp().getResponse();
     const req = host.switchToHttp().getRequest();
-    const status = exception.getStatus();
 
     if (exception instanceof BadRequestException) {
+      const status = exception.getStatus();
       if (exception.message === 'Unexpected field') {
         console.log('Exception files', response);
+        console.log({
+          status,
+        });
         return response.status(status).json({
-          ...Object(response),
-          message: 'Invalid file extension detected or size exeeded',
+          ...Object(exception.getResponse()),
+          message: 'Invalid file extension detected or limit exeeded',
           timestamp: new Date().toISOString(),
           statusCode: status,
         });
@@ -54,6 +57,7 @@ export class ValidationFilter implements ExceptionFilter {
         statusCode: status,
       });
     } else if (exception instanceof ForbiddenException) {
+      const status = exception.getStatus();
       console.log('ForbiddenException', exception);
       return response.status(status).json({
         path: req.url,
