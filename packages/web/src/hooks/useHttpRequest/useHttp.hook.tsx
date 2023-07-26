@@ -29,10 +29,8 @@ const useHttpRequest = <T,>(): HttpReqRes<T | AxiosError> => {
       setData(response.data);
       return response;
     } catch (error: unknown) {
-      if (error) {
-        console.log('error axios', error);
-      }
       if (axios.isAxiosError(error)) {
+        console.log('Error AXIOS', error.response);
         setError(new Error(error.response?.data.message || error.response?.data.error || 'Something went wrong'));
         return error.response;
       } else {

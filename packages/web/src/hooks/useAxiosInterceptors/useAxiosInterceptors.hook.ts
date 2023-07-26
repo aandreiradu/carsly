@@ -28,11 +28,10 @@ const useAxiosInterceptors = () => {
       (response: AxiosResponse) => response,
       async (error: AxiosError) => {
         const previousReq = error.config;
-        if (error.response?.status === 403 && previousReq) {
-          // console.log('responseInterceptor /// 403 branch');
-          // console.log('response interceptor received 403 from BE', error.response);
+        //@ts-ignore
+        if (error.response?.status === 403 && error.response.data?.message === 'Forbidden' && previousReq) {
+          console.log('responseInterceptor /// 403 branch');
 
-          // console.log('calling useRefreshToken from interceptor');
           const { accessToken, errorMessage } = await refresh();
 
           if (errorMessage) {
