@@ -1,0 +1,138 @@
+[
+    {
+        "name": "Mercedes Benz",
+        "description": "Luxury car manufacturer known for their high-quality vehicles."
+    },
+    {
+        "name": "Aston Martin",
+        "description": "British luxury sports car manufacturer with a rich heritage."
+    },
+    {
+        "name": "Jeep",
+        "description": "American SUV and off-road vehicle manufacturer."
+    },
+    {
+        "name": "Maserati",
+        "description": "Italian luxury car manufacturer known for their high-performance vehicles."
+    },
+    {
+        "name": "Ferrari",
+        "description": "Iconic Italian sports car manufacturer with a strong racing heritage."
+    },
+    {
+        "name": "Smart",
+        "description": "Manufacturer of compact and electric cars, owned by Mercedes Benz."
+    },
+    {
+        "name": "Hyundai",
+        "description": "South Korean automobile manufacturer offering a wide range of vehicles."
+    },
+    {
+        "name": "Nissan",
+        "description": "Japanese car manufacturer known for their innovative designs and technologies."
+    },
+    {
+        "name": "Bentley",
+        "description": "British luxury car manufacturer specializing in grand tourers."
+    },
+    {
+        "name": "Mazda",
+        "description": "Japanese car manufacturer producing stylish and reliable vehicles."
+    },
+    {
+        "name": "Volvo",
+        "description": "Swedish car manufacturer focused on safety and sustainability."
+    },
+    {
+        "name": "Polestar",
+        "description": "Swedish electric performance car brand, a subsidiary of Volvo."
+    },
+    {
+        "name": "Cadillac",
+        "description": "American luxury vehicle manufacturer, a division of General Motors."
+    },
+    {
+        "name": "Fiat",
+        "description": "Italian automobile manufacturer offering compact and stylish cars."
+    },
+    {
+        "name": "Rolls Royce",
+        "description": "British luxury car manufacturer synonymous with opulence and prestige."
+    },
+    {
+        "name": "Volkswagen",
+        "description": "German automotive brand offering a wide range of vehicles."
+    },
+    {
+        "name": "Bugatti",
+        "description": "French manufacturer of high-performance luxury cars."
+    },
+    {
+        "name": "Lamborghini",
+        "description": "Italian sports car manufacturer known for their powerful and exotic designs."
+    },
+    {
+        "name": "Tesla",
+        "description": "American electric vehicle manufacturer revolutionizing the automotive industry."
+    },
+    {
+        "name": "Honda",
+        "description": "Japanese multinational corporation known for manufacturing automobiles and motorcycles."
+    },
+    {
+        "name": "Porsche",
+        "description": "German sports car manufacturer renowned for their precision engineering."
+    },
+    {
+        "name": "Ford",
+        "description": "American automaker producing a wide range of vehicles, including trucks and SUVs."
+    },
+    {
+        "name": "Chevrolet",
+        "description": "American automobile division of General Motors offering a diverse lineup."
+    },
+    {
+        "name": "Mini",
+        "description": "British automotive brand known for their compact and stylish cars."
+    },
+    {
+        "name": "Chrysler",
+        "description": "American luxury car manufacturer, a subsidiary of Stellantis."
+    },
+    {
+        "name": "Land Rover",
+        "description": "British car manufacturer specializing in luxury SUVs."
+    },
+    {
+        "name": "BMW",
+        "description": "German automotive brand offering a wide range of luxury and performance vehicles."
+    },
+    {
+        "name": "Audi",
+        "description": "German automobile manufacturer known for their sophisticated designs and advanced technologies."
+    },
+    {
+        "name": "Jaguar",
+        "description": "British luxury car manufacturer specializing in elegant and sporty vehicles."
+    },
+    {
+        "name": "Toyota",
+        "description": "Japanese multinational automotive manufacturer offering a diverse range of vehicles."
+    },
+    {
+        "name": "Skoda",
+        "description": "Skoda, is a Czech automobile manufacturer established in 1925 as the successor to Laurin & Klement and headquartered in Mladá Boleslav, Czech Republic. Škoda Works became state owned in 1948. After 1991, it was gradually privatized to the German Volkswagen Group, becoming a partial subsidiary in 1994 and a wholly owned subsidiary in 2000."
+    },
+    {
+        "name": "Renault",
+        "description": "Groupe Renault, also known as the Renault Group is a French multinational automobile manufacturer established in 1899. The company produces a range of cars and vans and in the past, has manufactured trucks, tractors, tanks, buses/coaches, aircraft and aircraft engines, and autorail vehicles."
+    },
+    {
+        "name": "Koenigsegg",
+        "description": "The company was founded in 1994 in Sweden by Christian von Koenigsegg, with the intention of producing a \"world-class\" sports car. Many years of development and testing led to the CC8S, the company's first street-legal production car which was introduced in 2002"
+    },
+    {
+        "name": "Rimac Automobili",
+        "description": "Rimac Automobili is a Croatian automotive manufacturer headquartered in Sveta Nedelja, Croatia, that develops and produces electric sports cars, drivetrains and battery systems. The company was founded in 2009 by Mate Rimac. Rimac Automobili's first model, the Concept One, was the world's fastest production electric vehicle."
+    }
+]

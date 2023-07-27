@@ -1,0 +1,317 @@
+[
+  {
+    "brand": "audi",
+    "model": "a1",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "a2",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "a3",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "a4",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "a5",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "a6",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "a7",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "a8",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "s1",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "s2",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "s3",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "s4",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "s",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "s5",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "s6",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "s7",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "s8",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "rs3",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "rs4",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "rs5",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "rs6",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "audi",
+    "model": "rs7",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "aston martin",
+    "model": "rapide s",
+    "bodyType": "saloon"
+  },
+  {
+    "brand": "aston martin",
+    "model": "vantage",
+    "bodyType": "coupe"
+  },
+  {
+    "brand": "aston martin",
+    "model": "dbx",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "aston martin",
+    "model": "dbs superleggera",
+    "bodyType": "coupe"
+  },
+  {
+    "brand": "aston martin",
+    "model": "db11",
+    "bodyType": "coupe"
+  },
+  {
+    "brand": "aston martin",
+    "model": "db9",
+    "bodyType": "coupe"
+  },
+  {
+    "brand": "jeep",
+    "model": "wrangler",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "jeep",
+    "model": "cherokee",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "jeep",
+    "model": "grand cherokee",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "jeep",
+    "model": "renegade",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "jeep",
+    "model": "compass",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "bmw",
+    "model": "x1",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "bmw",
+    "model": "3 series",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "bmw",
+    "model": "5 series",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "bmw",
+    "model": "8 series",
+    "bodyType": "coupe"
+  },
+  {
+    "brand": "bmw",
+    "model": "2 series",
+    "bodyType": "coupe"
+  },
+  {
+    "brand": "bmw",
+    "model": "7 series",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "bmw",
+    "model": "z4",
+    "bodyType": "convertible"
+  },
+  {
+    "brand": "bmw",
+    "model": "i3",
+    "bodyType": "hatchback"
+  },
+  {
+    "brand": "bmw",
+    "model": "i8",
+    "bodyType": "coupe"
+  },
+  {
+    "brand": "bmw",
+    "model": "x3",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "bmw",
+    "model": "x5",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "bmw",
+    "model": "4 series",
+    "bodyType": "coupe"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "c-class",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "e-class",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "amg gt",
+    "bodyType": "coupe"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "a-class",
+    "bodyType": "hatchback"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "cla",
+    "bodyType": "coupe"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "glc",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "gle",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "e-class coupe",
+    "bodyType": "coupe"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "sl-class",
+    "bodyType": "convertible"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "c-class coupe",
+    "bodyType": "coupe"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "s-class",
+    "bodyType": "sedan"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "gla",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "b-class",
+    "bodyType": "hatchback"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "slc",
+    "bodyType": "convertible"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "s-class coupe",
+    "bodyType": "coupe"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "glb",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "gls",
+    "bodyType": "suv"
+  },
+  {
+    "brand": "mercedes benz",
+    "model": "g-class",
+    "bodyType": "suv"
+  }
+]
