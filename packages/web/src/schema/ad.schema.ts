@@ -31,7 +31,8 @@ export const adSchema = z.object({
       required_error: 'The number of kilometers should be greater or equal than 1',
       invalid_type_error: 'The number of kilometers should be greater or equal than 1',
     })
-    .min(1, { message: 'The number of kilometers should be greater or equal than 1' }),
+    .max(2000000, { message: 'The number of KM should not exceed 2 million' })
+    .min(0, { message: 'Please insert the number of km. The minimum value is 0' }),
   dayOfRegistration: z.coerce
     .number({
       description: 'Please insert the day of the first registration',
@@ -140,7 +141,7 @@ export const adSchema = z.object({
     invalid_type_error: 'Please select the number of seats',
   }),
 
-  files: z.any(),
+  images: z.any(),
 
   youtubeVideo: z
     .string()

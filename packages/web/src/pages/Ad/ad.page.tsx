@@ -35,6 +35,7 @@ import {
 import { noOfDorsDictionary } from '../../config/settings';
 import File from '../../components/UI/File/file.component';
 import { buildAdPageFormData } from '../../utils';
+import Nav from '../../components/Nav/nav.component';
 
 const Ad = ({ title }: AdPageProps) => {
   const topViewRef = useRef<HTMLDivElement>(null);
@@ -137,10 +138,10 @@ const Ad = ({ title }: AdPageProps) => {
 
   const onSubmit: SubmitHandler<AdProps> = async (data) => {
     const formData = buildAdPageFormData<AdProps>(data);
-    for (let i = 0; i < data.files?.length; i++) {
-      formData.append(`image-${i + 1}`, data.files[i]);
+    for (let i = 0; i < data.images?.length; i++) {
+      formData.append(`image-${i + 1}`, data.images[i]);
     }
-    formData.delete('files');
+    formData.delete('images');
 
     const responseAd = await createAdRequest('/api/ad', {
       method: 'POST',
@@ -153,11 +154,20 @@ const Ad = ({ title }: AdPageProps) => {
         status,
         data: { message },
       } = responseAd;
-      if (status === 400 && message?.length > 0) {
-        for (let i = 0; i < message.length; i++) {
-          adPageForm.setError(message[i]?.field, {
-            message: message[i].error.split(',')[0],
-          });
+      if (status === 400) {
+        if (Array.isArray(message) && message?.length > 0) {
+          for (let i = 0; i < message.length; i++) {
+            adPageForm.setError(message[i]?.field, {
+              message: message[i].error.split(',')[0],
+            });
+          }
+        } else if (typeof message === 'string') {
+          if (topLevelNotificationRef) {
+            topLevelNotificationRef.current?.display({
+              icon: <Warning className="w-14 h-8 text-red-600" />,
+              message: message,
+            });
+          }
         }
         return;
       }
@@ -188,6 +198,7 @@ const Ad = ({ title }: AdPageProps) => {
     <>
       <div ref={topViewRef}></div>
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
+      <Nav setShowComponent={() => {}} />
       <form
         encType="multipart/form-data"
         ref={formRef}
@@ -698,7 +709,7 @@ const Ad = ({ title }: AdPageProps) => {
         </div>
         {adPageForm.watch('seats') && (
           <Controller
-            name={'files'}
+            name={'images'}
             control={adPageForm.control}
             render={() => (
               <File
@@ -710,7 +721,7 @@ const Ad = ({ title }: AdPageProps) => {
                 onChange={(option) => {
                   if (option) {
                     console.log('optionnn', option);
-                    adPageForm.setValue('files', option);
+                    adPageForm.setValue('images', option);
                   }
                 }}
               />
