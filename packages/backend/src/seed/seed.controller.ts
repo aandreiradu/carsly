@@ -16,7 +16,7 @@ export interface SeedBrands {
 }
 
 export interface SeedModels {
-  name: string;
+  model: string;
   brand: string;
   bodyType: VehicleBodyType;
 }
@@ -83,9 +83,12 @@ export class SeedController {
         path.join(__dirname, '../../models-seed.json'),
       );
 
-      await this.seedService.seedModelsBulk(parsedData);
+      if (parsedData?.length) {
+        await this.seedService.seedModelsBulk(parsedData);
 
-      return { message: 'seed succeedeed' };
+        return { message: 'seed succeedeed' };
+      }
+
       return { message: 'seed failed' };
     } catch (error) {
       console.log(error);

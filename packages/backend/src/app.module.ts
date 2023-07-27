@@ -7,6 +7,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { CarModule } from './car/car.module';
 import { AdsModule } from './ads/ads.module';
+import { SeedModule } from './seed/seed.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -14,6 +15,7 @@ import { AdsModule } from './ads/ads.module';
     PrismaModule,
     CarModule,
     AdsModule,
+    SeedModule,
   ],
   providers: [
     {

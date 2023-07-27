@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { SeedBrands, SeedModels } from './seed.controller';
+import { SeedBrands } from './seed.controller';
+import { CarModel } from '@prisma/client';
 
 @Injectable()
 export class SeedRepository {
@@ -25,14 +26,13 @@ export class SeedRepository {
     }
   }
 
-  // async seedModelsBulk(models: SeedModels[]) {
-  //   for (let i = 0; i < models.length; i++) {
-  //     await this.prismaService.carModel.create({
-  //       data: {
-  //         ...models[i],
-
-  //       },
-  //     });
-  //   }
-  // }
+  async seedModelsBulk(models: CarModel[]) {
+    for (let i = 0; i < models.length; i++) {
+      await this.prismaService.carModel.create({
+        data: {
+          ...models[i],
+        },
+      });
+    }
+  }
 }
