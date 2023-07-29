@@ -1,6 +1,8 @@
 import { BadRequestException } from '@nestjs/common';
 import * as path from 'path';
 import * as fs from 'fs';
+import { Request } from 'express';
+import { createAdMapFormData } from 'src/utils/mapFormData';
 
 export const storage = {
   destination: async (_req, _file, cb) => {
@@ -33,7 +35,7 @@ export const storage = {
   },
 };
 
-export const fileFilter = (_req, file, callback) => {
+export const fileFilter = (req: Request, file, callback) => {
   const acceptableExtensions = ['png', 'jpg', 'jpeg', 'jpg'];
   if (
     !acceptableExtensions.some(
@@ -49,5 +51,12 @@ export const fileFilter = (_req, file, callback) => {
       ),
     );
   }
+
+  if (req?.method === 'POST' && req.url === '/api/ad') {
+    console.log('timestamp1', new Date().toISOString());
+    const newBody = createAdMapFormData(req.body);
+    console.log('new body', newBody);
+  }
+
   callback(null, true);
 };

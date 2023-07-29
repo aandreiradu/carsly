@@ -1,10 +1,9 @@
 import {
   Body,
   Controller,
-  ForbiddenException,
+  Get,
   Post,
   Req,
-  UploadedFiles,
   UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
@@ -15,12 +14,12 @@ import { fileFilter, storage } from 'src/config/file-upload';
 import { CreateAdDTO } from './dto/create-ad.dto';
 import { ValidationFilter } from 'src/filters/validation.filter';
 import { Public } from 'src/decorators';
+import { createAdMapFormData } from 'src/utils/mapFormData';
 
 @Controller('/api/ad')
 export class AdsController {
   constructor(private adsService: AdsService) {}
 
-  @Public()
   @Post()
   @UseFilters(ValidationFilter)
   @UseInterceptors(
@@ -38,14 +37,16 @@ export class AdsController {
       },
     ),
   )
-  async createAd(@Body() dto: CreateAdDTO, @Req() req) {
+  async createAd(@Body() data: any, @Req() req) {
     const filePaths = [];
     for (const i in req?.files) {
       filePaths.push(req?.files[i][0]?.filename || '');
     }
 
+    // const newBody = createAdMapFormData(req.body);
+
     return this.adsService.createAd({
-      ...dto,
+      ...data,
       userId: req?.user?.sub,
       filePaths,
     });

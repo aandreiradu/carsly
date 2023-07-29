@@ -43,7 +43,6 @@ export class CarService {
   }
 
   async getBrandIdByName(name: string): Promise<string> {
-    console.log('getBrandIdByName args', name);
     const brandId = await this.prisma.carBrand.findFirst({
       where: {
         name: name?.toLowerCase(),
@@ -65,10 +64,11 @@ export class CarService {
     model: string,
     bodyType: VehicleBodyType,
   ): Promise<string | null> {
-    console.log('bodyType received', bodyType);
+    console.log('existingBrandModel args', { brandId, model, bodyType });
     /* 
       Based on the brandId & model & bodyType, this will check if an existing model is already inserted
     */
+
     const existingModelQuery = await this.prisma.carModel.findFirst({
       where: {
         brandId: brandId,

@@ -2,51 +2,44 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAdDTO } from './dto/create-ad.dto';
 import { CarService } from 'src/car/car.service';
-import { v4 as uuidv4 } from 'uuid';
-interface CreateAd extends CreateAdDTO {
+import { AdRepository } from './ads.repository';
+export interface CreateAd extends CreateAdDTO {
   userId: string;
   filePaths?: string[];
+  brandId: string;
+  modelId: string;
 }
 
 @Injectable()
 export class AdsService {
-  constructor(private prisma: PrismaService, private carService: CarService) {}
+  constructor(
+    private adRepository: AdRepository,
+    private carService: CarService,
+  ) {}
 
   async createAd(dto: CreateAd) {
-    const brandId = await this.carService.getBrandIdByName(dto.brand);
-    const modelId = await this.carService.existingBrandModel(
-      brandId,
-      dto.model,
-      dto.bodyType,
-    );
+    try {
+      console.log('dto in createAd', dto);
+      const brandId = await this.carService.getBrandIdByName(dto.brand);
+      const modelId = await this.carService.existingBrandModel(
+        brandId,
+        'rapide s',
+        dto.bodyType,
+      );
 
-    const adId = uuidv4();
+      console.log('modelId', modelId);
 
-    await this.saveAdImages(dto.filePaths, adId);
-    console.log('adId', adId);
+      // const { id: adId } = await this.adRepository.createAd(dto);
 
-    await this.prisma.ad.create({
-      data: {
-        ...dto,
-        id: adId,
-        carBrandId: brandId,
-        carModelId: modelId,
-        fuelType: dto.fuel,
-        title: dto.adTitle,
-      },
-    });
+      // console.log('adId', adId);
 
-    return { brandId, modelId, adId };
-  }
+      // await this.adRepository.saveAdImages(dto.filePaths, adId);
 
-  async saveAdImages(filesPaths: string[], adId: string): Promise<void> {
-    filesPaths.forEach((filePath) => {
-      this.prisma.adImage.create({
-        data: {
-          path: filePath,
-          adId,
-        },
-      });
-    });
+      // return { brandId, modelId, adId };
+      return { brandId, modelId };
+    } catch (error) {
+      console.log('error', error);
+      throw error;
+    }
   }
 }

@@ -79,10 +79,12 @@ export class CreateAdDTO {
 
   @IsNotEmpty()
   @IsString({ message: 'Please select the brand' })
+  @Transform((tr) => tr?.value?.toLowerCase())
   brand: string;
 
   @IsNotEmpty()
   @IsString({ message: 'Please select a model' })
+  @Transform((tr) => tr?.value?.toLowerCase())
   model: string;
 
   @IsNotEmpty()
