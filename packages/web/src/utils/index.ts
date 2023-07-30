@@ -7,7 +7,7 @@ export const buildAdPageFormData = <T>(data: T) => {
     } else if (typeof i === 'string') {
       formData.append(i, data[i] as string);
     } else if (typeof i === 'undefined') {
-      formData.append(i, data[i]);
+      formData.append(i, String(!!data[i]));
     }
   }
 

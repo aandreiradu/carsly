@@ -11,10 +11,10 @@ import { AdsService } from './ads.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { fileFilter, storage } from 'src/config/file-upload';
-import { CreateAdDTO } from './dto/create-ad.dto';
 import { ValidationFilter } from 'src/filters/validation.filter';
 import { Public } from 'src/decorators';
 import { createAdMapFormData } from 'src/utils/mapFormData';
+import { CreateAdDTO } from './dto/create-ad.dto';
 
 @Controller('/api/ad')
 export class AdsController {
@@ -37,18 +37,23 @@ export class AdsController {
       },
     ),
   )
-  async createAd(@Body() data: any, @Req() req) {
+  async createAd(@Body() dto: CreateAdDTO, @Req() req) {
     const filePaths = [];
     for (const i in req?.files) {
       filePaths.push(req?.files[i][0]?.filename || '');
     }
 
-    // const newBody = createAdMapFormData(req.body);
+    const newBody = createAdMapFormData(req.body);
 
     return this.adsService.createAd({
-      ...data,
-      userId: req?.user?.sub,
+      ...newBody,
       filePaths,
+      userId: req?.user?.sub,
     });
+  }
+
+  @Get()
+  async getAdsByUserId(@Req() req) {
+    return this.adsService.getAdsByUserId(req?.user?.sub);
   }
 }

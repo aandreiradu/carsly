@@ -43,7 +43,7 @@ const Ad = ({ title }: AdPageProps) => {
   const dispatch = useDispatch();
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const { sendRequest, error, loading } = useHttpRequest<CarsBrandsSuccess>();
-  const { sendRequest: createAdRequest, error: createAdError, loading: createAdLoading } = useHttpRequest();
+  const { sendRequest: createAdRequest, loading: createAdLoading } = useHttpRequest();
   const adPageForm = useZodForm({
     schema: adSchema,
     defaultValues: {
@@ -132,17 +132,12 @@ const Ad = ({ title }: AdPageProps) => {
     [adPageForm.getValues('brand')],
   );
 
-  if (Object.keys(adPageForm.formState.errors)?.length > 0 && adPageForm.formState.isSubmitting) {
-    topViewRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }
-
   const onSubmit: SubmitHandler<AdProps> = async (data) => {
     const formData = buildAdPageFormData<AdProps>(data);
     for (let i = 0; i < data.images?.length; i++) {
       formData.append(`image-${i + 1}`, data.images[i]);
     }
     formData.delete('images');
-
     const responseAd = await createAdRequest('/api/ad', {
       method: 'POST',
       withCredentials: true,
@@ -156,10 +151,23 @@ const Ad = ({ title }: AdPageProps) => {
       } = responseAd;
       if (status === 400) {
         if (Array.isArray(message) && message?.length > 0) {
+          let scrolled = false;
           for (let i = 0; i < message.length; i++) {
+            if (topLevelNotificationRef) {
+              topLevelNotificationRef.current?.display({
+                icon: <Warning className="w-14 h-8 text-red-600" />,
+                message: 'Looks like some fields didnt passed our validation. Please review it',
+              });
+            }
             adPageForm.setError(message[i]?.field, {
               message: message[i].error.split(',')[0],
             });
+            if (!scrolled) {
+              setTimeout(() => {
+                topViewRef.current?.scrollIntoView({ behavior: 'smooth' });
+              }, 5500);
+              scrolled = true;
+            }
           }
         } else if (typeof message === 'string') {
           if (topLevelNotificationRef) {
@@ -170,13 +178,19 @@ const Ad = ({ title }: AdPageProps) => {
           }
         }
         return;
-      }
-
-      if (status === 201) {
+      } else if (status === 201) {
         if (topLevelNotificationRef) {
           topLevelNotificationRef.current?.display({
             icon: <Check className="w-14 h-8 text-green-500" />,
             message: `Ad created successfully`,
+          });
+        }
+        adPageForm.reset();
+      } else {
+        if (topLevelNotificationRef) {
+          topLevelNotificationRef.current?.display({
+            icon: <Warning className="w-14 h-8 text-red-600" />,
+            message: message || 'Something went wrong. Try again later',
           });
         }
       }
@@ -233,7 +247,7 @@ const Ad = ({ title }: AdPageProps) => {
                     type="button"
                     onClick={() => handleIsDamaged(false)}
                     className={`relative flex justify-center items-center w-full bg-gray-200 m-0 px-3 py-2 text-black font-bold cursor-pointer leading-6 hover:bg-indigo-600 focus:bg-indigo-600 group ${
-                      !adPageForm.getValues('isImported') && 'bg-indigo-600 text-white'
+                      !adPageForm.watch('isImported') && 'bg-indigo-600 text-white'
                     }`}
                   >
                     No
@@ -242,7 +256,7 @@ const Ad = ({ title }: AdPageProps) => {
                     type="button"
                     onClick={() => handleIsDamaged(true)}
                     className={`relative flex justify-center items-center w-full bg-gray-200 m-0 px-3 py-2 text-black font-bold cursor-pointer leading-6 hover:bg-indigo-600 focus:bg-indigo-600 ${
-                      adPageForm.getValues('isImported') && 'bg-indigo-600 text-white'
+                      adPageForm.watch('isImported') && 'bg-indigo-600 text-white'
                     }`}
                   >
                     Yes

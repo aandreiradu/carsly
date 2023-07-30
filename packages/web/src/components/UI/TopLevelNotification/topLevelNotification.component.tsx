@@ -30,7 +30,6 @@ const TopLevelNotification = forwardRef<TopLevelNotificationHandlers, ITopLevelN
     });
 
     const display = (args: HandlersProps): void => {
-      console.log('called dislpay with', args);
       setNotificationData((prev) => ({
         ...prev,
         isOpen: true,

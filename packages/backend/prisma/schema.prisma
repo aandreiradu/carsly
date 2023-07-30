@@ -19,32 +19,23 @@ model User {
   firstName    String?
   lastName     String?
   refreshToken String?
-
-  Ad Ad[]
+  adId         String?
+  Ad           Ad[]
 
   @@map("users")
 }
 
 model CarBrand {
-  id          String     @id @default(uuid())
-  name        String     @unique
+  id          String    @id @default(uuid())
+  name        String    @unique
   description String?
   logoUrl     String?
   yearOfEst   DateTime?
-  CarModel    CarModel[]
-  Ad          Ad[]
+
+  CarModel CarModel[]
+  Ad       Ad[]
 
   @@map("cars_brand")
-}
-
-model AdImage {
-  id   String @id @default(uuid())
-  path String
-
-  Ad   Ad     @relation(fields: [adId], references: [id])
-  adId String
-
-  @@map("image")
 }
 
 model CarModel {
@@ -55,10 +46,19 @@ model CarModel {
   brandId String
 
   bodyType VehicleBodyType
-
-  Ad Ad[]
+  Ad       Ad[]
 
   @@map("cars_model")
+}
+
+model AdImage {
+  id   String @id @default(uuid())
+  path String
+
+  Ad   Ad     @relation(fields: [adId], references: [id])
+  adId String
+
+  @@map("image")
 }
 
 model Ad {
@@ -108,14 +108,17 @@ model Ad {
   sellerPhoneNumber String
   images            AdImage[]
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  CarBrand   CarBrand @relation(fields: [carBrandId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  brand      CarBrand @relation(fields: [carBrandId], references: [id])
   carBrandId String
-  CarModel   CarModel @relation(fields: [carModelId], references: [id])
+
+  model      CarModel @relation(fields: [carModelId], references: [id])
   carModelId String
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String
 
   @@map("ad")
 }
@@ -149,6 +152,7 @@ enum VehicleBodyType {
   Pickup_truck
   Van
   Minibus
+  Sedan
 }
 
 enum VehicleCategory {
