@@ -38,20 +38,19 @@ export enum TransmissionTypes {
 }
 
 export enum PolluationNormTypes {
-  ParticleFilter = 'Particle Filter',
-  Euro_1 = 'Euro 1',
-  Euro_2 = 'Euro 2',
-  Euro_3 = 'Euro 3',
-  Euro_4 = 'Euro 4',
-  Euro_5 = 'Euro 5',
-  Euro_5a = 'Euro 5a',
-  Euro_5b = 'Euro 5a',
-  Euro_6 = 'Euro 6',
-  Euro_6b = 'Euro 6b',
-  Euro_6c = 'Euro 6c',
-  Euro_6d = 'Euro 6d',
-  Euro_6d_temp = 'Euro 6d-Temp',
-  Non_euro = 'Non-euro',
+  'Particle Filter' = 'Particle Filter',
+  'Euro 1' = 'Euro 1',
+  'Euro 2' = 'Euro 2',
+  'Euro 3' = 'Euro 3',
+  'Euro 4' = 'Euro 4',
+  'Euro 5' = 'Euro 5',
+  'Euro 5a' = 'Euro 5a',
+  'Euro 6' = 'Euro 6',
+  'Euro 6b' = 'Euro 6b',
+  'Euro 6c' = 'Euro 6c',
+  'Euro 6d' = 'Euro 6d',
+  'Euro 6d-Temp' = 'Euro 6d-Temp',
+  'Non-euro' = 'Non-euro',
 }
 
 export enum CurrencyTypes {
@@ -260,14 +259,15 @@ export const gearboxDictionary = Object.entries(GearboxTypes).map(([key, value])
   label: key,
 }));
 
+console.log('Object.entries(TransmissionTypes)', Object.entries(TransmissionTypes));
 export const transmissionDictionary = Object.entries(TransmissionTypes).map(([key, value]) => ({
-  value: key,
   label: value,
+  value: key,
 }));
 
 export const polluationNormDictionary = Object.entries(PolluationNormTypes).map(([key, value]) => ({
-  value: key,
-  label: value,
+  value,
+  label: key,
 }));
 
 export const bodyTypeDictionary = Object.entries(VehicleBodyType).map(([key, value]) => ({

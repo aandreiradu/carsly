@@ -28,7 +28,6 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
           ref={ref}
           value={selected}
           onChange={(e: { value: string | number; label: string }) => {
-            console.log('fmm', e);
             setSelected({ ...e });
             onChange(e);
           }}

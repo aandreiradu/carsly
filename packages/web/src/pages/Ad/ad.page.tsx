@@ -45,8 +45,10 @@ import { noOfDorsDictionary } from '../../config/settings';
 import File from '../../components/UI/File/file.component';
 import { buildAdPageFormData } from '../../utils';
 import Nav from '../../components/Nav/nav.component';
+import { PulseLoader } from 'react-spinners';
 
 const Ad = ({ title }: AdPageProps) => {
+  console.log('rerender');
   const topViewRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
   const dispatch = useDispatch();
@@ -100,49 +102,49 @@ const Ad = ({ title }: AdPageProps) => {
     }
   }
 
-  const handleBrandChange = useCallback(
-    async (brand: string) => {
-      if (!allModels[brand]) {
-        const respModels = await fetchModelsByBrand(brand);
-        if (respModels) {
-          const { data, status } = respModels;
-          if (status === 200 && data && data?.brandModels && data?.brand) {
-            if (data.brandModels[data.brand].length === 0) {
-              /* reset selects */
-              adPageForm.setValue('brand', '');
-              adPageForm.setValue('model', '');
+  const handleBrandChange = async (brand: string) => {
+    if (!allModels[brand]) {
+      const respModels = await fetchModelsByBrand(brand);
+      console.log('respModels', respModels);
+      if (respModels) {
+        const { data, status } = respModels;
+        if (status === 200 && data && data?.brandModels && data?.brand) {
+          console.log('before', adPageForm.getValues('model'));
+          console.log('after', adPageForm.getValues('model'));
+          if (data.brandModels[data.brand].length === 0) {
+            /* reset selects */
+            adPageForm.setValue('brand', '');
+            adPageForm.setValue('model', '');
 
-              if (topLevelNotificationRef) {
-                topLevelNotificationRef.current?.display({
-                  icon: <Info className="w-14 h-8 text-yellow-400" />,
-                  message: `No models were defined for ${brand}. \n Please select another brand`,
-                });
-              }
-
-              /* dispatch even if no models were defined => will be used later for caching */
-              dispatch(setModelsByBrand({ brand: data.brand, models: data.brandModels[data.brand] }));
-            }
-            dispatch(setModelsByBrand({ brand: data.brand, models: data.brandModels[data.brand] }));
-          } else {
             if (topLevelNotificationRef) {
               topLevelNotificationRef.current?.display({
-                icon: <Warning className="w-14 h-8 text-red-500" />,
-                message: 'Something went wrong when fetching your brand models. Please try again later',
+                icon: <Info className="w-14 h-8 text-yellow-400" />,
+                message: `No models were defined for ${brand}. \n Please select another brand`,
               });
             }
+
+            /* dispatch even if no models were defined => will be used later for caching */
+            dispatch(setModelsByBrand({ brand: data.brand, models: data.brandModels[data.brand] }));
+          }
+          dispatch(setModelsByBrand({ brand: data.brand, models: data.brandModels[data.brand] }));
+        } else {
+          if (topLevelNotificationRef) {
+            topLevelNotificationRef.current?.display({
+              icon: <Warning className="w-14 h-8 text-red-500" />,
+              message: 'Something went wrong when fetching your brand models. Please try again later',
+            });
           }
         }
-      } else if (allModels[brand]?.length === 0) {
-        if (topLevelNotificationRef) {
-          topLevelNotificationRef.current?.display({
-            icon: <Info className="w-14 h-8 text-yellow-400" />,
-            message: `No models were defined for ${brand}. \n Please select another brand`,
-          });
-        }
       }
-    },
-    [adPageForm.getValues('brand')],
-  );
+    } else if (allModels[brand]?.length === 0) {
+      if (topLevelNotificationRef) {
+        topLevelNotificationRef.current?.display({
+          icon: <Info className="w-14 h-8 text-yellow-400" />,
+          message: `No models were defined for ${brand}. \n Please select another brand`,
+        });
+      }
+    }
+  };
 
   console.log(adPageForm.formState.errors);
 
@@ -218,6 +220,8 @@ const Ad = ({ title }: AdPageProps) => {
     },
     [adPageForm.watch('brand')],
   );
+
+  console.log('m', adPageForm.watch('model'));
 
   return (
     <>
@@ -449,9 +453,9 @@ const Ad = ({ title }: AdPageProps) => {
               name="brand"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => {
-                    onChange(e.name);
-                    handleBrandChange(e.name);
+                  onChange={(e: { value: string }) => {
+                    onChange(e.value);
+                    handleBrandChange(e.value);
                   }}
                   dataSource={carsBrands}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-full h-[41px]"
@@ -473,7 +477,7 @@ const Ad = ({ title }: AdPageProps) => {
               name="model"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
+                  onChange={(e: { value: string }) => onChange(e.value)}
                   dataSource={cachedModels}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.model?.message}
@@ -495,7 +499,6 @@ const Ad = ({ title }: AdPageProps) => {
               render={({ field: { onChange } }) => (
                 <Select
                   onChange={(e: { value: FuelType; label: string }) => {
-                    // adPageForm.setValue('fuel', { ...e });
                     onChange({ ...e });
                   }}
                   dataSource={fuelTypeDictionary}
@@ -599,7 +602,10 @@ const Ad = ({ title }: AdPageProps) => {
                   }}
                   dataSource={transmissionDictionary}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
-                  error={adPageForm.formState.errors.transmission?.message}
+                  error={
+                    adPageForm.formState.errors.transmission?.message ||
+                    adPageForm.formState.errors.transmission?.value?.message
+                  }
                   disabled={loading || !adPageForm.watch('gearbox')}
                 />
               )}
@@ -732,8 +738,8 @@ const Ad = ({ title }: AdPageProps) => {
               name="seats"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { value: number }) => {
-                    // adPageForm.setValue('seats', e.value);
+                  onChange={(e: { value: number; label: string }) => {
+                    // adPageForm.setValue('seats', {...e});
                     onChange({ ...e });
                   }}
                   dataSource={noOfSeatsDictionary}
@@ -1079,7 +1085,7 @@ const Ad = ({ title }: AdPageProps) => {
             }
             `}
         >
-          Submit
+          {createAdLoading ? 'Submit' : <PulseLoader color="#fff" />}
         </button>
       </form>
     </>

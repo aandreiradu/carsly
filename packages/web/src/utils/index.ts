@@ -5,7 +5,7 @@ export const buildAdPageFormData = <T extends object>(data: T) => {
     console.log(i, data[i]);
     if (typeof data[i] === 'object') {
       console.log('e object ', i);
-      formData.append(i, (data[i] as any)?.name);
+      formData.append(i, (data[i] as any)?.value);
     } else if (typeof i === 'boolean') {
       formData.append(i, String(!!data[i]));
     } else if (typeof i === 'string') {
@@ -14,6 +14,8 @@ export const buildAdPageFormData = <T extends object>(data: T) => {
       formData.append(i, String(!!data[i]));
     }
   }
+
+  console.log('formdata to return', formData);
 
   return formData;
 };

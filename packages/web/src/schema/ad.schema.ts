@@ -96,10 +96,13 @@ export const adSchema = z.object({
       invalid_type_error: 'Please insert a positive number',
     })
     .min(1, { message: 'Value should be greater than or equal to 1' }),
-  noOfDoors: z.coerce.number({
-    description: 'Please select the number of doors',
-    required_error: 'Please select the number of doors',
-    invalid_type_error: 'Please select the number of doors',
+  noOfDoors: z.object({
+    value: z.coerce.number({
+      description: 'Please select the number of doors',
+      required_error: 'Please select the number of doors',
+      invalid_type_error: 'Please select the number of doors',
+    }),
+    label: z.string(),
   }),
   gearbox: z.object({
     value: z.nativeEnum(GearboxTypes, {
@@ -156,10 +159,13 @@ export const adSchema = z.object({
     }),
     label: z.string(),
   }),
-  seats: z.coerce.number({
-    description: 'Please select the number of seats',
-    required_error: 'Please select the number of seats',
-    invalid_type_error: 'Please select the number of seats',
+  seats: z.object({
+    value: z.coerce.number({
+      description: 'Please select the number of seats',
+      required_error: 'Please select the number of seats',
+      invalid_type_error: 'Please select the number of seats',
+    }),
+    label: z.string(),
   }),
 
   images: z.any(),
