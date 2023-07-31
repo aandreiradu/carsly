@@ -15,7 +15,6 @@ export class AdRepository {
   async createAd(dto: CreateAdDTOO): Promise<Ad> {
     return this.prismaService.ad.create({
       data: {
-        // ...dto
         isDamaged: dto.isDamaged,
         isRightHandDrive: dto.isRightHandDrive,
         isImported: dto.isImported,
@@ -30,8 +29,8 @@ export class AdRepository {
         engineSize: dto.engineSize,
         noOfDoors: dto.noOfDoors,
         gearbox: dto.gearbox,
-        transmission: TransmissionTypes.fourByFourAutomatic,
-        polluationNorm: PolluationNormTypes.Euro_6,
+        transmission: dto.transmission,
+        polluationNorm: dto.polluationNorm,
         co2emissions: dto.co2emissions || 0,
         bodyType: dto.bodyType,
         color: dto.color,
@@ -40,7 +39,7 @@ export class AdRepository {
         youtubeVideo: dto.youtubeVideo,
         title: dto.title,
         description: dto.description,
-        vehicleOrigin: CountriesTypes.ROMANIA,
+        vehicleOrigin: dto.vehicleOrigin,
         isFirstOwner: dto.isFirstOwner,
         isWithoutAccident: dto.isWithoutAccident,
         isRegistered: dto.isRegistered,

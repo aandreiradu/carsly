@@ -17,12 +17,13 @@ export const selectModelsByBrandDataSource = (brand: string) =>
     }
 
     if (state.models[brand]?.length === 0) {
-      return [{ name: '' }];
+      return [{ value: '', label: '' }];
     }
 
     return (
       state.models[brand]?.map((model) => ({
-        name: model,
+        value: model,
+        label: model,
       })) ?? []
     );
   });

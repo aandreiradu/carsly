@@ -22,6 +22,15 @@ import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from '../../components/UI/TopLevelNotification/topLevelNotification.component';
 import {
+  CarsColorsTypes,
+  ColorTypes,
+  CountriesTypes,
+  CurrencyTypes,
+  FuelType,
+  GearboxTypes,
+  PolluationNormTypes,
+  TransmissionTypes,
+  VehicleBodyType,
   bodyTypeDictionary,
   carsColorsDictionary,
   carsColorsTypesDictionary,
@@ -50,7 +59,10 @@ const Ad = ({ title }: AdPageProps) => {
       isImported: false,
     },
   });
-  const carsBrands = useSelector(selectCarsBrands);
+  const carsBrands = useSelector(selectCarsBrands).map((value) => ({
+    value: value.name,
+    label: value.name,
+  }));
   const cachedModels = useSelector(selectModelsByBrandDataSource(adPageForm.getValues('brand')));
   const allModels = useSelector(getAllModels());
 
@@ -132,8 +144,11 @@ const Ad = ({ title }: AdPageProps) => {
     [adPageForm.getValues('brand')],
   );
 
+  console.log(adPageForm.formState.errors);
+
   const onSubmit: SubmitHandler<AdProps> = async (data) => {
     const formData = buildAdPageFormData<AdProps>(data);
+    console.log('babaababa', formData);
     for (let i = 0; i < data.images?.length; i++) {
       formData.append(`image-${i + 1}`, data.images[i]);
     }
@@ -151,24 +166,21 @@ const Ad = ({ title }: AdPageProps) => {
       } = responseAd;
       if (status === 400) {
         if (Array.isArray(message) && message?.length > 0) {
-          let scrolled = false;
           for (let i = 0; i < message.length; i++) {
-            if (topLevelNotificationRef) {
-              topLevelNotificationRef.current?.display({
-                icon: <Warning className="w-14 h-8 text-red-600" />,
-                message: 'Looks like some fields didnt passed our validation. Please review it',
-              });
-            }
             adPageForm.setError(message[i]?.field, {
               message: message[i].error.split(',')[0],
             });
-            if (!scrolled) {
-              setTimeout(() => {
-                topViewRef.current?.scrollIntoView({ behavior: 'smooth' });
-              }, 5500);
-              scrolled = true;
+
+            if (topLevelNotificationRef) {
+              topLevelNotificationRef.current?.display({
+                icon: <Warning className="w-14 h-8 text-red-600" />,
+                message: "Looks like some fields didn't passed our validation. Please review the ad.",
+              });
             }
           }
+          setTimeout(() => {
+            topViewRef.current?.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
         } else if (typeof message === 'string') {
           if (topLevelNotificationRef) {
             topLevelNotificationRef.current?.display({
@@ -177,7 +189,6 @@ const Ad = ({ title }: AdPageProps) => {
             });
           }
         }
-        return;
       } else if (status === 201) {
         if (topLevelNotificationRef) {
           topLevelNotificationRef.current?.display({
@@ -299,7 +310,7 @@ const Ad = ({ title }: AdPageProps) => {
             <Controller
               control={adPageForm.control}
               name="VIN"
-              render={({}) => (
+              render={() => (
                 <Input
                   label="VIN (chassis series)*"
                   labelClasses="my-2"
@@ -418,9 +429,8 @@ const Ad = ({ title }: AdPageProps) => {
               name="year"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
+                  onChange={(e: { value: string }) => onChange(e.value)}
                   dataSource={sellNowYearsSorted}
-                  cachedValue={adPageForm.watch('year')}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.year?.message}
                 />
@@ -444,7 +454,6 @@ const Ad = ({ title }: AdPageProps) => {
                     handleBrandChange(e.name);
                   }}
                   dataSource={carsBrands}
-                  cachedValue={adPageForm.watch('brand') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-full h-[41px]"
                   error={adPageForm.formState.errors.brand?.message}
                   disabled={loading || !adPageForm.watch('year')}
@@ -466,7 +475,6 @@ const Ad = ({ title }: AdPageProps) => {
                 <Select
                   onChange={(e: { name: string }) => onChange(e.name)}
                   dataSource={cachedModels}
-                  cachedValue={adPageForm.watch('model') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.model?.message}
                   disabled={allModels[adPageForm.watch('brand')]?.length === 0 || !adPageForm.watch('brand') || loading}
@@ -486,10 +494,12 @@ const Ad = ({ title }: AdPageProps) => {
               name="fuel"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
+                  onChange={(e: { value: FuelType; label: string }) => {
+                    // adPageForm.setValue('fuel', { ...e });
+                    onChange({ ...e });
+                  }}
                   dataSource={fuelTypeDictionary}
                   disabled={!adPageForm.watch('model') || allModels[adPageForm.watch('brand')]?.length === 0 || loading}
-                  cachedValue={adPageForm.watch('fuel') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.fuel?.message}
                 />
@@ -536,9 +546,11 @@ const Ad = ({ title }: AdPageProps) => {
               name="noOfDoors"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
+                  onChange={(e: { value: number }) => {
+                    // adPageForm.setValue('noOfDoors', +e.value);
+                    onChange({ ...e });
+                  }}
                   dataSource={noOfDorsDictionary}
-                  cachedValue={adPageForm.watch('noOfDoors') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.noOfDoors?.message}
                   disabled={loading || !adPageForm.watch('engineSize')}
@@ -558,9 +570,11 @@ const Ad = ({ title }: AdPageProps) => {
               name="gearbox"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
+                  onChange={(e: { value: GearboxTypes; label: string }) => {
+                    adPageForm.setValue('gearbox', { ...e });
+                    onChange({ ...e });
+                  }}
                   dataSource={gearboxDictionary}
-                  cachedValue={adPageForm.watch('gearbox') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.gearbox?.message}
                   disabled={loading || !adPageForm.watch('noOfDoors')}
@@ -580,9 +594,10 @@ const Ad = ({ title }: AdPageProps) => {
               name="transmission"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
+                  onChange={(e: { value: TransmissionTypes; label: string }) => {
+                    onChange({ ...e });
+                  }}
                   dataSource={transmissionDictionary}
-                  cachedValue={adPageForm.watch('transmission') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.transmission?.message}
                   disabled={loading || !adPageForm.watch('gearbox')}
@@ -602,9 +617,10 @@ const Ad = ({ title }: AdPageProps) => {
               name="polluationNorm"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
+                  onChange={(e: { value: PolluationNormTypes; label: string }) => {
+                    onChange({ ...e });
+                  }}
                   dataSource={polluationNormDictionary}
-                  cachedValue={adPageForm.watch('polluationNorm') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.polluationNorm?.message}
                   disabled={loading || !adPageForm.watch('transmission')}
@@ -642,9 +658,11 @@ const Ad = ({ title }: AdPageProps) => {
               name="bodyType"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
+                  onChange={(e: { value: VehicleBodyType; label: string }) => {
+                    console.log('e este', e);
+                    onChange({ ...e });
+                  }}
                   dataSource={bodyTypeDictionary}
-                  cachedValue={adPageForm.watch('bodyType') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.bodyType?.message}
                   disabled={loading || !adPageForm.watch('polluationNorm')}
@@ -665,9 +683,11 @@ const Ad = ({ title }: AdPageProps) => {
               name="color"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
+                  onChange={(e: { value: CarsColorsTypes; label: string }) => {
+                    // adPageForm.setValue('color', { ...e });
+                    onChange({ ...e });
+                  }}
                   dataSource={carsColorsDictionary}
-                  cachedValue={adPageForm.watch('color') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.color?.message}
                   disabled={loading || !adPageForm.watch('bodyType')}
@@ -688,9 +708,11 @@ const Ad = ({ title }: AdPageProps) => {
               name="colorType"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
+                  onChange={(e: { value: ColorTypes; label: string }) => {
+                    // adPageForm.setValue('colorType', { ...e });
+                    onChange({ ...e });
+                  }}
                   dataSource={carsColorsTypesDictionary}
-                  cachedValue={adPageForm.watch('colorType') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.colorType?.message}
                   disabled={loading || !adPageForm.watch('color')}
@@ -710,9 +732,11 @@ const Ad = ({ title }: AdPageProps) => {
               name="seats"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
+                  onChange={(e: { value: number }) => {
+                    // adPageForm.setValue('seats', e.value);
+                    onChange({ ...e });
+                  }}
                   dataSource={noOfSeatsDictionary}
-                  cachedValue={adPageForm.watch('seats') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.seats?.message}
                   disabled={loading || !adPageForm.watch('colorType')}
@@ -812,9 +836,12 @@ const Ad = ({ title }: AdPageProps) => {
               name="vehicleOrigin"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
+                  onChange={(e: { value: CountriesTypes; label: string }) => {
+                    // adPageForm.setValue('vehicleOrigin', { ...e });
+                    console.log('origineee', e);
+                    onChange({ ...e });
+                  }}
                   dataSource={countriesDictionary}
-                  cachedValue={adPageForm.watch('vehicleOrigin') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.vehicleOrigin?.message}
                   disabled={loading || !adPageForm.watch('seats')}
@@ -949,9 +976,11 @@ const Ad = ({ title }: AdPageProps) => {
               name="currency"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { name: string }) => onChange(e.name)}
+                  onChange={(e: { value: CurrencyTypes; label: string }) => {
+                    // adPageForm.setValue('currency', { ...e });
+                    onChange({ ...e });
+                  }}
                   dataSource={currencyDictionary}
-                  cachedValue={adPageForm.watch('currency') || ''}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.currency?.message}
                   disabled={loading || !adPageForm.watch('price')}

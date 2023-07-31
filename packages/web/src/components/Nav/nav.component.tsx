@@ -61,11 +61,6 @@ const Nav = ({ setShowComponent }: SideBarProps) => {
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-center">
                 <div className="flex flex-shrink-0 items-center justify-center text-center">
-                  {/* <img
-                    className="block h-8 w-auto lg:hidden"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                    alt="Your Company"
-                  /> */}
                   <h1 className="text-white font-kanit uppercase tracking-widest text-xl">carsly</h1>
                 </div>
               </div>
@@ -115,8 +110,8 @@ const Nav = ({ setShowComponent }: SideBarProps) => {
             </div>
           </div>
 
-          <Disclosure.Panel className="md:hidden">
-            <div className="space-y-1 px-2 pb-3 pt-2 bg-default-gray">
+          <Disclosure.Panel className="md:hidden z-50 bg-red-600">
+            <div className="space-y-1 px-2 pb-3 pt-2 bg-red-600">
               {navigationLinks.map((item) => (
                 <Disclosure.Button
                   key={item.label}

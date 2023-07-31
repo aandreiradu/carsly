@@ -6,15 +6,17 @@ import {
   Req,
   UseFilters,
   UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AdsService } from './ads.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { fileFilter, storage } from 'src/config/file-upload';
 import { ValidationFilter } from 'src/filters/validation.filter';
-import { Public } from 'src/decorators';
 import { createAdMapFormData } from 'src/utils/mapFormData';
 import { CreateAdDTO } from './dto/create-ad.dto';
+import { CreateAdDTOMappingPipe } from 'src/pipes/create-ad-mapping.pipe';
 
 @Controller('/api/ad')
 export class AdsController {
@@ -37,16 +39,17 @@ export class AdsController {
       },
     ),
   )
+  @UsePipes(new CreateAdDTOMappingPipe(), new ValidationPipe())
   async createAd(@Body() dto: CreateAdDTO, @Req() req) {
     const filePaths = [];
     for (const i in req?.files) {
       filePaths.push(req?.files[i][0]?.filename || '');
     }
 
-    const newBody = createAdMapFormData(req.body);
+    const mappedReqBody = createAdMapFormData(req.body);
 
     return this.adsService.createAd({
-      ...newBody,
+      ...mappedReqBody,
       filePaths,
       userId: req?.user?.sub,
     });

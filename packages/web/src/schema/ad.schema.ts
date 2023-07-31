@@ -74,10 +74,13 @@ export const adSchema = z.object({
       invalid_type_error: 'Please select a valid model',
     })
     .nonempty(),
-  fuel: z.nativeEnum(FuelType, {
-    description: 'Please select a valid fuel type',
-    required_error: 'Please select a fuel type',
-    invalid_type_error: 'Please select a valid fuel type',
+  fuel: z.object({
+    value: z.nativeEnum(FuelType, {
+      description: 'Please select a valid fuel type',
+      required_error: 'Please select a fuel type',
+      invalid_type_error: 'Please select a valid fuel type',
+    }),
+    label: z.string(),
   }),
   power: z.coerce
     .number({
@@ -98,20 +101,29 @@ export const adSchema = z.object({
     required_error: 'Please select the number of doors',
     invalid_type_error: 'Please select the number of doors',
   }),
-  gearbox: z.nativeEnum(GearboxTypes, {
-    description: 'Please select the gearbox type',
-    required_error: 'Please select the gearbox type',
-    invalid_type_error: 'Please select a valid gearbox type',
+  gearbox: z.object({
+    value: z.nativeEnum(GearboxTypes, {
+      description: 'Please select the gearbox type',
+      required_error: 'Please select the gearbox type',
+      invalid_type_error: 'Please select a valid gearbox type',
+    }),
+    label: z.string(),
   }),
-  transmission: z.nativeEnum(TransmissionTypes, {
-    description: 'Please select the transmission type',
-    required_error: 'Please select the transmission type',
-    invalid_type_error: 'Please select a valid transmission type',
+  transmission: z.object({
+    value: z.nativeEnum(TransmissionTypes, {
+      description: 'Please select the transmission type',
+      required_error: 'Please select the transmission type',
+      invalid_type_error: 'Please select a valid transmission type',
+    }),
+    label: z.string(),
   }),
-  polluationNorm: z.nativeEnum(PolluationNormTypes, {
-    description: 'Please select the polluation norm',
-    required_error: 'Please select the polluation norm ',
-    invalid_type_error: 'Please select a valid polluation norm ',
+  polluationNorm: z.object({
+    value: z.nativeEnum(PolluationNormTypes, {
+      description: 'Please select the polluation norm',
+      required_error: 'Please select the polluation norm ',
+      invalid_type_error: 'Please select a valid polluation norm ',
+    }),
+    label: z.string(),
   }),
   co2emissions: z.coerce
     .number()
@@ -120,20 +132,29 @@ export const adSchema = z.object({
     .or(z.literal('').or(z.literal(undefined))),
 
   // Body Type details
-  bodyType: z.nativeEnum(VehicleBodyType, {
-    description: 'Please select the body type',
-    required_error: 'Please select the body type',
-    invalid_type_error: 'Please select a valid body type',
+  bodyType: z.object({
+    value: z.nativeEnum(VehicleBodyType, {
+      description: 'Please select the body type',
+      required_error: 'Please select the body type',
+      invalid_type_error: 'Please select a valid body type',
+    }),
+    label: z.string(),
   }),
-  color: z.nativeEnum(CarsColorsTypes, {
-    description: 'Please select the color',
-    required_error: 'Please select the color',
-    invalid_type_error: 'Please select a valid color',
+  color: z.object({
+    value: z.nativeEnum(CarsColorsTypes, {
+      description: 'Please select the color',
+      required_error: 'Please select the color',
+      invalid_type_error: 'Please select a valid color',
+    }),
+    label: z.string(),
   }),
-  colorType: z.nativeEnum(ColorTypes, {
-    description: 'Please select the color type',
-    required_error: 'Please select the color type',
-    invalid_type_error: 'Please select a valid color type',
+  colorType: z.object({
+    value: z.nativeEnum(ColorTypes, {
+      description: 'Please select the color type',
+      required_error: 'Please select the color type',
+      invalid_type_error: 'Please select a valid color type',
+    }),
+    label: z.string(),
   }),
   seats: z.coerce.number({
     description: 'Please select the number of seats',
@@ -150,10 +171,13 @@ export const adSchema = z.object({
     .or(z.literal('').or(z.literal(undefined))),
   adTitle: z.string(),
   description: z.string().optional(),
-  vehicleOrigin: z.nativeEnum(CountriesTypes, {
-    description: 'Please select a country',
-    required_error: 'Please select a country',
-    invalid_type_error: 'Please select a valid country',
+  vehicleOrigin: z.object({
+    value: z.nativeEnum(CountriesTypes, {
+      description: 'Please select a country',
+      required_error: 'Please select a country',
+      invalid_type_error: 'Please select a valid country',
+    }),
+    label: z.string(),
   }),
   // Vehicle Status
   isFirstOwner: z.boolean().optional(),
@@ -172,10 +196,13 @@ export const adSchema = z.object({
     })
     .min(1, { message: 'Value should be greater than or equal to 1' }),
 
-  currency: z.nativeEnum(CurrencyTypes, {
-    description: 'Please select the currency',
-    required_error: 'Please select the currency',
-    invalid_type_error: 'Please select a valid country',
+  currency: z.object({
+    value: z.nativeEnum(CurrencyTypes, {
+      description: 'Please select the currency',
+      required_error: 'Please select the currency',
+      invalid_type_error: 'Please select a valid country',
+    }),
+    label: z.string(),
   }),
 
   //   Price details

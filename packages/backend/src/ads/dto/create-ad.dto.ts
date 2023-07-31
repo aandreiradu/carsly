@@ -13,6 +13,7 @@ import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
+  IsIn,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -23,6 +24,13 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
+
+const trans: TransmissionTypes[] = [
+  'fourByFourAutomatic',
+  'fourByFourManual',
+  'front',
+  'rear',
+];
 
 export class CreateAdDTO {
   @IsOptional()
@@ -114,7 +122,8 @@ export class CreateAdDTO {
   gearbox: GearboxTypes;
 
   @IsNotEmpty()
-  @IsEnum(TransmissionTypes, { message: 'Please select the transmission type' })
+  // @IsString({ message: 'Please select the transmission type' })
+  @IsIn(trans, { message: 'Please select the transmission type' })
   transmission: TransmissionTypes;
 
   @IsNotEmpty()
@@ -122,7 +131,6 @@ export class CreateAdDTO {
   polluationNorm: PolluationNormTypes;
 
   @IsOptional()
-  @IsNumber()
   @Min(0, { message: 'CO2 emissions must be greater than 0' })
   @Max(200, { message: 'CO2 emissions must be lower than 200' })
   @Type(() => Number)

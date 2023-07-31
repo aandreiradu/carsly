@@ -91,7 +91,9 @@ export class AdsService {
         userId: dto.userId,
       });
 
-      await this.adRepository.saveAdImages(dto.filePaths, adId);
+      if (dto.filePaths?.length) {
+        await this.adRepository.saveAdImages(dto.filePaths, adId);
+      }
 
       return { brandId, modelId, adId };
     } catch (error) {

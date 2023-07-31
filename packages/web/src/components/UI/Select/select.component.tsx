@@ -4,9 +4,11 @@ import { CaretUp, CaretDown, Check } from 'phosphor-react';
 import { cn } from '../Checkbox/checkbox.component';
 
 export type SelectProps = {
-  dataSource: Record<'name', string>[];
+  dataSource: {
+    value: string | number;
+    label?: string;
+  }[];
   onChange?: any;
-  cachedValue?: string | number;
   classNameWrapper?: string;
   classNameListbox?: string;
   disabled?: boolean;
@@ -14,9 +16,9 @@ export type SelectProps = {
 };
 
 const Select = forwardRef<HTMLDivElement, SelectProps>(
-  ({ disabled = false, classNameListbox, classNameWrapper, dataSource, onChange, cachedValue, error }, ref) => {
+  ({ disabled = false, classNameListbox, classNameWrapper, dataSource, onChange, error }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selected, setSelected] = useState({ name: cachedValue || '' });
+    const [selected, setSelected] = useState<{ value: string | number; label: string }>({ value: '' || '', label: '' });
 
     const handleOpen = () => setIsOpen((prev) => !prev);
 
@@ -24,9 +26,10 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
       <div className={`relative h-full visible ${disabled && 'hidden'}`} onClick={handleOpen}>
         <Listbox
           ref={ref}
-          value={selected || cachedValue}
-          onChange={(e) => {
-            setSelected(e);
+          value={selected}
+          onChange={(e: { value: string | number; label: string }) => {
+            console.log('fmm', e);
+            setSelected({ ...e });
             onChange(e);
           }}
         >
@@ -40,7 +43,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
                       ${disabled && 'hidden opacity-50 cursor-not-allowed'}        
               `}
             >
-              <span className="block truncate px-2 ">{cachedValue}</span>
+              <span className="block truncate px-2">{selected.label}</span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 {isOpen && !disabled ? (
                   <CaretDown className="h-5 w-5 text-black" aria-hidden="true" />
@@ -65,11 +68,11 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
                         active ? 'bg-amber-100 text-amber-900' : 'text-gray-900'
                       }`
                     }
-                    value={{ name: data.name }}
+                    value={{ value: data.value, label: data.label }}
                   >
                     {({ selected }) => (
                       <>
-                        <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{data.name}</span>
+                        <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{data.label}</span>
                         {selected ? (
                           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
                             <Check className="h-5 w-5" aria-hidden="true" />

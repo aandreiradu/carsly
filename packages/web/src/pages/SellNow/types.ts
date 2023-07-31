@@ -1,3 +1,4 @@
+import { ClimbingBoxLoader } from 'react-spinners';
 import { z } from 'zod';
 
 export const sellNowStageOne = z.object({
@@ -20,12 +21,13 @@ export enum VehicleBodyType {
   Pickup_truck = 'Pickup Truck',
   Van = 'Van',
   Minibus = 'Minibus',
+  Sedan = 'Sedan',
 }
 
 export enum GearboxTypes {
   Manual = 'Manual',
   Automatic = 'Automatic',
-  SemiAutomatic = 'SemiAutomatic',
+  SemiAutomatic = 'Semi-Automatic',
 }
 
 export enum TransmissionTypes {
@@ -36,20 +38,20 @@ export enum TransmissionTypes {
 }
 
 export enum PolluationNormTypes {
-  'ParticleFilter' = 'Particle Filter',
-  'Euro-1' = 'Euro 1',
-  'Euro-2' = 'Euro 2',
-  'Euro-3' = 'Euro 3',
-  'Euro-4' = 'Euro 4',
-  'Euro-5' = 'Euro 5',
-  'Euro-5a' = 'Euro 5a',
-  'Euro-5b' = 'Euro 5a',
-  'Euro-6' = 'Euro 6',
-  'Euro-6b' = 'Euro 6b',
-  'Euro-6c' = 'Euro 6c',
-  'Euro-6d' = 'Euro 6d',
-  'Euro-6d-temp' = 'Euro 6d-Temp',
-  'Non-euro' = 'Non-euro',
+  ParticleFilter = 'Particle Filter',
+  Euro_1 = 'Euro 1',
+  Euro_2 = 'Euro 2',
+  Euro_3 = 'Euro 3',
+  Euro_4 = 'Euro 4',
+  Euro_5 = 'Euro 5',
+  Euro_5a = 'Euro 5a',
+  Euro_5b = 'Euro 5a',
+  Euro_6 = 'Euro 6',
+  Euro_6b = 'Euro 6b',
+  Euro_6c = 'Euro 6c',
+  Euro_6d = 'Euro 6d',
+  Euro_6d_temp = 'Euro 6d-Temp',
+  Non_euro = 'Non-euro',
 }
 
 export enum CurrencyTypes {
@@ -248,20 +250,47 @@ export enum CountriesTypes {
 
 export type SellNowStageTwoProps = z.infer<typeof sellNowStageTwo>;
 
-export const fuelTypeDictionary = Object.values(FuelType).map((q) => ({ name: q }));
+export const fuelTypeDictionary = Object.entries(FuelType).map(([key, value]) => ({
+  value: value,
+  label: key,
+}));
 
-export const gearboxDictionary = Object.values(GearboxTypes).map((q) => ({ name: q }));
+export const gearboxDictionary = Object.entries(GearboxTypes).map(([key, value]) => ({
+  value: value,
+  label: key,
+}));
 
-export const transmissionDictionary = Object.values(TransmissionTypes).map((q) => ({ name: q, label: q }));
+export const transmissionDictionary = Object.entries(TransmissionTypes).map(([key, value]) => ({
+  value: key,
+  label: value,
+}));
 
-export const polluationNormDictionary = Object.values(PolluationNormTypes).map((q) => ({ name: q }));
+export const polluationNormDictionary = Object.entries(PolluationNormTypes).map(([key, value]) => ({
+  value: key,
+  label: value,
+}));
 
-export const bodyTypeDictionary = Object.values(VehicleBodyType).map((q) => ({ name: q }));
+export const bodyTypeDictionary = Object.entries(VehicleBodyType).map(([key, value]) => ({
+  value: value,
+  label: key,
+}));
 
-export const carsColorsDictionary = Object.values(CarsColorsTypes).map((q) => ({ name: q }));
+export const carsColorsDictionary = Object.entries(CarsColorsTypes).map(([key, value]) => ({
+  value: value,
+  label: key,
+}));
 
-export const carsColorsTypesDictionary = Object.values(ColorTypes).map((q) => ({ name: q }));
+export const carsColorsTypesDictionary = Object.entries(ColorTypes).map(([key, value]) => ({
+  value: value,
+  label: key,
+}));
 
-export const countriesDictionary = Object.values(CountriesTypes).map((q) => ({ name: q }));
+export const countriesDictionary = Object.entries(CountriesTypes).map(([key, value]) => ({
+  value: value,
+  label: key,
+}));
 
-export const currencyDictionary = Object.values(CurrencyTypes).map((q) => ({ name: q }));
+export const currencyDictionary = Object.entries(CurrencyTypes).map(([key, value]) => ({
+  value: value,
+  label: key,
+}));

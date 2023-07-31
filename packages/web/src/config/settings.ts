@@ -10,13 +10,13 @@ export const sellNow__getYears = () => {
 };
 
 export const sellNowYearsSorted = sellNow__getYears()
-  .map((data) => ({ name: String(data) }))
+  .map((data) => ({ value: String(data), label: String(data) }))
   .reverse();
 
 const buildNoOfDors = () => {
   const source = [];
   for (let i = 2; i <= 6; i++) {
-    source.push({ name: String(i) });
+    source.push({ value: i, label: String(i) });
   }
   return source;
 };
@@ -26,7 +26,7 @@ export const noOfDorsDictionary = buildNoOfDors();
 const buildNoOfSeats = () => {
   const source = [];
   for (let i = 1; i <= 9; i++) {
-    source.push({ name: String(i) });
+    source.push({ value: i, label: String(i) });
   }
   return source;
 };
