@@ -1084,7 +1084,7 @@ const Ad = ({ title }: AdPageProps) => {
             }
             `}
         >
-          {createAdLoading ? 'Submit' : <PulseLoader color="#fff" />}
+          {!createAdLoading ? 'Submit' : <PulseLoader color="#fff" />}
         </button>
       </form>
     </>

@@ -18,7 +18,6 @@ async function bootstrap() {
   }),
     app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: true }));
-  // app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useGlobalPipes(
     new ValidationPipe({
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
@@ -27,17 +26,10 @@ async function bootstrap() {
           error: Object.values(error.constraints).join(', '),
         }));
         return new BadRequestException(errors);
-        // return new BadRequestException(
-        //   validationErrors.map((error) => ({
-        //     field: error.property,
-        //     error: Object.values(error.constraints).join(', '),
-        //   })),
-        // );
       },
       whitelist: true,
     }),
   );
-  // app.useGlobalFilters(new HttpExceptionFilter());
   app.useStaticAssets(join(__dirname, '..', 'uploads'));
   await app.listen(5174);
 }

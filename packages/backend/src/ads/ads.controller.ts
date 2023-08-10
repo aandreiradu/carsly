@@ -16,7 +16,6 @@ import { fileFilter, storage } from 'src/config/file-upload';
 import { ValidationFilter } from 'src/filters/validation.filter';
 import { createAdMapFormData } from 'src/utils/mapFormData';
 import { CreateAdDTO } from './dto/create-ad.dto';
-import { CreateAdDTOMappingPipe } from 'src/pipes/create-ad-mapping.pipe';
 
 @Controller('/api/ad')
 export class AdsController {
