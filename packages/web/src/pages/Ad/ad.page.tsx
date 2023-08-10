@@ -228,7 +228,7 @@ const Ad = ({ title }: AdPageProps) => {
     <>
       <div ref={topViewRef}></div>
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
-      <Nav setShowComponent={() => {}} />
+      <Nav setShowComponent={() => {}} showOnAllScreens={true} />
       <form
         encType="multipart/form-data"
         ref={formRef}

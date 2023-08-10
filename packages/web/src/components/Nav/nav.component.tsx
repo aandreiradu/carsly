@@ -3,6 +3,7 @@ import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { List, X, User } from 'phosphor-react';
 import { SidebarLinkProps } from '../SidebarLink/sidebarlink.component';
 import { SideBarProps } from '../../types/index.types';
+import { Link } from 'react-router-dom';
 
 const navigationLinks: Omit<SidebarLinkProps, 'icon'>[] = [
   {
@@ -11,12 +12,6 @@ const navigationLinks: Omit<SidebarLinkProps, 'icon'>[] = [
     href: '/',
     isActive: true,
   },
-  // {
-  //   label: 'Sell Now',
-  //   isLink: false,
-  //   isActive: false,
-  //   setShowComponent: () => {},
-  // },
   {
     label: 'Sell Now',
     isLink: true,
@@ -41,14 +36,14 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-const Nav = ({ setShowComponent }: SideBarProps) => {
+const Nav = ({ setShowComponent, showOnAllScreens }: SideBarProps) => {
   return (
-    <Disclosure as="nav" className="z-50 md:hidden bg-[#1f1f1f] w-full h-16">
+    <Disclosure as="nav" className={`z-50 ${showOnAllScreens ? '' : 'md:hidden'} bg-[#1f1f1f] w-full h-16`}>
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div className="relative flex h-16 items-center justify-between">
-              <div className="flex-1 relative inset-y-0 left-0 flex items-center md:hidden">
+              <div className={`flex-1 relative inset-y-0 left-0 flex items-center ${showOnAllScreens ? '' : 'md:hidden'}`}>
                 {/* Mobile menu button*/}
                 <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                   <span className="sr-only">Open main menu</span>
@@ -110,25 +105,42 @@ const Nav = ({ setShowComponent }: SideBarProps) => {
             </div>
           </div>
 
-          <Disclosure.Panel className="md:hidden z-50 bg-red-600">
-            <div className="space-y-1 px-2 pb-3 pt-2 bg-red-600">
-              {navigationLinks.map((item) => (
-                <Disclosure.Button
-                  key={item.label}
-                  as="a"
-                  href={item.href}
-                  className={classNames(
-                    item.isActive
-                      ? 'bg-default-yellow text-black'
-                      : 'text-gray-300 hover:bg-default-yellow hover:text-black',
-                    'block rounded-md px-3 py-2 text-base font-medium',
-                  )}
-                  aria-current={item.isActive ? 'page' : undefined}
-                  onClick={() => setShowComponent({ show: true, componentName: item.label })}
-                >
-                  {item.label}
-                </Disclosure.Button>
-              ))}
+          <Disclosure.Panel className={`relative z-50 ${showOnAllScreens ? '' : 'md:hidden'} bg-[#1f1f1f]`}>
+            <div className="space-y-1 px-2 pb-3 pt-2">
+              {navigationLinks.map((item) =>
+                item.isLink ? (
+                  <Link
+                    key={item.label}
+                    to={item.href ?? '/home'}
+                    className={classNames(
+                      item.isActive
+                        ? 'bg-default-yellow text-black'
+                        : 'text-gray-300 hover:bg-default-yellow hover:text-black',
+                      'block rounded-md px-3 py-2 text-base font-medium',
+                    )}
+                    aria-current={item.isActive ? 'page' : undefined}
+                    onClick={() => setShowComponent({ show: true, componentName: item.label })}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <Disclosure.Button
+                    key={item.label}
+                    as="a"
+                    href={item.href}
+                    className={classNames(
+                      item.isActive
+                        ? 'bg-default-yellow text-black'
+                        : 'text-gray-300 hover:bg-default-yellow hover:text-black',
+                      'block rounded-md px-3 py-2 text-base font-medium',
+                    )}
+                    aria-current={item.isActive ? 'page' : undefined}
+                    onClick={() => setShowComponent({ show: true, componentName: item.label })}
+                  >
+                    {item.label}
+                  </Disclosure.Button>
+                ),
+              )}
             </div>
           </Disclosure.Panel>
         </>

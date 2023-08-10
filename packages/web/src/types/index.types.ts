@@ -7,6 +7,7 @@ export type ShowComponentProps = {
 
 export type SideBarProps = {
   setShowComponent: Dispatch<SetStateAction<ShowComponentProps>>;
+  showOnAllScreens?: boolean;
 };
 
 export type SellNowProps = SideBarProps & ShowComponentProps;
