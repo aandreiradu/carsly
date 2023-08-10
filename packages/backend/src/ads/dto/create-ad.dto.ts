@@ -42,7 +42,6 @@ export class CreateAdDTO {
   @IsOptional()
   isImported: boolean;
 
-  @IsNotEmpty()
   @IsString()
   @Length(13, 13, { message: 'VIN must have 13 characters' })
   VIN: string;
@@ -122,7 +121,6 @@ export class CreateAdDTO {
   gearbox: GearboxTypes;
 
   @IsNotEmpty()
-  // @IsString({ message: 'Please select the transmission type' })
   @IsIn(trans, { message: 'Please select the transmission type' })
   transmission: TransmissionTypes;
 
@@ -134,6 +132,7 @@ export class CreateAdDTO {
   @Min(0, { message: 'CO2 emissions must be greater than 0' })
   @Max(200, { message: 'CO2 emissions must be lower than 200' })
   @Type(() => Number)
+  @Transform((tr) => (!tr.value ? 0 : tr.value))
   co2emissions: number;
 
   @IsNotEmpty()

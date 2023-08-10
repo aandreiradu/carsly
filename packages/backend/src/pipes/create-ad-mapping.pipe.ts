@@ -4,10 +4,6 @@ import { CreateAdDTO } from 'src/ads/dto/create-ad.dto';
 
 export class CreateAdDTOMappingPipe implements PipeTransform {
   transform(body: any, metadata: ArgumentMetadata) {
-    const result = new CreateAdDTO();
-
-    console.log('body ba', body);
-
-    return;
+    return body;
   }
 }

@@ -8,6 +8,7 @@ import {
 import * as cookieParser from 'cookie-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -16,6 +17,7 @@ async function bootstrap() {
     credentials: true,
   }),
     app.use(cookieParser());
+  app.use(bodyParser.urlencoded({ extended: true }));
   // app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useGlobalPipes(
     new ValidationPipe({

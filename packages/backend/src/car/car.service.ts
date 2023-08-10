@@ -64,7 +64,6 @@ export class CarService {
     model: string,
     bodyType: VehicleBodyType,
   ): Promise<string | null> {
-    console.log('existingBrandModel args', { brandId, model, bodyType });
     /* 
       Based on the brandId & model & bodyType, this will check if an existing model is already inserted
     */
@@ -81,6 +80,11 @@ export class CarService {
     });
 
     if (!existingModelQuery) {
+      console.log('Could not identify the model based on provided brand', {
+        brandId,
+        model,
+        bodyType,
+      });
       throw new BadRequestException(
         'Could not identify the model based on provided brand',
       );

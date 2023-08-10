@@ -35,7 +35,7 @@ export const storage = {
 };
 
 export const fileFilter = (req: Request, file, callback) => {
-  const acceptableExtensions = ['png', 'jpg', 'jpeg', 'jpg'];
+  const acceptableExtensions = ['png', 'jpg', 'jpeg'];
   if (
     !acceptableExtensions.some(
       (extension) =>
@@ -50,12 +50,6 @@ export const fileFilter = (req: Request, file, callback) => {
       ),
     );
   }
-
-  // if (req?.method === 'POST' && req.url === '/api/ad') {
-  //   console.log('timestamp1', new Date().toISOString());
-  //   const newBody = createAdMapFormData(req.body);
-  //   console.log('new body', newBody);
-  // }
 
   callback(null, true);
 };

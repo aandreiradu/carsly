@@ -113,12 +113,12 @@ export const adSchema = z.object({
     label: z.string(),
   }),
   transmission: z.object({
-    value: z.nativeEnum(TransmissionTypes, {
+    value: z.string(),
+    label: z.nativeEnum(TransmissionTypes, {
       description: 'Please select the transmission type',
       required_error: 'Please select the transmission type',
       invalid_type_error: 'Please select a valid transmission type',
     }),
-    label: z.string(),
   }),
   polluationNorm: z.object({
     value: z.nativeEnum(PolluationNormTypes, {

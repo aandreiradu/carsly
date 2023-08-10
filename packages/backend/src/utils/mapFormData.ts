@@ -52,7 +52,7 @@ export const createAdMapFormData = (data: CreateAdDTO) => {
     sellerFullName: data.sellerFullName,
     sellerCity: data.sellerCity,
     sellerPhoneNumber: data.sellerPhoneNumber,
-    model: data.model,
-    brand: data.brand,
+    model: data.model.toLowerCase(),
+    brand: data.brand.toLowerCase(),
   };
 };

@@ -39,19 +39,19 @@ export class AdsController {
       },
     ),
   )
-  @UsePipes(new CreateAdDTOMappingPipe(), new ValidationPipe())
   async createAd(@Body() dto: CreateAdDTO, @Req() req) {
     const filePaths = [];
     for (const i in req?.files) {
       filePaths.push(req?.files[i][0]?.filename || '');
     }
 
-    const mappedReqBody = createAdMapFormData(req.body);
+    const mappedReqBody = createAdMapFormData(dto);
 
     return this.adsService.createAd({
       ...mappedReqBody,
       filePaths,
       userId: req?.user?.sub,
+      bodyType: req.body?.bodyType?.toLowerCase(),
     });
   }
 

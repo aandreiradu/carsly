@@ -149,8 +149,8 @@ const Ad = ({ title }: AdPageProps) => {
   console.log(adPageForm.formState.errors);
 
   const onSubmit: SubmitHandler<AdProps> = async (data) => {
+    console.log('dataaa', data);
     const formData = buildAdPageFormData<AdProps>(data);
-    console.log('babaababa', formData);
     for (let i = 0; i < data.images?.length; i++) {
       formData.append(`image-${i + 1}`, data.images[i]);
     }
@@ -169,8 +169,9 @@ const Ad = ({ title }: AdPageProps) => {
       if (status === 400) {
         if (Array.isArray(message) && message?.length > 0) {
           for (let i = 0; i < message.length; i++) {
+            console.log('msg[i]', message[i]);
             adPageForm.setError(message[i]?.field, {
-              message: message[i].error.split(',')[0],
+              message: message[i]?.error?.split(',')[0],
             });
 
             if (topLevelNotificationRef) {
@@ -690,7 +691,6 @@ const Ad = ({ title }: AdPageProps) => {
               render={({ field: { onChange } }) => (
                 <Select
                   onChange={(e: { value: CarsColorsTypes; label: string }) => {
-                    // adPageForm.setValue('color', { ...e });
                     onChange({ ...e });
                   }}
                   dataSource={carsColorsDictionary}
@@ -843,8 +843,7 @@ const Ad = ({ title }: AdPageProps) => {
               render={({ field: { onChange } }) => (
                 <Select
                   onChange={(e: { value: CountriesTypes; label: string }) => {
-                    // adPageForm.setValue('vehicleOrigin', { ...e });
-                    console.log('origineee', e);
+                    console.log('eeeee', e);
                     onChange({ ...e });
                   }}
                   dataSource={countriesDictionary}
