@@ -1,10 +1,11 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import {
   Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
   Post,
   Req,
   Res,
@@ -13,26 +14,14 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDTO, SignUpDTO } from './dto';
-import {
-  AuthAccountCreated,
-  AuthTokens,
-  RequestMetadata,
-} from './types/auth.types';
+import { AuthAccountCreated, RequestMetadata } from './types/auth.types';
 import { Public } from 'src/decorators/public.decorator';
-// import { AtGuard, RtGuard } from 'src/guards';
 import { GetCurrentUserId } from 'src/decorators';
-import { CryptoService } from 'src/utils/crypto';
-import { ConfigService } from '@nestjs/config';
 import { RtGuard } from 'src/guards';
-import { Reflector } from '@nestjs/core';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private crypto: CryptoService,
-    private config: ConfigService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @Public()
   @Post('/local/signup')
@@ -71,10 +60,7 @@ export class AuthController {
   @Get('/refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(@Req() req: RequestMetadata, @Res() res: Response) {
-    console.log('req metadata in controller', req['user']);
-
     const { email, refreshToken, userId } = req['user'];
-
     if (!userId || !refreshToken) {
       console.log(
         'could not extract the userId or refreshToken from request metadata',
@@ -94,7 +80,6 @@ export class AuthController {
 
     /* here the refresh token is valid, we can generate & return a new access token */
     const accessToken = await this.authService.getTokens(userId, email, 'AT');
-    console.log('new access token generated', accessToken);
 
     return res.json(accessToken);
   }
@@ -103,23 +88,20 @@ export class AuthController {
   @Get('/logout')
   @UseGuards(RtGuard)
   @HttpCode(HttpStatus.OK)
-  async logout(@GetCurrentUserId() userId: string) {
+  async logout(@GetCurrentUserId() userId: string, @Res() res: Response) {
     try {
-      console.log('userId received in controller', userId);
-
       await this.authService.logout(userId);
-
-      return {
+      res.clearCookie('CARSLY_REFRESH_TOKEN');
+      return res.json({
         message: 'ok',
         status: 200,
-      };
+      });
     } catch (error) {
       if (error instanceof Error) {
-        return {
-          message: error.message,
-          status: 500,
-        };
+        throw error;
       }
+
+      throw new InternalServerErrorException('Something went wrong');
     }
   }
 }

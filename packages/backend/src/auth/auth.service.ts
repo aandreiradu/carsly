@@ -191,7 +191,7 @@ export class AuthService {
         },
       });
 
-      if (!user) {
+      if (!user || !user?.refreshToken) {
         console.log('checkRTHashing user not found');
         /* if no user was found in the db based on the provided RT, will throw exception */
         throw new UnauthorizedException();
@@ -209,12 +209,11 @@ export class AuthService {
       return true;
     } catch (error) {
       console.log('error checkRTHashing', error);
-
       if (error instanceof Error) {
-        throw new Error(error.message);
+        throw error;
       }
 
-      throw new Error('Something went wrong');
+      throw new InternalServerErrorException('Something went wrong');
     }
   }
 
