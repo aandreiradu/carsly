@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import SidebarLink, { SidebarLinkProps } from '../SidebarLink/sidebarlink.component';
 import { House, User, Heart, SignOut, PlusCircle } from 'phosphor-react';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
@@ -16,13 +16,6 @@ const sidebarLinks: SidebarLinkProps[] = [
     icon: <House className="w-6 h-6 text-white group-hover:text-black" />,
     isActive: true,
   },
-  // {
-  //   label: 'Sell Now',
-  //   isLink: false,
-  //   isActive: false,
-  //   icon: <PlusCircle className="w-6 h-6 text-white group-hover:text-black" />,
-  //   setShowComponent: () => {},
-  // },
   {
     label: 'Sell Now',
     isLink: true,
@@ -65,7 +58,6 @@ const Sidebar = ({ setShowComponent }: SideBarProps) => {
   }, []);
 
   const handleLogoutRequest = useCallback(async () => {
-    console.log('called');
     await sendRequest('/auth/logout', {
       method: 'GET',
       withCredentials: true,
@@ -99,14 +91,10 @@ const Sidebar = ({ setShowComponent }: SideBarProps) => {
             icon={link.icon}
             href={link.href}
             isLink={link.isLink}
-            onClick={
-              // link.onClick
-              () => {
-                activeLinkHandler.bind(this, link.label);
-                link.label === 'Sign Out' && handleLogoutRequest();
-              }
-            }
-            // ref={sellNowRef}
+            onClick={() => {
+              activeLinkHandler.bind(this, link.label);
+              link.label === 'Sign Out' && handleLogoutRequest();
+            }}
             isActive={activeLink === link.label ? true : false}
             setShowComponent={setShowComponent}
           />

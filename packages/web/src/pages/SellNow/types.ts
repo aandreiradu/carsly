@@ -258,7 +258,6 @@ export const gearboxDictionary = Object.entries(GearboxTypes).map(([key, value])
   label: key,
 }));
 
-console.log('Object.entries(TransmissionTypes)', Object.entries(TransmissionTypes));
 export const transmissionDictionary = Object.entries(TransmissionTypes).map(([key, value]) => ({
   label: value,
   value: key,

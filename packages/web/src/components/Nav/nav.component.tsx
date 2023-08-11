@@ -1,9 +1,13 @@
-import { Fragment } from 'react';
+import { Fragment, useCallback, useEffect } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { List, X, User } from 'phosphor-react';
 import { SidebarLinkProps } from '../SidebarLink/sidebarlink.component';
 import { SideBarProps } from '../../types/index.types';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { LogoutSuccessResponse } from '../../types/auth.types';
+import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
+import { setAccessToken } from '../../store/user/user.slice';
+import { useDispatch } from 'react-redux';
 
 const navigationLinks: Omit<SidebarLinkProps, 'icon'>[] = [
   {
@@ -37,6 +41,34 @@ function classNames(...classes: string[]) {
 }
 
 const Nav = ({ setShowComponent, showOnAllScreens }: SideBarProps) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { data, error, sendRequest } = useHttpRequest<LogoutSuccessResponse>();
+
+  useEffect(() => {
+    if (data) {
+      const { message, status } = data;
+
+      if (status === 200 && message === 'ok') {
+        dispatch(setAccessToken({ accessToken: '' }));
+      }
+
+      return navigate('/signin', { replace: true });
+    }
+
+    if (error) {
+      dispatch(setAccessToken({ accessToken: '' }));
+      return navigate('/signin', { replace: true });
+    }
+  }, [error, data]);
+
+  const handleLogoutRequest = useCallback(async () => {
+    await sendRequest('/auth/logout', {
+      method: 'GET',
+      withCredentials: true,
+    });
+  }, []);
+
   return (
     <Disclosure as="nav" className={`z-50 ${showOnAllScreens ? '' : 'md:hidden'} bg-[#1f1f1f] w-full h-16`}>
       {({ open }) => (
@@ -90,12 +122,15 @@ const Nav = ({ setShowComponent, showOnAllScreens }: SideBarProps) => {
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                          <button
+                            onClick={handleLogoutRequest}
+                            className={classNames(
+                              active ? 'bg-gray-100' : '',
+                              'block w-full text-left px-4 py-2 text-sm text-gray-700',
+                            )}
                           >
                             Sign out
-                          </a>
+                          </button>
                         )}
                       </Menu.Item>
                     </Menu.Items>
