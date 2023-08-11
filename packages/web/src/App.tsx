@@ -4,11 +4,11 @@ import SignUp from './pages/SignUp/signup.page';
 import SignIn from './pages/SignIn/signin.page';
 import Persist from './components/Persist/persist.component';
 import Ad from './pages/Ad/ad.page';
+import NotFound from './pages/NotFound/notfound.page';
 
 function App() {
   return (
     <Routes>
-      {/* SignUp & SignIn */}
       <Route path="/signup" element={<SignUp />} />
       <Route path="/signin" element={<SignIn />} />
 
@@ -16,6 +16,7 @@ function App() {
         <Route index path="/" element={<Home />} />
         <Route path="/auto/add" element={<Ad title="Sell Your Car Now" />} />
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
