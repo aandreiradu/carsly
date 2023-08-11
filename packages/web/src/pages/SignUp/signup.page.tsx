@@ -86,11 +86,7 @@ const SignUp = () => {
       }
     >
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />)
-      <form
-        id="register"
-        className="mt-8 flex flex-col w-full  md:max-w-lg overflow-hidden"
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <form id="register" className="flex flex-col w-full  md:max-w-lg overflow-hidden" onSubmit={handleSubmit(onSubmit)}>
         <div className="w-full flex flex-wrap md:flex-nowrap gap-3 md:gap-5 items-center justify-between">
           {/* First name */}
           <div className="flex-1 py-1 px-1 bg-yellow-300 flex rounded-xl h-14 w-full md:max-w-[245px]">

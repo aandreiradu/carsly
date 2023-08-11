@@ -98,7 +98,7 @@ const SignIn = () => {
 
       <form
         id="register"
-        className="mt-8 flex flex-col w-full lg:w-96 md:max-w-2xl overflow-hidden"
+        className="flex flex-col w-full lg:w-96 md:max-w-2xl overflow-hidden"
         onSubmit={handleSubmit(onSubmit)}
       >
         {/* Email */}
