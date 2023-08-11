@@ -66,6 +66,25 @@ export class ValidationFilter implements ExceptionFilter {
         statusCode: status,
       });
     }
+
+    /* delete inserted file */
+    if (req?.fileInsert && Object.keys(req?.files).length > 0) {
+      let lastFile;
+      for (const it in req.files) {
+        try {
+          if (
+            req.files[it][0]?.filename &&
+            lastFile !== req.files[it][0].filename
+          ) {
+            removeFile(req.files[it][0].filename);
+            lastFile = req.files[it][0]?.filename;
+          }
+        } catch (error) {
+          console.log('remove file error', error);
+          return;
+        }
+      }
+    }
     return response.status(500).json(new InternalServerErrorException());
   }
 }

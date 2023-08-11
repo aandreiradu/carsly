@@ -4,6 +4,7 @@ import { CarService } from 'src/car/car.service';
 import { AdRepository } from './ads.repository';
 import {
   Ad,
+  AdStatus,
   CarsColors,
   ColorTypes,
   CountriesTypes,
@@ -20,8 +21,8 @@ export interface CreateAd extends CreateAdDTO {
   filePaths?: string[];
   brandId: string;
   modelId: string;
+  status: AdStatus;
 }
-
 export interface CreateAdDTOO {
   isDamaged?: boolean;
   isRightHandDrive?: boolean;

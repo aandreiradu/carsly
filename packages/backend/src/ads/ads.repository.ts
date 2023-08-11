@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAdDTOO } from './ads.service';
-import {
-  Ad,
-  CountriesTypes,
-  PolluationNormTypes,
-  TransmissionTypes,
-} from '@prisma/client';
+import { Ad, AdStatus } from '@prisma/client';
 
 @Injectable()
 export class AdRepository {
@@ -56,6 +51,7 @@ export class AdRepository {
         userId: dto.userId,
         carBrandId: dto.brandId,
         carModelId: dto.modelId,
+        status: AdStatus.PENDING,
       },
     });
   }

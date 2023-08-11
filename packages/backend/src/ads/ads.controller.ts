@@ -6,8 +6,6 @@ import {
   Req,
   UseFilters,
   UseInterceptors,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { AdsService } from './ads.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';

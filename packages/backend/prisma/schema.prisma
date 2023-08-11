@@ -107,6 +107,7 @@ model Ad {
   sellerCity        String
   sellerPhoneNumber String
   images            AdImage[]
+  status            AdStatus      @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -121,6 +122,13 @@ model Ad {
   carModelId String
 
   @@map("ad")
+}
+
+enum AdStatus {
+  PENDING
+  ACCEPTED
+  DELETED
+  EXPIRED
 }
 
 enum VehicleBodyType {

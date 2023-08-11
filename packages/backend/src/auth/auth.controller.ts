@@ -84,7 +84,6 @@ export class AuthController {
     return res.json(accessToken);
   }
 
-  @Public()
   @Get('/logout')
   @UseGuards(RtGuard)
   @HttpCode(HttpStatus.OK)
