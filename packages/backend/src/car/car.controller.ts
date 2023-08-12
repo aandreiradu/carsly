@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   Body,
+  CacheKey,
+  CacheTTL,
   Controller,
   ForbiddenException,
   Get,
@@ -13,6 +15,7 @@ import { CreateCarBrandDTO } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { SuccessResponse } from 'src/config/types';
 import { CreateCarModelDTO } from './dto/create-car-model.dto';
+import { Public } from 'src/decorators';
 
 @Controller('/api/car')
 export class CarController {
@@ -62,9 +65,7 @@ export class CarController {
     } catch (error) {
       console.error('__ERROR getCarsBrands controller', error);
       if (error instanceof Error) {
-        return {
-          message: error.message,
-        };
+        throw error;
       }
 
       throw new InternalServerErrorException();
@@ -86,6 +87,7 @@ export class CarController {
     };
   }
 
+  @Public()
   @Get('/carmodel/:name')
   async getModelsByBrand(@Param() params: { name: string }) {
     if (!params.name) {

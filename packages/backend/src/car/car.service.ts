@@ -1,17 +1,32 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
+  Inject,
+  CACHE_MANAGER,
 } from '@nestjs/common';
-import { CreateCarBrandDTO, CreateCarDTO } from './dto';
+import { CreateCarBrandDTO } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCarModelDTO } from './dto/create-car-model.dto';
 import { capitalizeAll } from 'src/utils/helpers';
 import { VehicleBodyType } from '@prisma/client';
+import { Cache } from 'cache-manager';
+import { ConfigService } from '@nestjs/config';
+
+export interface GetCarsBrands {
+  name: string;
+  description: string;
+  yearOfEst: Date;
+  logoUrl: string;
+}
 
 @Injectable()
 export class CarService {
-  constructor(private prisma: PrismaService) {}
+  public carsBrands: GetCarsBrands[] = [];
+  constructor(
+    private prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private configService: ConfigService,
+  ) {}
 
   async createCarBrand(dto: CreateCarBrandDTO) {
     const carBrand = await this.prisma.carBrand.create({
@@ -23,20 +38,30 @@ export class CarService {
     return carBrand;
   }
 
-  async getCarsBrands() {
-    const queryData = await this.prisma.carBrand.findMany({
-      select: {
-        name: true,
-        description: true,
-        yearOfEst: true,
-        logoUrl: true,
-      },
-      orderBy: {
-        name: 'asc',
-      },
-    });
+  async getCarsBrands(): Promise<GetCarsBrands[]> {
+    let carsBrands = (await this.cacheManager.get(
+      'carsBrands',
+    )) as GetCarsBrands[];
 
-    return queryData.map((d) => ({
+    if (!carsBrands) {
+      carsBrands = await this.prisma.carBrand.findMany({
+        select: {
+          name: true,
+          description: true,
+          yearOfEst: true,
+          logoUrl: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
+
+      await this.cacheManager.set('carsBrands', carsBrands, {
+        ttl: this.configService.get('configService') ?? 3600,
+      });
+    }
+
+    return carsBrands.map((d) => ({
       ...d,
       name: capitalizeAll(d.name),
     }));
