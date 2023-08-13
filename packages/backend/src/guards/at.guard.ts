@@ -50,9 +50,6 @@ export class AtGuard extends AuthGuard('jwt') {
       const tokenPayload = await this.jwtService.verifyAsync(token, {
         secret: this.config.getOrThrow<string>('__AT_SECRET'),
       });
-
-      console.log('tokenValidity', tokenPayload);
-
       request['user'] = tokenPayload;
       return true;
     } catch (error) {
