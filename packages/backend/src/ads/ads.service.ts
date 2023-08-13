@@ -77,7 +77,7 @@ export class AdsService {
     private carService: CarService,
   ) {}
 
-  async createAd(dto: CreateAdDTOO): Promise<Ad> {
+  async createAd(dto: CreateAdDTOO): Promise<Ad & { images: string[] }> {
     try {
       const brandId = await this.carService.getBrandIdByName(dto.brand);
       const modelId = await this.carService.existingBrandModel(
@@ -96,7 +96,10 @@ export class AdsService {
         await this.adRepository.saveAdImages(dto.filePaths, ad.id);
       }
 
-      return ad;
+      return {
+        ...ad,
+        images: dto.filePaths,
+      };
     } catch (error) {
       console.log('error', error);
       throw error;
