@@ -1,14 +1,11 @@
 import {
   ExecutionContext,
   Injectable,
-  SetMetadata,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
-import { Observable } from 'rxjs';
-import { AuthService } from 'src/auth/auth.service';
 import { JWTPayload } from 'src/auth/types/auth.types';
 
 @Injectable()
@@ -25,9 +22,8 @@ export class RtGuard extends AuthGuard('jwt-refresh') {
     */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-
     const refreshToken = request.cookies['CARSLY_REFRESH_TOKEN'];
-    console.log('RT GUARD refreshtoken', refreshToken);
+
     if (!refreshToken) {
       throw new UnauthorizedException();
     }

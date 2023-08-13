@@ -19,9 +19,16 @@ export interface GetCarsBrands {
   logoUrl: string;
 }
 
+type CachedModelsByBrand = Record<string, string[]>;
+
 @Injectable()
 export class CarService {
-  public carsBrands: GetCarsBrands[] = [];
+  carsBrands: GetCarsBrands[] = [];
+  cachedModelsByBrand: CachedModelsByBrand = {};
+  #expireDateCacheModelsByBrand =
+    Date.now() +
+    +(this.configService.get('CACHE_MODELS_BY_BRAND_SECONDS') || 3600) * 1000;
+
   constructor(
     private prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
@@ -89,10 +96,6 @@ export class CarService {
     model: string,
     bodyType: VehicleBodyType,
   ): Promise<string | null> {
-    /* 
-      Based on the brandId & model & bodyType, this will check if an existing model is already inserted
-    */
-
     const existingModelQuery = await this.prisma.carModel.findFirst({
       where: {
         brandId: brandId,
@@ -145,27 +148,50 @@ export class CarService {
   async getModelsByBrands(
     brandName: string,
   ): Promise<{ brand: string; models: string[] }> {
-    const models = await this.prisma.carModel.findMany({
-      where: {
-        brand: {
-          name: {
-            contains: brandName,
+    const now = Date.now();
+
+    if (now > this.#expireDateCacheModelsByBrand) {
+      this.cachedModelsByBrand = {};
+    }
+
+    if (
+      !this.cachedModelsByBrand ||
+      !this.cachedModelsByBrand[brandName] ||
+      this.cachedModelsByBrand[brandName].length === 0
+    ) {
+      const models = await this.prisma.carModel.findMany({
+        where: {
+          brand: {
+            name: {
+              contains: brandName,
+            },
           },
         },
-      },
-      select: {
-        name: true,
-      },
-      orderBy: {
-        name: 'asc',
-      },
-    });
+        select: {
+          name: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+      });
 
-    const modelsMap = models.map((mod) => mod.name.toUpperCase());
+      const modelsMap = models.map((mod) => mod.name.toUpperCase());
+      if (models.length > 0) {
+        this.cachedModelsByBrand = {
+          ...this.cachedModelsByBrand,
+          [brandName]: modelsMap,
+        };
+      }
 
-    return {
-      brand: brandName,
-      models: modelsMap,
-    };
+      return {
+        brand: brandName,
+        models: modelsMap,
+      };
+    } else {
+      return {
+        brand: brandName,
+        models: this.cachedModelsByBrand[brandName],
+      };
+    }
   }
 }

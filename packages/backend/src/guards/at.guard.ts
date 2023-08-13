@@ -23,18 +23,12 @@ export class AtGuard extends AuthGuard('jwt') {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('AT GUARD HIT');
     const isPublic = this.reflector.getAllAndOverride('isPublic', [
       context.getHandler(),
       context.getClass(),
     ]);
 
     if (isPublic) {
-      console.log(
-        `this is a public route ${
-          context.switchToHttp().getRequest().url
-        }, return true`,
-      );
       return true;
     }
 
@@ -47,8 +41,6 @@ export class AtGuard extends AuthGuard('jwt') {
     */
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
-
-    console.log('tokentokentoken', token);
 
     if (!token) {
       console.log('no token provided in authorization header');
