@@ -46,6 +46,7 @@ import File from '../../components/UI/File/file.component';
 import { buildAdPageFormData } from '../../utils';
 import Nav from '../../components/Nav/nav.component';
 import { PulseLoader } from 'react-spinners';
+import { insertAd } from '../../store/ad/ad.slice';
 
 const Ad = ({ title }: AdPageProps) => {
   console.log('rerender');
@@ -146,10 +147,7 @@ const Ad = ({ title }: AdPageProps) => {
     }
   };
 
-  console.log(adPageForm.formState.errors);
-
   const onSubmit: SubmitHandler<AdProps> = async (data) => {
-    console.log('dataaa', data);
     const formData = buildAdPageFormData<AdProps>(data);
     for (let i = 0; i < data.images?.length; i++) {
       formData.append(`image-${i + 1}`, data.images[i]);
@@ -164,8 +162,10 @@ const Ad = ({ title }: AdPageProps) => {
     if (responseAd) {
       const {
         status,
-        data: { message },
+        data: { message, ad },
       } = responseAd;
+      console.log('responsead', responseAd);
+      console.log('ad response', ad);
       if (status === 400) {
         if (Array.isArray(message) && message?.length > 0) {
           for (let i = 0; i < message.length; i++) {
@@ -193,12 +193,15 @@ const Ad = ({ title }: AdPageProps) => {
           }
         }
       } else if (status === 201) {
+        /* Publish add to store */
+
         if (topLevelNotificationRef) {
           topLevelNotificationRef.current?.display({
             icon: <Check className="w-14 h-8 text-green-500" />,
-            message: `Ad created successfully`,
+            message: `Your ad was created successfully. Our team will validate your request and we'll let you know when it's live!`,
           });
         }
+        dispatch(insertAd(ad));
         adPageForm.reset();
       } else {
         if (topLevelNotificationRef) {
