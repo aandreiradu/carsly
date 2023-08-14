@@ -41,9 +41,7 @@ const SidebarLink: FC<SidebarLinkProps> = ({ icon, href, isLink, onClick, isActi
   return (
     <li
       // ref={ref}
-      className={`cursor-pointer p-2 ${
-        isActive ? 'bg-yellow-400' : 'bg-transparent'
-      } rounded-md hover:bg-default-yellow group`}
+      className={`cursor-pointer p-2 ${isActive ? 'bg-yellow-400' : 'bg-transparent'} rounded-md hover:bg-yellow-400 group`}
       onClick={clickHandler}
     >
       {icon}
