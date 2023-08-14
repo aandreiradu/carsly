@@ -1,6 +1,6 @@
 import Carousel from '../../components/Carousel/carousel.component';
 import MainLayout from '../../components/Layouts/Main/main.layout';
-import { Heart, Star, ShoppingCart, Warning } from 'phosphor-react';
+import { Heart, Star, Warning } from 'phosphor-react';
 import Nav from '../../components/Nav/nav.component';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import _axios from '../../api/axios/axios';
@@ -13,100 +13,10 @@ import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from '../../components/UI/TopLevelNotification/topLevelNotification.component';
 import { selectCarsBrands } from '../../store/cars/cars.selector';
+import OfferOfTheDay from '../../components/OfferOfTheDay/offerOfTheDay.component';
+import { CurrencyTypes, FuelType } from '../SellNow/types';
 
 const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Newest'];
-const mercedesModels = [
-  {
-    name: 'C-Class',
-    brand: 'Mercedes Benz',
-    bodyType: 'Sedan',
-  },
-  {
-    name: 'E-Class',
-    brand: 'Mercedes Benz',
-    bodyType: 'Sedan',
-  },
-  {
-    name: 'S-Class',
-    brand: 'Mercedes Benz',
-    bodyType: 'Sedan',
-  },
-  {
-    name: 'GLA',
-    brand: 'Mercedes Benz',
-    bodyType: 'SUV',
-  },
-  {
-    name: 'GLC',
-    brand: 'Mercedes Benz',
-    bodyType: 'SUV',
-  },
-  {
-    name: 'GLE',
-    brand: 'Mercedes Benz',
-    bodyType: 'SUV',
-  },
-  {
-    name: 'CLA',
-    brand: 'Mercedes Benz',
-    bodyType: 'Coupe',
-  },
-  {
-    name: 'C-Class Coupe',
-    brand: 'Mercedes Benz',
-    bodyType: 'Coupe',
-  },
-  {
-    name: 'E-Class Coupe',
-    brand: 'Mercedes Benz',
-    bodyType: 'Coupe',
-  },
-  {
-    name: 'AMG GT',
-    brand: 'Mercedes Benz',
-    bodyType: 'Coupe',
-  },
-  {
-    name: 'A-Class',
-    brand: 'Mercedes Benz',
-    bodyType: 'Hatchback',
-  },
-  {
-    name: 'B-Class',
-    brand: 'Mercedes Benz',
-    bodyType: 'Hatchback',
-  },
-  {
-    name: 'GLB',
-    brand: 'Mercedes Benz',
-    bodyType: 'SUV',
-  },
-  {
-    name: 'GLS',
-    brand: 'Mercedes Benz',
-    bodyType: 'SUV',
-  },
-  {
-    name: 'S-Class Coupe',
-    brand: 'Mercedes Benz',
-    bodyType: 'Coupe',
-  },
-  {
-    name: 'G-Class',
-    brand: 'Mercedes Benz',
-    bodyType: 'SUV',
-  },
-  {
-    name: 'SLC',
-    brand: 'Mercedes Benz',
-    bodyType: 'Convertible',
-  },
-  {
-    name: 'SL-Class',
-    brand: 'Mercedes Benz',
-    bodyType: 'Convertible',
-  },
-];
 
 const Home = () => {
   const carsBrands = useSelector(selectCarsBrands);
@@ -114,8 +24,7 @@ const Home = () => {
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const dispatch = useDispatch();
   const { sendRequest, error } = useHttpRequest<CarsBrandsSuccess>();
-  const { sendRequest: SR, error: Err } = useHttpRequest();
-  const [showComponet, setShowComponent] = useState<ShowComponentProps>({ show: false, componentName: '' });
+  const [_, setShowComponent] = useState<ShowComponentProps>({ show: false, componentName: '' });
 
   useEffect(() => {
     const getCarsBrands = async () => {
@@ -147,38 +56,24 @@ const Home = () => {
     }
   }
 
-  const insertModels = () => {
-    mercedesModels.forEach(async (model) => {
-      await SR('/api/car/carmodel', {
-        withCredentials: true,
-        data: {
-          ...model,
-          bodyType: model.bodyType.toLowerCase(),
-          brand: model.brand.toLowerCase(),
-        },
-        method: 'POST',
-      });
-    });
-  };
-
   return (
     <MainLayout>
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
       <Nav setShowComponent={setShowComponent} />
       <Sidebar setShowComponent={setShowComponent} />
       {/* <SellNow show={showComponet.show} componentName={showComponet.componentName} setShowComponent={setShowComponent} /> */}
-      <section className="px-2 gap-4 lg:gap-0 md:px-0 my-6 md:my-0 h-full max-h-[98%] flex flex-wrap items-center w-full overflow-auto  xl:space-x-5 2xl:space-x-7">
+      <section className="px-2 gap-4 lg:gap-0 md:px-0 my-6 md:my-0 h-full max-h-[98%] flex flex-wrap items-center w-full overflow-auto xl:space-x-5 2xl:space-x-7">
         {/* LEFT */}
-        <div className="flex md:h-full w-full shadow-xl bg-default-gray rounded-2xl md:max-h-[800px] md:my-auto py-3 px-2 m-0 lg:m-5 lg:py-5 lg:px-6 md:max-w-[600px] xl:max-w-[1000px]">
+        <div className="flex w-full shadow-xl bg-default-gray rounded-2xl h-full max-h-[735px] md:max-h-[800px] md:my-auto py-3 px-2 m-0 lg:m-5 lg:py-5 lg:px-6 md:max-w-[600px] xl:max-w-[1000px]">
           <div className="w-full h-full flex flex-col overflow-hidden">
-            <h1 onClick={insertModels} className="text-white mb-4 font-kanit text-xl md:text-4xl font-bold tracking-widest">
+            <h1 className="text-white mb-4 font-kanit text-xl md:text-4xl font-bold tracking-widest">
               Find your perfect car
             </h1>
             <Carousel className="flex text-center items-center w-full space-x-4 overflow-hidden overflow-x-auto">
               {categories.map((cat, index) => (
                 <div
                   key={'a' + index}
-                  className="select-none cursor-pointer flex flex-shrink-0 justify-center items-center w-24 h-12 md:w-36  font-kanit text-base md:text-lg bg-yellow-300 py-2 rounded-xl"
+                  className="select-none cursor-pointer flex flex-shrink-0 justify-center items-center w-24 h-12 md:w-36  font-kanit text-base md:text-lg bg-yellow-400 py-2 rounded-xl"
                 >
                   {cat}
                 </div>
@@ -206,7 +101,7 @@ const Home = () => {
                   className="flex flex-col flex-shrink-0 relative w-52 h-64 bg-[#2f2e2e] text-white rounded-lg"
                 >
                   <span className="absolute cursor-pointer top-2 left-2 p-1 bg-[#2f2e2e] rounded-lg">
-                    <Heart className="h-5 w-6" onClick={() => console.log('matamare')} />
+                    <Heart className="h-5 w-6" />
                   </span>
 
                   <img
@@ -229,58 +124,22 @@ const Home = () => {
             </Carousel>
           </div>
         </div>
-
-        {/* RIGHT */}
-        <div className="relative m-0 lg:m-5 my-8 md:my-0 shadow-xl bg-default-gray w-full h-full overflow-y-auto max-h-[420px] md:h-full md:max-w-md md:max-h-[800px] flex flex-col rounded-2xl">
-          <img
-            className="z-0 w-full h-fit md:h-full md:max-h-[40%] object-cover object-bottom rounded-lg brightness-75"
-            src={'./amg.jpg'}
-          />
-          <div className="my-4 p-2 px-4 flex flex-col text-white">
-            <h2 className="font-kanit text-2xl font-bold tracking-wider">Mercedes AMG GTR</h2>
-            <p className="my-1 tracking-wide">Petrol</p>
-
-            <div className="flex items-center my-3 space-x-4">
-              <div className="bg-[#2f2e2e] flex flex-col p-3 rounded-lg">
-                <span>396 mi</span>
-                <span>Range (EPA est.)</span>
-              </div>
-              <div className="bg-[#2f2e2e] flex flex-col p-3 rounded-lg">
-                <span>1.99s</span>
-                <span>0 - 60 mph*</span>
-              </div>
-              <div className="bg-[#2f2e2e] flex flex-col p-3 rounded-lg">
-                <span>200mph</span>
-                <span>Top Speed*</span>
-              </div>
-            </div>
-
-            <p className="my-2 text-base leading-loose">
-              The Mercedes-AMG GT (C190 / R190) is a grand tourer produced in coupé and roadster bodystyles by German
-              automobile manufacturer Mercedes-AMG. The car was introduced on 9 September 2014 and was officially unveiled to
-              the public in October 2014 at the Paris Motor Show.
-            </p>
-
-            <div className="w-full flex items-center">
-              <span className="flex-1 h-[1px] bg-default-yellow"></span>
-              <span className="px-4 transform rotate-90 text-2xl">〈 〉</span>
-              <span className="flex-1 h-[1px] bg-default-yellow"></span>
-            </div>
-
-            <div className="sticky w-full py-4 bottom-0 left-0 bg-default-gray flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="font-kanit text-lg font-light">Price</span>
-                <span className="text-2xl font-kanit font-bold">
-                  <small className="text-sm mr-1">$</small>199 99
-                </span>
-              </div>
-              <button className="flex items-center justify-center gap-2 first-letter:cursor-pointer bg-yellow-400 p-2 w-36 rounded-3xl text-xl text-black font-kanit active:outline-none focus:outline-none">
-                Buy
-                <ShoppingCart className="h-6 w-6" />
-              </button>
-            </div>
-          </div>
-        </div>
+        <OfferOfTheDay
+          imageURL="./amg.jpg"
+          currency={CurrencyTypes.EUR}
+          price={40000}
+          engineSize={3000}
+          fuel={FuelType.Petrol}
+          km={76333}
+          title="BMW 540i"
+          year={2018}
+          description="The Mercedes-AMG GT (C190 / R190) is a grand tourer produced in coupé and roadster bodystyles by German automobile
+          manufacturer Mercedes-AMG. The car was introduced on 9 September 2014 and was officially unveiled to the public in
+          October 2014 at the Paris Motor Show. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Est culpa eligendi
+          ducimus tenetur rem vero quo vel, non blanditiis incidunt corrupti pariatur qui. Earum enim officia culpa voluptate
+          vero vitae facilis dolorum ipsum provident atque corporis, obcaecati sit numquam eligendi, dolore labore possimus
+          nobis quis blanditiis asperiores? Soluta, optio tenetur."
+        />
       </section>
     </MainLayout>
   );
