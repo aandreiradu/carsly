@@ -1,5 +1,9 @@
 import { Heart } from 'phosphor-react';
 import { CurrencyTypes, FuelType } from '../../pages/SellNow/types';
+import { useDispatch, useSelector } from 'react-redux';
+import { useCallback } from 'react';
+import { FavoriteCarAd, addOrRemoveAdToFavorites } from '../../store/favorites/favorites.slice';
+import { isFavoriteAd } from '../../store/favorites/favorites.selector';
 
 interface OfferOfTheDayProps {
   imageURL: string;
@@ -13,7 +17,7 @@ interface OfferOfTheDayProps {
   description?: string;
   details?: {
     text: string;
-    values: string | number;
+    value: string | number;
   }[];
 }
 
@@ -28,6 +32,12 @@ const OfferOfTheDay = ({
   title,
   year,
 }: OfferOfTheDayProps) => {
+  // const favAd = useSelector(isFavoriteAd('1234'));
+  const dispatch = useDispatch();
+  const handleAddToFavorite = useCallback((ad: FavoriteCarAd) => {
+    dispatch(addOrRemoveAdToFavorites(ad));
+  }, []);
+
   return (
     <div className="relative my-6 md:my-0 shadow-xl bg-default-gray w-full h-fit md:h-full md:max-h-[800px] md:max-w-md flex flex-col rounded-2xl">
       <p className="absolute z-10 -top-4  left-1/2 -translate-x-1/2 text-black font-bold capitalize bg-yellow-400 p-2 rounded-lg">
@@ -68,9 +78,19 @@ const OfferOfTheDay = ({
               {price}
             </span>
           </div>
-          <button className="flex items-center justify-center gap-1 first-letter:cursor-pointer bg-yellow-400 py-2 px-3 rounded-3xl text-xl text-black font-kanit active:outline-none focus:outline-none">
+          <button
+            className="flex items-center justify-center gap-1 first-letter:cursor-pointer bg-yellow-400 py-2 px-3 rounded-3xl text-xl text-black font-kanit active:outline-none focus:outline-none"
+            onClick={handleAddToFavorite.bind(this, {
+              adId: '1234',
+              currency,
+              name: title,
+              price,
+              thumbnail: imageURL,
+              location: 'unknown',
+            })}
+          >
             Add to favorite
-            <Heart className="h-6 w-6" />
+            <Heart color="#1f1f1f" className="h-6 w-6 " />
           </button>
         </div>
       </div>
