@@ -1,8 +1,6 @@
 import {
   BadRequestException,
   Body,
-  CacheKey,
-  CacheTTL,
   Controller,
   ForbiddenException,
   Get,
@@ -87,7 +85,6 @@ export class CarController {
     };
   }
 
-  @Public()
   @Get('/carmodel/:name')
   async getModelsByBrand(@Param() params: { name: string }) {
     if (!params.name) {

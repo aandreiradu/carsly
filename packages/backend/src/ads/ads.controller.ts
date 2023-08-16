@@ -15,7 +15,7 @@ import { ValidationFilter } from 'src/filters/validation.filter';
 import { createAdMapFormData } from 'src/utils/mapFormData';
 import { CreateAdDTO } from './dto/create-ad.dto';
 
-@Controller('/api/ad')
+@Controller('api/ad')
 export class AdsController {
   constructor(private adsService: AdsService) {}
 
@@ -55,5 +55,10 @@ export class AdsController {
   @Get()
   async getAdsByUserId(@Req() req) {
     return this.adsService.getAdsByUserId(req?.user?.sub);
+  }
+
+  @Get('offerOfTheDay')
+  async getOfferOfTheDay() {
+    return this.adsService.getOfferOfTheDay();
   }
 }

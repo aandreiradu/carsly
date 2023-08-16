@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { CarService } from 'src/car/car.service';
-import { AdRepository } from './ads.repository';
+import { AdRepository, GetOfferOfTheDay } from './ads.repository';
 import {
   Ad,
   AdStatus,
@@ -16,6 +15,7 @@ import {
   VehicleBodyType,
 } from '@prisma/client';
 import { CreateAdDTO } from './dto/create-ad.dto';
+import { ConfigService } from '@nestjs/config';
 export interface CreateAd extends CreateAdDTO {
   userId: string;
   filePaths?: string[];
@@ -72,9 +72,15 @@ export interface CreateAdDTOO {
 
 @Injectable()
 export class AdsService {
+  offerOfTheDayCache = [];
+  #offerOfTheDaycacheTTL =
+    Date.now() +
+    (this.configService.get('CACHE_OFFER_OF_THE_DAY_SECONDS') || 3600);
+
   constructor(
     private adRepository: AdRepository,
     private carService: CarService,
+    private configService: ConfigService,
   ) {}
 
   async createAd(dto: CreateAdDTOO): Promise<Ad & { images: string[] }> {
@@ -111,6 +117,27 @@ export class AdsService {
       return this.adRepository.getAdsByUserId(userId);
     } catch (error) {
       throw error;
+    }
+  }
+
+  async getOfferOfTheDay(): Promise<GetOfferOfTheDay[]> {
+    const now = Date.now();
+
+    /* *Reset the cache after TTL expires */
+    if (now > this.#offerOfTheDaycacheTTL) {
+      this.#offerOfTheDaycacheTTL = {};
+    }
+
+    if (!this.offerOfTheDayCache || this.offerOfTheDayCache.length === 0) {
+      console.log('its not cached branch');
+
+      const offerOfTheDay = await this.adRepository.getOfferOfTheDay();
+      this.offerOfTheDayCache = offerOfTheDay;
+      console.log('cached with', offerOfTheDay);
+      return offerOfTheDay;
+    } else {
+      console.log('its cached branch => return', this.offerOfTheDayCache);
+      return this.offerOfTheDayCache;
     }
   }
 }

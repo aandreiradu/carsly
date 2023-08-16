@@ -1,8 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAdDTOO } from './ads.service';
-import { Ad, AdStatus } from '@prisma/client';
+import { Ad, AdImage, AdStatus, CurrencyTypes, FuelType } from '@prisma/client';
 
+export interface GetOfferOfTheDay {
+  imageURL: AdImage[];
+  title: string;
+  fuel: FuelType;
+  price: number;
+  currency: CurrencyTypes;
+  year: number;
+  km: number;
+  engineSize: number;
+  description?: string;
+}
 @Injectable()
 export class AdRepository {
   constructor(private prismaService: PrismaService) {}
@@ -77,5 +88,39 @@ export class AdRepository {
 
   async getAdImages() {
     return this.prismaService.adImage.findMany();
+  }
+
+  async getOfferOfTheDay(): Promise<GetOfferOfTheDay[]> {
+    const countAds = await this.prismaService.ad.count();
+    const skip = Math.floor(Math.random() * countAds);
+
+    const offerOfTheDay = await this.prismaService.ad.findMany({
+      take: 1,
+      skip,
+      select: {
+        id: true,
+        images: true,
+        title: true,
+        fuelType: true,
+        price: true,
+        currency: true,
+        year: true,
+        KM: true,
+        engineSize: true,
+        description: true,
+      },
+    });
+
+    return offerOfTheDay.map((offer) => ({
+      imageURL: offer.images?.slice(0, 1) || [],
+      title: offer.title,
+      fuel: offer.fuelType,
+      price: offer.price,
+      currency: offer.currency,
+      year: offer.year,
+      km: offer.KM,
+      engineSize: offer.engineSize,
+      description: offer.description,
+    }));
   }
 }
