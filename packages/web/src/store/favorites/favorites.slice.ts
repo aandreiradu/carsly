@@ -2,12 +2,12 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { CurrencyTypes } from '../../pages/SellNow/types';
 
 export type FavoriteCarAd = {
-  adId: string;
-  name: string;
-  price: number;
-  currency: CurrencyTypes;
-  thumbnail: string;
-  location?: string;
+  adId: string | null;
+  name: string | null;
+  price: number | null;
+  currency: CurrencyTypes | null;
+  thumbnail: string | null;
+  location?: string | null;
 };
 
 export interface FavoritesState {

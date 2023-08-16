@@ -66,12 +66,27 @@ interface Ad {
   carModelId: string;
 }
 
+export interface OfferOfTheDay {
+  adId: string;
+  imageURL: string;
+  title: string;
+  fuel: FuelType;
+  price: number;
+  currency: CurrencyTypes;
+  year: number;
+  km: number;
+  engineSize: number;
+  description?: string;
+}
+
 export interface IADState {
   ads: Ad[];
+  offerOfTheDay: OfferOfTheDay | null;
 }
 
 const initialState: IADState = {
   ads: [],
+  offerOfTheDay: null,
 };
 
 export const adSlice = createSlice({
@@ -81,8 +96,11 @@ export const adSlice = createSlice({
     insertAd(state: IADState, action: PayloadAction<Ad>) {
       state.ads.push(action.payload);
     },
+    setOfferOfTheDay(state: IADState, action: PayloadAction<OfferOfTheDay>) {
+      state.offerOfTheDay = action.payload;
+    },
   },
 });
 
-export const { insertAd } = adSlice.actions;
+export const { insertAd, setOfferOfTheDay } = adSlice.actions;
 export default adSlice.reducer;

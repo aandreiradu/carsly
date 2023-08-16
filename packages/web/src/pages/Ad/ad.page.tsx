@@ -169,7 +169,6 @@ const Ad = ({ title }: AdPageProps) => {
       if (status === 400) {
         if (Array.isArray(message) && message?.length > 0) {
           for (let i = 0; i < message.length; i++) {
-            console.log('msg[i]', message[i]);
             adPageForm.setError(message[i]?.field, {
               message: message[i]?.error?.split(',')[0],
             });
