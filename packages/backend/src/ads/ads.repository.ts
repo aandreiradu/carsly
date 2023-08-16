@@ -4,7 +4,8 @@ import { CreateAdDTOO } from './ads.service';
 import { Ad, AdImage, AdStatus, CurrencyTypes, FuelType } from '@prisma/client';
 
 export interface GetOfferOfTheDay {
-  imageURL: AdImage[];
+  adId: string;
+  imageURL: string;
   title: string;
   fuel: FuelType;
   price: number;
@@ -90,7 +91,7 @@ export class AdRepository {
     return this.prismaService.adImage.findMany();
   }
 
-  async getOfferOfTheDay(): Promise<GetOfferOfTheDay[]> {
+  async getOfferOfTheDay(): Promise<GetOfferOfTheDay | null> {
     const countAds = await this.prismaService.ad.count();
     const skip = Math.floor(Math.random() * countAds);
 
@@ -111,8 +112,11 @@ export class AdRepository {
       },
     });
 
-    return offerOfTheDay.map((offer) => ({
-      imageURL: offer.images?.slice(0, 1) || [],
+    if (!offerOfTheDay.length) return null;
+
+    const offer = offerOfTheDay?.map((offer) => ({
+      adId: offer.id,
+      imageURL: offer.images?.slice(0, 1)[0]?.path || '',
       title: offer.title,
       fuel: offer.fuelType,
       price: offer.price,
@@ -121,6 +125,8 @@ export class AdRepository {
       km: offer.KM,
       engineSize: offer.engineSize,
       description: offer.description,
-    }));
+    }))[0];
+
+    return offer;
   }
 }

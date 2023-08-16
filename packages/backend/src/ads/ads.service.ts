@@ -72,10 +72,10 @@ export interface CreateAdDTOO {
 
 @Injectable()
 export class AdsService {
-  offerOfTheDayCache = [];
+  offerOfTheDayCache = {};
   #offerOfTheDaycacheTTL =
     Date.now() +
-    (this.configService.get('CACHE_OFFER_OF_THE_DAY_SECONDS') || 3600);
+    (this.configService.get('CACHE_OFFER_OF_THE_DAY_SECONDS') || 3600) * 1000;
 
   constructor(
     private adRepository: AdRepository,
@@ -120,24 +120,27 @@ export class AdsService {
     }
   }
 
-  async getOfferOfTheDay(): Promise<GetOfferOfTheDay[]> {
+  async getOfferOfTheDay(): Promise<GetOfferOfTheDay> {
     const now = Date.now();
 
     /* *Reset the cache after TTL expires */
     if (now > this.#offerOfTheDaycacheTTL) {
-      this.#offerOfTheDaycacheTTL = {};
+      this.#offerOfTheDaycacheTTL =
+        now +
+        +(this.configService.get('CACHE_OFFER_OF_THE_DAY_SECONDS') || 3600) *
+          1000;
+      this.offerOfTheDayCache = {};
     }
 
-    if (!this.offerOfTheDayCache || this.offerOfTheDayCache.length === 0) {
-      console.log('its not cached branch');
-
+    if (Object.keys(this.offerOfTheDayCache).length === 0) {
       const offerOfTheDay = await this.adRepository.getOfferOfTheDay();
-      this.offerOfTheDayCache = offerOfTheDay;
-      console.log('cached with', offerOfTheDay);
+      if (offerOfTheDay) {
+        this.offerOfTheDayCache = offerOfTheDay;
+      }
+
       return offerOfTheDay;
     } else {
-      console.log('its cached branch => return', this.offerOfTheDayCache);
-      return this.offerOfTheDayCache;
+      return this.offerOfTheDayCache as GetOfferOfTheDay;
     }
   }
 }
