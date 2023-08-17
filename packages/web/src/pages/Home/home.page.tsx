@@ -62,7 +62,7 @@ const Home = () => {
       <Nav setShowComponent={setShowComponent} />
       <Sidebar setShowComponent={setShowComponent} />
       {/* <SellNow show={showComponet.show} componentName={showComponet.componentName} setShowComponent={setShowComponent} /> */}
-      <section className="px-2 gap-4 lg:gap-0 md:px-0 my-6 md:my-0 h-full max-h-[98%] flex flex-wrap items-center w-full overflow-auto xl:space-x-5 2xl:space-x-7">
+      <section className="md:ml-5 px-2 gap-4 lg:gap-8 md:px-0 my-6 md:my-0 h-full max-h-[98%] flex flex-wrap items-center w-full overflow-auto xl:space-x-5 2xl:space-x-7">
         {/* LEFT */}
         <div className="flex w-full shadow-xl bg-default-gray rounded-2xl h-full max-h-[735px] md:max-h-[800px] md:my-auto py-3 px-2 m-0 lg:m-5 lg:py-5 lg:px-6 md:max-w-[600px] xl:max-w-[1000px]">
           <div className="w-full h-full flex flex-col overflow-hidden">
@@ -124,22 +124,7 @@ const Home = () => {
             </Carousel>
           </div>
         </div>
-        <OfferOfTheDay
-          imageURL="./amg.jpg"
-          currency={CurrencyTypes.EUR}
-          price={40000}
-          engineSize={3000}
-          fuel={FuelType.Petrol}
-          km={76333}
-          title="BMW 540i"
-          year={2018}
-          description="The Mercedes-AMG GT (C190 / R190) is a grand tourer produced in coupé and roadster bodystyles by German automobile
-          manufacturer Mercedes-AMG. The car was introduced on 9 September 2014 and was officially unveiled to the public in
-          October 2014 at the Paris Motor Show. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Est culpa eligendi
-          ducimus tenetur rem vero quo vel, non blanditiis incidunt corrupti pariatur qui. Earum enim officia culpa voluptate
-          vero vitae facilis dolorum ipsum provident atque corporis, obcaecati sit numquam eligendi, dolore labore possimus
-          nobis quis blanditiis asperiores? Soluta, optio tenetur."
-        />
+        <OfferOfTheDay />
       </section>
     </MainLayout>
   );
