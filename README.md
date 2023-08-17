@@ -1,4 +1,4 @@
-# Work In Prgogress carsly - Cars Marketplace
+# Work In Progress carsly - Cars Marketplace
 
 ## Tech-Stack:
 
