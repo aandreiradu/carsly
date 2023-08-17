@@ -7,6 +7,7 @@ axios.defaults.withCredentials = true;
 const _axios = axios.create({
   baseURL: BACKEND_BASE_URL,
   withCredentials: true,
+  timeout: 30000,
 });
 
 export default _axios;
