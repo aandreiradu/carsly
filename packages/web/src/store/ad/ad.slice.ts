@@ -68,7 +68,7 @@ interface Ad {
 
 export interface OfferOfTheDay {
   adId: string;
-  imageURL: string;
+  thumbnail: string;
   title: string;
   fuel: FuelType;
   price: number;

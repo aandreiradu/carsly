@@ -5,7 +5,7 @@ import { Ad, AdImage, AdStatus, CurrencyTypes, FuelType } from '@prisma/client';
 
 export interface GetOfferOfTheDay {
   adId: string;
-  imageURL: string;
+  thumbnail: string;
   title: string;
   fuel: FuelType;
   price: number;
@@ -116,7 +116,7 @@ export class AdRepository {
 
     const offer = offerOfTheDay?.map((offer) => ({
       adId: offer.id,
-      imageURL: offer.images?.slice(0, 1)[0]?.path || '',
+      thumbnail: offer.images?.slice(0, 1)[0]?.path || '',
       title: offer.title,
       fuel: offer.fuelType,
       price: offer.price,
