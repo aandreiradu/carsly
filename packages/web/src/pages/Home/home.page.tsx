@@ -14,7 +14,7 @@ import TopLevelNotification, {
 } from '../../components/UI/TopLevelNotification/topLevelNotification.component';
 import { selectCarsBrands } from '../../store/cars/cars.selector';
 import OfferOfTheDay from '../../components/OfferOfTheDay/offerOfTheDay.component';
-import { CurrencyTypes, FuelType } from '../SellNow/types';
+import { setFavoriteAds, setFavoritesCount } from '../../store/favorites/favorites.slice';
 
 const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Newest'];
 
@@ -23,7 +23,8 @@ const Home = () => {
   console.log('carsBrands din home', carsBrands);
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const dispatch = useDispatch();
-  const { sendRequest, error } = useHttpRequest<CarsBrandsSuccess>();
+  const { sendRequest, error } = useHttpRequest();
+  const { sendRequest: SRGetFavoritesAds, error: errorFavoritesAds, data: dataFavoriteAds } = useHttpRequest();
   const [_, setShowComponent] = useState<ShowComponentProps>({ show: false, componentName: '' });
 
   useEffect(() => {
@@ -42,17 +43,51 @@ const Home = () => {
       }
     };
 
+    const getFavoritesAdsByUser = async () => {
+      const favoriteAds = await SRGetFavoritesAds('/api/ad/favorites', {
+        method: 'GET',
+        withCredentials: true,
+      });
+
+      if (favoriteAds && favoriteAds.status === 200) {
+        const { count, favorites } = favoriteAds.data || {};
+        if (count && +count > 0) {
+          dispatch(setFavoritesCount(count));
+        }
+
+        if (favorites && favorites?.length) {
+          dispatch(setFavoriteAds(favorites));
+        }
+      }
+    };
+
     //cached
     carsBrands?.length === 0 && getCarsBrands();
+    getFavoritesAdsByUser();
   }, []);
 
   if (error) {
-    console.log('error', error);
     if (topLevelNotificationRef) {
       topLevelNotificationRef.current?.display({
         message: error.message,
         icon: <Warning className="w-14 h-8 text-red-500" />,
       });
+    }
+  } else if (errorFavoritesAds) {
+    if (errorFavoritesAds instanceof Error) {
+      if (topLevelNotificationRef) {
+        topLevelNotificationRef.current?.display({
+          icon: <Warning className="w-14 h-8 text-red-600" />,
+          message: errorFavoritesAds?.message || 'Something went wrong. Please try again later!',
+        });
+      }
+    } else {
+      if (topLevelNotificationRef) {
+        topLevelNotificationRef.current?.display({
+          icon: <Warning className="w-14 h-8 text-red-600" />,
+          message: 'Something went wrong. Please try again later!',
+        });
+      }
     }
   }
 
@@ -61,8 +96,7 @@ const Home = () => {
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
       <Nav setShowComponent={setShowComponent} />
       <Sidebar setShowComponent={setShowComponent} />
-      {/* <SellNow show={showComponet.show} componentName={showComponet.componentName} setShowComponent={setShowComponent} /> */}
-      <section className="md:ml-5 px-2 gap-4 lg:gap-8 md:px-0 my-6 md:my-0 h-full max-h-[98%] flex flex-wrap items-center w-full overflow-auto xl:space-x-5 2xl:space-x-7">
+      <section className="md:ml-2 px-2 gap-4 md:px-0 my-6 md:my-0 h-full max-h-[98%] flex flex-wrap items-center w-full overflow-auto xl:space-x-5 2xl:space-x-7">
         {/* LEFT */}
         <div className="flex w-full shadow-xl bg-default-gray rounded-2xl h-full max-h-[735px] md:max-h-[800px] md:my-auto py-3 px-2 m-0 lg:m-5 lg:py-5 lg:px-6 md:max-w-[600px] xl:max-w-[1000px]">
           <div className="w-full h-full flex flex-col overflow-hidden">
