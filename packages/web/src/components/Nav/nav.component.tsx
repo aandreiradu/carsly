@@ -156,7 +156,7 @@ const Nav = memo(function ({ showOnAllScreens }: SideBarProps) {
                       item.isActive
                         ? 'bg-default-yellow text-black'
                         : 'text-gray-300 hover:bg-default-yellow hover:text-black',
-                      'block rounded-md px-3 py-2 text-base font-medium',
+                      'rounded-md px-3 py-2 text-base font-medium flex items-center',
                     )}
                     aria-current={item.isActive ? 'page' : undefined}
                   >
