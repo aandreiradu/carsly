@@ -11,16 +11,17 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  email        String   @unique
+  id           String       @id @default(uuid())
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  email        String       @unique
   password     String
   firstName    String?
   lastName     String?
   refreshToken String?
   adId         String?
   Ad           Ad[]
+  AdFavorites  AdFavorite[]
 
   @@map("users")
 }
@@ -118,10 +119,26 @@ model Ad {
   brand      CarBrand @relation(fields: [carBrandId], references: [id])
   carBrandId String
 
-  model      CarModel @relation(fields: [carModelId], references: [id])
-  carModelId String
+  model       CarModel     @relation(fields: [carModelId], references: [id])
+  carModelId  String
+  AdFavorites AdFavorite[]
 
   @@map("ad")
+}
+
+model AdFavorite {
+  id String @id @default(uuid())
+
+  ad   Ad     @relation(fields: [adId], references: [id])
+  adId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  isOfferOfTheDay Boolean? @default(false)
+  createdAt       DateTime @default(now())
+
+  @@map("adFavorites")
 }
 
 enum AdStatus {
@@ -183,6 +200,11 @@ enum FuelType {
   Hybrid
   Diesel
   Hydrogen
+  petrol
+  electric
+  hybrid
+  diesel
+  hydrogen
 }
 
 enum GearboxTypes {
