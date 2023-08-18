@@ -13,7 +13,6 @@ import { CreateCarBrandDTO } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { SuccessResponse } from 'src/config/types';
 import { CreateCarModelDTO } from './dto/create-car-model.dto';
-import { Public } from 'src/decorators';
 
 @Controller('/api/car')
 export class CarController {

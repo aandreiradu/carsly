@@ -43,7 +43,6 @@ export class AtGuard extends AuthGuard('jwt') {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      console.log('no token provided in authorization header');
       throw new ForbiddenException();
     }
     try {
