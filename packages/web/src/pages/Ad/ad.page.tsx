@@ -15,7 +15,6 @@ import Label from '../../components/UI/Label/label.component';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllModels, selectCarsBrands, selectModelsByBrandDataSource } from '../../store/cars/cars.selector';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
-import { CarsBrandsSuccess } from '../../types/index.types';
 import { useCallback, useEffect, useRef } from 'react';
 import { setCarsBrands, setModelsByBrand } from '../../store/cars/cars.slice';
 import TopLevelNotification, {
@@ -54,7 +53,7 @@ const Ad = ({ title }: AdPageProps) => {
   const formRef = useRef<HTMLFormElement | null>(null);
   const dispatch = useDispatch();
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
-  const { sendRequest, error, loading } = useHttpRequest<CarsBrandsSuccess>();
+  const { sendRequest, error, loading } = useHttpRequest();
   const { sendRequest: createAdRequest, loading: createAdLoading } = useHttpRequest();
   const adPageForm = useZodForm({
     schema: adSchema,
@@ -436,7 +435,17 @@ const Ad = ({ title }: AdPageProps) => {
               name="year"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { value: string }) => onChange(e.value)}
+                  onChange={(e: { value: string }) => {
+                    const yearRegistration = +adPageForm.getValues('yearOfRegistration');
+                    if (+e.value > yearRegistration) {
+                      adPageForm.setError('year', {
+                        message: 'Year of manufacture could not be smaller than year of registration.',
+                      });
+                    } else {
+                      adPageForm.clearErrors('year');
+                      onChange(e.value);
+                    }
+                  }}
                   dataSource={sellNowYearsSorted}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.year?.message}
