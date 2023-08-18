@@ -3,7 +3,7 @@ import AuthLayout from '../../components/Layouts/Auth/auth.layout';
 import { Link, useNavigate } from 'react-router-dom';
 import { Envelope, Eye, Warning } from 'phosphor-react';
 import { Input } from '../../components/UI/Input/input.component';
-import useHttpRequest, { HttpReqRes } from '../../hooks/useHttpRequest/useHttp.hook';
+import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import TopLevelNotification, {
@@ -13,7 +13,6 @@ import { PulseLoader } from 'react-spinners';
 import { SignInProps, signinSchema } from '../../schema/signin.schema';
 import { useDispatch } from 'react-redux';
 import { setAuthData } from '../../store/user/user.slice';
-import { SignInResponse } from './types';
 
 export const showPassword = (ref: React.RefObject<HTMLInputElement>) => {
   if (ref) {
@@ -38,7 +37,7 @@ const SignIn = () => {
     resolver: zodResolver(signinSchema),
     mode: 'onSubmit',
   });
-  const { data, error, loading, sendRequest }: HttpReqRes<SignInResponse> = useHttpRequest<SignInResponse>();
+  const { data, error, loading, sendRequest } = useHttpRequest();
   let passwordRef = useRef<HTMLInputElement | null>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();

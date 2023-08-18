@@ -3,11 +3,10 @@ import AuthLayout from '../../components/Layouts/Auth/auth.layout';
 import { Link, useNavigate } from 'react-router-dom';
 import { AddressBook, Check, Envelope, Eye, Warning } from 'phosphor-react';
 import { Input } from '../../components/UI/Input/input.component';
-import useHttpRequest, { HttpReqRes } from '../../hooks/useHttpRequest/useHttp.hook';
+import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { registerSchema, RegisterProps } from '../../schema/signup.schema';
-import { AuthAccountCreated } from '../../types/auth.types';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from '../../components/UI/TopLevelNotification/topLevelNotification.component';
@@ -25,13 +24,15 @@ const SignUp = () => {
     resolver: zodResolver(registerSchema),
     mode: 'onSubmit',
   });
-  const { error, loading, sendRequest }: HttpReqRes<AuthAccountCreated> = useHttpRequest<AuthAccountCreated>();
+  const { error, loading, sendRequest } = useHttpRequest();
   const passwordRef = useRef<HTMLInputElement | null>(null);
   const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
   const { ref: refPassword, ...restPassword } = register('password');
   const { ref: refConfirmPassword, ...restConfirmPassword } = register('confirmPassword');
+
+  console.log('errors', errors);
 
   useEffect(() => {
     if (error) {
@@ -153,11 +154,11 @@ const SignUp = () => {
         <div className="flex-1 my-3 py-1 px-1 bg-yellow-300 flex rounded-xl h-14 w-full ">
           <div className="pl-1 flex flex-col w-4/5">
             <Input
-              {...restPassword}
-              ref={(e) => {
-                refPassword(e);
-                passwordRef.current = e;
-              }}
+              {...register('password')}
+              // ref={(e) => {
+              //   refPassword(e);
+              //   passwordRef.current = e;
+              // }}
               className={`text-black border-none focus:outline-none active:outline-none bg-transparent px-1 ${
                 errors.password?.message && 'border-red-500'
               }`}
@@ -180,11 +181,12 @@ const SignUp = () => {
         <div className="flex-1 my-3 py-1 px-1 bg-yellow-300 flex rounded-xl h-14 w-full ">
           <div className="pl-1 flex flex-col w-4/5">
             <Input
-              {...restConfirmPassword}
-              ref={(e) => {
-                refPassword(e);
-                confirmPasswordRef.current = e;
-              }}
+              {...register('confirmPassword')}
+              // {...restConfirmPassword}
+              // ref={(e) => {
+              //   refPassword(e);
+              //   confirmPasswordRef.current = e;
+              // }}
               className={`text-black border-none focus:outline-none active:outline-none bg-transparent px-1 ${
                 errors.confirmPassword?.message && 'border-red-500'
               }`}
