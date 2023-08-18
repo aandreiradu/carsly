@@ -15,6 +15,11 @@ export type SidebarLinkProps = {
 const SidebarLink: FC<SidebarLinkProps> = ({ icon, href, isLink, onClick, isActive, setShowComponent, label }) => {
   const navigate = useNavigate();
 
+  console.log({
+    label,
+    icon,
+  });
+
   const clickHandler = useCallback(() => {
     if (isLink) {
       if (onClick) {
@@ -40,7 +45,6 @@ const SidebarLink: FC<SidebarLinkProps> = ({ icon, href, isLink, onClick, isActi
 
   return (
     <li
-      // ref={ref}
       className={`cursor-pointer p-2 ${isActive ? 'bg-yellow-400' : 'bg-transparent'} rounded-md hover:bg-yellow-400 group`}
       onClick={clickHandler}
     >
@@ -48,6 +52,5 @@ const SidebarLink: FC<SidebarLinkProps> = ({ icon, href, isLink, onClick, isActi
     </li>
   );
 };
-// );
 
 export default SidebarLink;

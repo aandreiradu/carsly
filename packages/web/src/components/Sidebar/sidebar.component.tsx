@@ -1,56 +1,63 @@
-import { useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import SidebarLink, { SidebarLinkProps } from '../SidebarLink/sidebarlink.component';
 import { House, User, Heart, SignOut, PlusCircle } from 'phosphor-react';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
-import { LogoutSuccessResponse } from '../../types/auth.types';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setAccessToken } from '../../store/user/user.slice';
 import { useNavigate } from 'react-router-dom';
 import { SideBarProps } from '../../types/index.types';
+import { selectFavoritesCount } from '../../store/favorites/favorites.selector';
 
-const sidebarLinks: SidebarLinkProps[] = [
-  {
-    label: 'Home',
-    isLink: true,
-    href: '/',
-    icon: <House className="w-6 h-6 text-white group-hover:text-black" />,
-    isActive: true,
-  },
-  {
-    label: 'Sell Now',
-    isLink: true,
-    href: '/auto/add',
-    isActive: false,
-    icon: <PlusCircle className="w-6 h-6 text-white group-hover:text-black" />,
-    setShowComponent: () => {},
-  },
-  {
-    icon: <User className="w-6 h-6 text-white group-hover:text-black" />,
-    label: 'My Profile',
-    isLink: true,
-    href: '/me',
-    isActive: false,
-  },
-  {
-    icon: <Heart className="w-6 h-6 text-white group-hover:text-black" />,
-    label: 'My Favorites',
-    isLink: true,
-    href: '/favorites',
-    isActive: false,
-  },
-  {
-    icon: <SignOut className="w-6 h-6 text-white group-hover:text-black" />,
-    label: 'Sign Out',
-    isLink: false,
-    href: '/sign-in',
-    isActive: false,
-  },
-];
-
-const Sidebar = ({ setShowComponent }: SideBarProps) => {
+const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
+  const favoritesCount = useSelector(selectFavoritesCount);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { data, error, sendRequest } = useHttpRequest<LogoutSuccessResponse>();
+  const { data, error, sendRequest } = useHttpRequest();
+  const sidebarLinks: SidebarLinkProps[] = [
+    {
+      label: 'Home',
+      isLink: true,
+      href: '/',
+      icon: <House className="w-6 h-6 text-white group-hover:text-black" />,
+      isActive: true,
+    },
+    {
+      label: 'Sell Now',
+      isLink: true,
+      href: '/auto/add',
+      isActive: false,
+      icon: <PlusCircle className="w-6 h-6 text-white group-hover:text-black" />,
+      setShowComponent: () => {},
+    },
+    {
+      icon: (
+        <div className="relative">
+          <Heart className="w-6 h-6 text-white group-hover:text-black relative" />
+          <p className="absolute -top-2 left-4 py-[1px] px-1 w-5 h-5 rounded-xl flex items-center justify-center bg-yellow-400 text-white">
+            {favoritesCount}
+          </p>
+        </div>
+      ),
+      label: 'My Favorites',
+      isLink: true,
+      href: '/favorites',
+      isActive: false,
+    },
+    {
+      icon: <User className="w-6 h-6 text-white group-hover:text-black" />,
+      label: 'My Profile',
+      isLink: true,
+      href: '/me',
+      isActive: false,
+    },
+    {
+      icon: <SignOut className="w-6 h-6 text-white group-hover:text-black" />,
+      label: 'Sign Out',
+      isLink: false,
+      href: '/sign-in',
+      isActive: false,
+    },
+  ];
   const [activeLink, setActiveLink] = useState(sidebarLinks[0].label);
 
   const activeLinkHandler = useCallback((label: string) => {
@@ -92,7 +99,7 @@ const Sidebar = ({ setShowComponent }: SideBarProps) => {
             href={link.href}
             isLink={link.isLink}
             onClick={() => {
-              activeLinkHandler.bind(this, link.label);
+              activeLinkHandler(link.label);
               link.label === 'Sign Out' && handleLogoutRequest();
             }}
             isActive={activeLink === link.label ? true : false}
@@ -102,6 +109,6 @@ const Sidebar = ({ setShowComponent }: SideBarProps) => {
       </ul>
     </div>
   );
-};
+});
 
 export default Sidebar;

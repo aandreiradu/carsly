@@ -1,49 +1,51 @@
-import { Fragment, useCallback, useEffect } from 'react';
+import { Fragment, memo, useCallback, useEffect } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { List, X, User } from 'phosphor-react';
+import { List, X, User, Heart } from 'phosphor-react';
 import { SidebarLinkProps } from '../SidebarLink/sidebarlink.component';
 import { SideBarProps } from '../../types/index.types';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogoutSuccessResponse } from '../../types/auth.types';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { setAccessToken } from '../../store/user/user.slice';
-import { useDispatch } from 'react-redux';
-
-const navigationLinks: Omit<SidebarLinkProps, 'icon'>[] = [
-  {
-    label: 'Home',
-    isLink: true,
-    href: '/',
-    isActive: true,
-  },
-  {
-    label: 'Sell Now',
-    isLink: true,
-    isActive: false,
-    href: '/auto/add',
-  },
-  {
-    label: 'My Profile',
-    isLink: true,
-    href: '/me',
-    isActive: false,
-  },
-  {
-    label: 'My Favorites',
-    isLink: true,
-    href: '/favorites',
-    isActive: false,
-  },
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { selectFavoritesCount } from '../../store/favorites/favorites.selector';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-const Nav = ({ setShowComponent, showOnAllScreens }: SideBarProps) => {
+const Nav = memo(function ({ showOnAllScreens }: SideBarProps) {
+  const favoritesCount = useSelector(selectFavoritesCount);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { data, error, sendRequest } = useHttpRequest<LogoutSuccessResponse>();
+  const { data, error, sendRequest } = useHttpRequest();
+
+  const navigationLinks: Partial<SidebarLinkProps>[] = [
+    {
+      label: 'Home',
+      isLink: true,
+      href: '/',
+      isActive: true,
+    },
+    {
+      label: 'Sell Now',
+      isLink: true,
+      isActive: false,
+      href: '/auto/add',
+    },
+    {
+      label: 'My Profile',
+      isLink: true,
+      href: '/me',
+      isActive: false,
+    },
+    {
+      label: `My Favorites - ${favoritesCount}`,
+      icon: <Heart weight="fill" className="w-4 h-4 text-white group-hover:text-black relative ml-1" />,
+      isLink: true,
+      href: '/favorites',
+      isActive: false,
+    },
+  ];
 
   useEffect(() => {
     if (data) {
@@ -157,9 +159,8 @@ const Nav = ({ setShowComponent, showOnAllScreens }: SideBarProps) => {
                       'block rounded-md px-3 py-2 text-base font-medium',
                     )}
                     aria-current={item.isActive ? 'page' : undefined}
-                    onClick={() => setShowComponent({ show: true, componentName: item.label })}
                   >
-                    {item.label}
+                    {item.label} {item?.icon}
                   </Link>
                 ) : (
                   <Disclosure.Button
@@ -170,12 +171,11 @@ const Nav = ({ setShowComponent, showOnAllScreens }: SideBarProps) => {
                       item.isActive
                         ? 'bg-default-yellow text-black'
                         : 'text-gray-300 hover:bg-default-yellow hover:text-black',
-                      'block rounded-md px-3 py-2 text-base font-medium',
+                      'rounded-md px-3 py-2 text-base font-medium flex items-center',
                     )}
                     aria-current={item.isActive ? 'page' : undefined}
-                    onClick={() => setShowComponent({ show: true, componentName: item.label })}
                   >
-                    {item.label}
+                    {item.label} {item?.icon}
                   </Disclosure.Button>
                 ),
               )}
@@ -185,6 +185,6 @@ const Nav = ({ setShowComponent, showOnAllScreens }: SideBarProps) => {
       )}
     </Disclosure>
   );
-};
+});
 
 export default Nav;

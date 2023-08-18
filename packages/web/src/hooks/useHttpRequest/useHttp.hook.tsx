@@ -11,9 +11,9 @@ export interface HttpReqRes<T> {
   setError?: Dispatch<SetStateAction<Error | null>>;
 }
 
-const useHttpRequest = <T,>(): HttpReqRes<T | AxiosError> => {
+const useHttpRequest = () => {
   const axiosInterceptors = useAxiosInterceptors();
-  const [data, setData] = useState<T | null>(null);
+  const [data, setData] = useState(null);
   const [loading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -25,7 +25,7 @@ const useHttpRequest = <T,>(): HttpReqRes<T | AxiosError> => {
       }
 
       setIsLoading(true);
-      const response = await axiosInterceptors<T>(url, options);
+      const response = await axiosInterceptors(url, options);
       setData(response.data);
       return response;
     } catch (error: unknown) {
@@ -37,7 +37,9 @@ const useHttpRequest = <T,>(): HttpReqRes<T | AxiosError> => {
         setError(new Error('An unknown error occurred.'));
       }
     } finally {
+      // setTimeout(() => {
       setIsLoading(false);
+      // }, 6000);
     }
   }, []);
 
