@@ -12,30 +12,27 @@ export type FavoriteCarAd = {
 
 export interface FavoritesState {
   favoriteAds: FavoriteCarAd[];
+  count: number;
 }
 
 const initialState: FavoritesState = {
   favoriteAds: [],
+  count: 0,
 };
 
 export const favoritesSlice = createSlice({
   name: 'favorites',
   initialState,
   reducers: {
-    addOrRemoveAdToFavorites(state: FavoritesState, action: PayloadAction<FavoriteCarAd>) {
-      const existingAd = state.favoriteAds.find((ad) => ad.adId === action.payload.adId);
+    setFavoriteAds(state: FavoritesState, action: PayloadAction<FavoriteCarAd[]>) {
+      state.favoriteAds = action.payload;
+    },
 
-      if (!existingAd) {
-        console.log('nu exista');
-        state.favoriteAds.push(action.payload);
-      } else {
-        const filteredFavAds = state.favoriteAds.filter((ad) => ad.adId !== action.payload.adId);
-        console.log('exista');
-        state.favoriteAds = filteredFavAds;
-      }
+    setFavoritesCount(state: FavoritesState, action: PayloadAction<number>) {
+      state.count = action.payload;
     },
   },
 });
 
-export const { addOrRemoveAdToFavorites } = favoritesSlice.actions;
+export const { setFavoriteAds, setFavoritesCount } = favoritesSlice.actions;
 export default favoritesSlice.reducer;

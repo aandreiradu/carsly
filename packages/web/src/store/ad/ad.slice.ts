@@ -77,6 +77,7 @@ export interface OfferOfTheDay {
   km: number;
   engineSize: number;
   description?: string;
+  location?: string;
 }
 
 export interface IADState {
