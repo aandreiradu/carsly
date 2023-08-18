@@ -1,12 +1,13 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
-  InternalServerErrorException,
+  HttpCode,
+  HttpStatus,
   Post,
   Req,
   UseFilters,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AdsService } from './ads.service';
@@ -16,7 +17,8 @@ import { fileFilter, storage } from 'src/config/file-upload';
 import { ValidationFilter } from 'src/filters/validation.filter';
 import { createAdMapFormData } from 'src/utils/mapFormData';
 import { CreateAdDTO } from './dto/create-ad.dto';
-import { Public } from 'src/decorators';
+import { AddFavoriteDTO } from './dto/favorite-ad.dto';
+import { ExtendedRequest, InjectUserId } from 'src/guards';
 
 @Controller('api/ad')
 export class AdsController {
@@ -63,5 +65,22 @@ export class AdsController {
   @Get('offerOfTheDay')
   async getOfferOfTheDay() {
     return this.adsService.getOfferOfTheDay();
+  }
+
+  @UseGuards(InjectUserId)
+  @Get('favorites')
+  @HttpCode(HttpStatus.OK)
+  async getFavoritesByUserId(@Req() req: ExtendedRequest) {
+    return this.adsService.getFavoriteAdsByUserId(req['user']?.sub);
+  }
+
+  @UseGuards(InjectUserId)
+  @Post('favorites')
+  @HttpCode(HttpStatus.OK)
+  async favoritesHandler(@Req() req: Request, @Body() dto: AddFavoriteDTO) {
+    return this.adsService.addOrRemoveFavorites({
+      ...dto,
+      userId: req['user']?.sub,
+    });
   }
 }

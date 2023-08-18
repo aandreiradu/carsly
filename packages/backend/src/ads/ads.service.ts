@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CarService } from 'src/car/car.service';
 import { AdRepository, GetOfferOfTheDay } from './ads.repository';
 import {
@@ -16,6 +16,7 @@ import {
 } from '@prisma/client';
 import { CreateAdDTO } from './dto/create-ad.dto';
 import { ConfigService } from '@nestjs/config';
+import { AddFavoriteDTO } from './dto/favorite-ad.dto';
 export interface CreateAd extends CreateAdDTO {
   userId: string;
   filePaths?: string[];
@@ -120,6 +121,10 @@ export class AdsService {
     }
   }
 
+  async getFavoriteAdsByUserId(userId: string) {
+    return this.adRepository.getFavoriteAdsByUserId(userId);
+  }
+
   async getOfferOfTheDay(): Promise<GetOfferOfTheDay> {
     const now = Date.now();
 
@@ -141,6 +146,33 @@ export class AdsService {
       return offerOfTheDay;
     } else {
       return this.offerOfTheDayCache as GetOfferOfTheDay;
+    }
+  }
+
+  async addOrRemoveFavorites(dto: AddFavoriteDTO) {
+    const isValidAd = await this.adRepository.getAdById(dto.adId);
+    if (!isValidAd) {
+      throw new BadRequestException('Ad not found');
+    }
+
+    const existingFavoriteAd = await this.adRepository.getFavoriteByAdId(
+      dto.adId,
+      dto.userId,
+    );
+
+    if (existingFavoriteAd) {
+      await this.adRepository.removeAdFromFavorites(existingFavoriteAd.id);
+      const updatedFavoriteAds = await this.adRepository.getFavoriteAdsByUserId(
+        dto.userId,
+      );
+      return updatedFavoriteAds;
+    } else {
+      await this.adRepository.addAdToFavorites(dto);
+      const updatedFavoriteAds = await this.adRepository.getFavoriteAdsByUserId(
+        dto.userId,
+      );
+
+      return updatedFavoriteAds;
     }
   }
 }

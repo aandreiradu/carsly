@@ -1,7 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAdDTOO } from './ads.service';
-import { Ad, AdImage, AdStatus, CurrencyTypes, FuelType } from '@prisma/client';
+import {
+  Ad,
+  AdFavorite,
+  AdStatus,
+  CurrencyTypes,
+  FuelType,
+} from '@prisma/client';
+import { AddFavoriteDTO } from './dto/favorite-ad.dto';
 
 export interface GetOfferOfTheDay {
   adId: string;
@@ -68,6 +75,46 @@ export class AdRepository {
     });
   }
 
+  async getAdById(adId: string): Promise<Ad> {
+    return this.prismaService.ad.findFirst({
+      where: {
+        id: adId,
+      },
+    });
+  }
+
+  async getFavoriteByAdId(
+    adId: string,
+    userId: string,
+  ): Promise<AdFavorite | null> {
+    const favoriteAdd = await this.prismaService.adFavorite.findFirst({
+      where: {
+        adId,
+        userId,
+      },
+    });
+
+    if (!favoriteAdd) return null;
+
+    return favoriteAdd;
+  }
+
+  async removeAdFromFavorites(adFavoriteId: string): Promise<void> {
+    await this.prismaService.adFavorite.delete({
+      where: {
+        id: adFavoriteId,
+      },
+    });
+  }
+
+  async addAdToFavorites(dto: AddFavoriteDTO): Promise<void> {
+    await this.prismaService.adFavorite.create({
+      data: {
+        ...dto,
+      },
+    });
+  }
+
   async getAdsByUserId(userId: string): Promise<Ad[]> {
     return this.prismaService.ad.findMany({
       where: {
@@ -128,5 +175,53 @@ export class AdRepository {
     }))[0];
 
     return offer;
+  }
+
+  async getFavoriteAdsByUserId(userId: string) {
+    const count = await this.prismaService.adFavorite.count({
+      where: {
+        userId,
+      },
+    });
+    const favoritesQuery = await this.prismaService.adFavorite.findMany({
+      where: {
+        userId,
+      },
+      select: {
+        ad: {
+          select: {
+            id: true,
+            images: {
+              select: {
+                path: true,
+              },
+            },
+            title: true,
+            fuelType: true,
+            price: true,
+            currency: true,
+            year: true,
+            KM: true,
+            engineSize: true,
+            description: true,
+            sellerCity: true,
+          },
+        },
+      },
+    });
+
+    const favorites = favoritesQuery.map((favItem) => ({
+      adId: favItem.ad.id,
+      name: favItem.ad.title,
+      price: favItem.ad.price,
+      currency: favItem.ad.currency,
+      thumbnail: favItem.ad.images?.slice(0, 1)[0]?.path ?? [],
+      location: favItem.ad.sellerCity,
+    }));
+
+    return {
+      count,
+      favorites,
+    };
   }
 }
