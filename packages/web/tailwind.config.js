@@ -3,6 +3,11 @@ export default {
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
     extend: {
+      gridTemplateColumns: {
+        '4cols-258': 'repeat(4, minmax(258px, 1fr))',
+        '3cols-258': 'repeat(3, minmax(258px, 1fr))',
+        '2cols-258': 'repeat(2, minmax(258px, 1fr))',
+      },
       backgroundColor: {
         'default-gray': '#373737',
         'default-yellow': 'rgb(253 224 71)',
