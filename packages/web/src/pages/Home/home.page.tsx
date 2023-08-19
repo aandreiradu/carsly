@@ -5,7 +5,7 @@ import Nav from '../../components/Nav/nav.component';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import _axios from '../../api/axios/axios';
 import { useEffect, useRef, useState } from 'react';
-import { CarsBrandsSuccess, ShowComponentProps } from '../../types/index.types';
+import { ShowComponentProps } from '../../types/index.types';
 import Sidebar from '../../components/Sidebar/sidebar.component';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCarsBrands } from '../../store/cars/cars.slice';
@@ -20,11 +20,10 @@ const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Ne
 
 const Home = () => {
   const carsBrands = useSelector(selectCarsBrands);
-  console.log('carsBrands din home', carsBrands);
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const dispatch = useDispatch();
   const { sendRequest, error } = useHttpRequest();
-  const { sendRequest: SRGetFavoritesAds, error: errorFavoritesAds, data: dataFavoriteAds } = useHttpRequest();
+  const { sendRequest: SRGetFavoritesAds, error: errorFavoritesAds } = useHttpRequest();
   const [_, setShowComponent] = useState<ShowComponentProps>({ show: false, componentName: '' });
 
   useEffect(() => {

@@ -9,3 +9,5 @@ export const selectIsFavoriteAd = (adId: string) =>
   });
 
 export const selectFavoritesCount = createSelector(favAdsState, (state) => state.count);
+
+export const selectFavoriteAds = createSelector(favAdsState, (state) => state.favoriteAds);
