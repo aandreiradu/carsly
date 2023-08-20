@@ -15,11 +15,13 @@ import TopLevelNotification, {
 import { selectCarsBrands } from '../../store/cars/cars.selector';
 import OfferOfTheDay from '../../components/OfferOfTheDay/offerOfTheDay.component';
 import { setFavoriteAds, setFavoritesCount } from '../../store/favorites/favorites.slice';
+import { selectFavoriteAds } from '../../store/favorites/favorites.selector';
 
 const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Newest'];
 
 const Home = () => {
   const carsBrands = useSelector(selectCarsBrands);
+  const favoriteAds = useSelector(selectFavoriteAds);
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const dispatch = useDispatch();
   const { sendRequest, error } = useHttpRequest();
@@ -62,7 +64,7 @@ const Home = () => {
 
     //cached
     carsBrands?.length === 0 && getCarsBrands();
-    getFavoritesAdsByUser();
+    favoriteAds?.length === 0 && getFavoritesAdsByUser();
   }, []);
 
   if (error) {
