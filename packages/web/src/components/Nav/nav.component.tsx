@@ -27,7 +27,7 @@ const Nav = memo(function ({ showOnAllScreens }: SideBarProps) {
       isActive: true,
     },
     {
-      label: 'Sell Now',
+      label: 'Sell Your Car',
       isLink: true,
       isActive: false,
       href: '/auto/add',

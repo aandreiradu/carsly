@@ -22,7 +22,7 @@ const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
       isActive: true,
     },
     {
-      label: 'Sell Now',
+      label: 'Sell Your Car',
       isLink: true,
       href: '/auto/add',
       isActive: false,
