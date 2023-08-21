@@ -77,6 +77,9 @@ export class AdsService {
   #offerOfTheDaycacheTTL =
     Date.now() +
     (this.configService.get('CACHE_OFFER_OF_THE_DAY_SECONDS') || 3600) * 1000;
+  #latestAdsCacheTTL =
+    Date.now() + (this.configService.get('CACHE_LATEST_ADS') || 120) * 1000;
+  cacheLatestAds = [];
 
   constructor(
     private adRepository: AdRepository,
@@ -173,6 +176,28 @@ export class AdsService {
       );
 
       return updatedFavoriteAds;
+    }
+  }
+
+  async getLatestAds() {
+    const now = Date.now();
+
+    /* *Reset the cache after TTL expires */
+    if (now > this.#latestAdsCacheTTL) {
+      this.#latestAdsCacheTTL =
+        now + +(this.configService.get('CACHE_LATEST_ADS') || 120) * 1000;
+      this.cacheLatestAds = [];
+    }
+
+    if (!this.cacheLatestAds.length) {
+      const latestAds = await this.adRepository.getLatestAds();
+      if (latestAds.length > 0) {
+        this.cacheLatestAds = latestAds;
+      }
+
+      return latestAds;
+    } else {
+      return this.cacheLatestAds;
     }
   }
 }

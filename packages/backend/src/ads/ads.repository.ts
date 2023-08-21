@@ -22,6 +22,16 @@ export interface GetOfferOfTheDay {
   engineSize: number;
   description?: string;
 }
+
+interface LatestAd {
+  adId: string;
+  name: string;
+  price: number;
+  currency: CurrencyTypes;
+  thumbnail: string;
+  location?: string;
+}
+
 @Injectable()
 export class AdRepository {
   constructor(private prismaService: PrismaService) {}
@@ -223,5 +233,40 @@ export class AdRepository {
       count,
       favorites,
     };
+  }
+
+  async getLatestAds(): Promise<LatestAd[]> {
+    const latestAdsQuery = await this.prismaService.ad.findMany({
+      take: 15,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        id: true,
+        images: {
+          select: {
+            path: true,
+          },
+        },
+        title: true,
+        fuelType: true,
+        price: true,
+        currency: true,
+        year: true,
+        KM: true,
+        engineSize: true,
+        description: true,
+        sellerCity: true,
+      },
+    });
+
+    return latestAdsQuery.map((ad) => ({
+      adId: ad.id,
+      name: ad.title,
+      price: ad.price,
+      currency: ad.currency,
+      thumbnail: ad.images?.slice(0, 1)[0]?.path ?? '',
+      location: ad.sellerCity,
+    }));
   }
 }

@@ -19,6 +19,7 @@ import { createAdMapFormData } from 'src/utils/mapFormData';
 import { CreateAdDTO } from './dto/create-ad.dto';
 import { AddFavoriteDTO } from './dto/favorite-ad.dto';
 import { ExtendedRequest, InjectUserId } from 'src/guards';
+import { Public } from 'src/decorators';
 
 @Controller('api/ad')
 export class AdsController {
@@ -82,5 +83,10 @@ export class AdsController {
       ...dto,
       userId: req['user']?.sub,
     });
+  }
+
+  @Get('latest')
+  async getLatestAds() {
+    return this.adsService.getLatestAds();
   }
 }
