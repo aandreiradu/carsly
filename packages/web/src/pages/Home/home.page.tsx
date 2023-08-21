@@ -16,6 +16,7 @@ import { selectCarsBrands } from '../../store/cars/cars.selector';
 import OfferOfTheDay from '../../components/OfferOfTheDay/offerOfTheDay.component';
 import { setFavoriteAds, setFavoritesCount } from '../../store/favorites/favorites.slice';
 import { selectFavoriteAds } from '../../store/favorites/favorites.selector';
+import LatestAdsPage from '../LatestAds/latestAds.page';
 
 const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Newest'];
 
@@ -99,7 +100,7 @@ const Home = () => {
       <Sidebar setShowComponent={setShowComponent} />
       <section className="md:ml-2 px-2 gap-4 md:px-0 my-6 md:my-0 h-full max-h-[98%] flex flex-wrap items-center w-full overflow-auto xl:space-x-5 2xl:space-x-7">
         {/* LEFT */}
-        <div className="flex w-full shadow-xl bg-default-gray rounded-2xl h-full max-h-[735px] md:max-h-[800px] md:my-auto py-3 px-2 m-0 lg:m-5 lg:py-5 lg:px-6 md:max-w-[600px] xl:max-w-[1000px]">
+        <div className="flex w-full shadow-xl bg-default-gray rounded-2xl h-full max-h-[735px] md:max-h-[800px] md:my-auto py-3 px-2 m-0 lg:m-5 lg:py-2 lg:px-6 md:max-w-[600px] xl:max-w-[60%]">
           <div className="w-full h-full flex flex-col overflow-hidden">
             <h1 className="text-white mb-4 font-kanit text-xl md:text-4xl font-bold tracking-widest">
               Find your perfect car
@@ -128,35 +129,7 @@ const Home = () => {
                 </p>
               </div>
             </div>
-
-            <Carousel className="cursor-grab mt-10 px-1 md:pl-1 md:pr-4 flex items-center space-x-3 overflow-x-auto overflow-y-hidden">
-              {categories.map((_, index) => (
-                <div
-                  key={'b' + index}
-                  className="flex flex-col flex-shrink-0 relative w-52 h-64 bg-[#2f2e2e] text-white rounded-lg"
-                >
-                  <span className="absolute cursor-pointer top-2 left-2 p-1 bg-[#2f2e2e] rounded-lg">
-                    <Heart className="h-5 w-6" />
-                  </span>
-
-                  <img
-                    className="select-none pointer-events-none rounded-lg h-full w-full bg-cover bg-center max-h-[70%]"
-                    src={'./landing-2.jpg'}
-                  />
-
-                  <div className="px-2 py-1 select-none ">
-                    <p className="text-sm">Mercedes Benz AMG GTR PRO +</p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-base capitalize">petrol</span>
-                      <div className="flex items-center">
-                        <Star />
-                        <span>4.8</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </Carousel>
+            <LatestAdsPage />
           </div>
         </div>
         <OfferOfTheDay />
