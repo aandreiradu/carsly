@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import _axios from '../../api/axios/axios';
 import useAxiosInterceptors from '../useAxiosInterceptors/useAxiosInterceptors.hook';

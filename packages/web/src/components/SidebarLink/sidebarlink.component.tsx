@@ -15,11 +15,6 @@ export type SidebarLinkProps = {
 const SidebarLink: FC<SidebarLinkProps> = ({ icon, href, isLink, onClick, isActive, setShowComponent, label }) => {
   const navigate = useNavigate();
 
-  console.log({
-    label,
-    icon,
-  });
-
   const clickHandler = useCallback(() => {
     if (isLink) {
       if (onClick) {
