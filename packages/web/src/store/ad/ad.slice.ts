@@ -80,14 +80,25 @@ export interface OfferOfTheDay {
   location?: string;
 }
 
+export interface LatestAd {
+  adId: string;
+  name: string;
+  price: number;
+  currency: CurrencyTypes;
+  thumbnail: string;
+  location?: string;
+}
+
 export interface IADState {
   ads: Ad[];
   offerOfTheDay: OfferOfTheDay | null;
+  latestAds: LatestAd[] | null;
 }
 
 const initialState: IADState = {
   ads: [],
   offerOfTheDay: null,
+  latestAds: null,
 };
 
 export const adSlice = createSlice({
@@ -100,8 +111,11 @@ export const adSlice = createSlice({
     setOfferOfTheDay(state: IADState, action: PayloadAction<OfferOfTheDay>) {
       state.offerOfTheDay = action.payload;
     },
+    setLatestAds(state: IADState, action: PayloadAction<LatestAd[]>) {
+      state.latestAds = action.payload;
+    },
   },
 });
 
-export const { insertAd, setOfferOfTheDay } = adSlice.actions;
+export const { insertAd, setOfferOfTheDay, setLatestAds } = adSlice.actions;
 export default adSlice.reducer;
