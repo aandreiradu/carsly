@@ -225,7 +225,7 @@ export class AdRepository {
       name: favItem.ad.title,
       price: favItem.ad.price,
       currency: favItem.ad.currency,
-      thumbnail: favItem.ad.images?.slice(0, 1)[0]?.path ?? [],
+      thumbnail: favItem.ad.images?.slice(0, 1)[0]?.path ?? null,
       location: favItem.ad.sellerCity,
     }));
 
