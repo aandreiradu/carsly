@@ -19,7 +19,6 @@ import { createAdMapFormData } from 'src/utils/mapFormData';
 import { CreateAdDTO } from './dto/create-ad.dto';
 import { AddFavoriteDTO } from './dto/favorite-ad.dto';
 import { ExtendedRequest, InjectUserId } from 'src/guards';
-import { Public } from 'src/decorators';
 
 @Controller('api/ad')
 export class AdsController {
@@ -72,7 +71,7 @@ export class AdsController {
   @Get('favorites')
   @HttpCode(HttpStatus.OK)
   async getFavoritesByUserId(@Req() req: ExtendedRequest) {
-    return this.adsService.getFavoriteAdsByUserId(req['user']?.sub);
+    return this.adsService.getFavoriteAdsByUserId(req['user']?.sub ?? null);
   }
 
   @UseGuards(InjectUserId)

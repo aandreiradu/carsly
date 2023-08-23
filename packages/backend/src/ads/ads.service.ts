@@ -125,6 +125,10 @@ export class AdsService {
   }
 
   async getFavoriteAdsByUserId(userId: string) {
+    if (!userId) {
+      throw new BadRequestException('Could not extract userId');
+    }
+
     return this.adRepository.getFavoriteAdsByUserId(userId);
   }
 
