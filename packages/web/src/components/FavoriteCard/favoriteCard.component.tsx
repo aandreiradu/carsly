@@ -7,6 +7,7 @@ import { ClipLoader } from 'react-spinners';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from '../UI/TopLevelNotification/topLevelNotification.component';
+import BackupImage from '../../assets/missing-image.jpg';
 
 const FavoriteCardItem = ({ adId, currency, name, price, thumbnail, location }: FavoriteCarAd) => {
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
@@ -61,8 +62,8 @@ const FavoriteCardItem = ({ adId, currency, name, price, thumbnail, location }: 
         <div className="h-48 w-full">
           <img
             className="w-full h-full object-cover rounded-tl-md rounded-tr-md"
-            src={`${import.meta.env.VITE_BACKEND_URL}/${thumbnail}` ?? ''}
-            alt="name"
+            src={thumbnail ? `${import.meta.env.VITE_BACKEND_URL}/${thumbnail}` : BackupImage}
+            alt={name ?? 'ad thumbnail'}
           />
         </div>
         <div className="flex flex-col p-4 gap-2">
