@@ -15,7 +15,7 @@ interface ILatestAd extends LatestAd {}
 const LatestAd = ({ adId, currency, name, price, thumbnail, location }: ILatestAd) => {
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const isFavoriteAd = useSelector(isFavorite(adId));
-  const { errorFavorites, handleAddToFavorite, loadingFavorites } = useAddToFavorite();
+  const { errorFavorites, handleAddToFavorite, loadingFavorites } = useAddToFavorite({ isOfferOfTheDay: false });
 
   if (errorFavorites) {
     if (topLevelNotificationRef) {

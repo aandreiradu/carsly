@@ -12,42 +12,17 @@ import TopLevelNotification, {
 import { ClipLoader } from 'react-spinners';
 import BackupImage from '../../assets/missing-image.jpg';
 import { Skeleton } from '@mui/material';
+import useAddToFavorite from '../../hooks/useAddToFavorite/useAddToFavorite.hook';
 
 const yelloDefault = 'rgb(253 224 71)';
 
 const OfferOfTheDay = () => {
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const { loading, sendRequest, error } = useHttpRequest();
-  const { sendRequest: sendRequestFavorites, loading: loadingFavorites, error: errorFavorites } = useHttpRequest();
+  const { errorFavorites, handleAddToFavorite, loadingFavorites } = useAddToFavorite({ isOfferOfTheDay: true });
   const dispatch = useDispatch();
   const offerOfTheDay = useSelector(selectOfferOfTheDay);
   const isFavAd = useSelector(selectIsFavoriteAd(offerOfTheDay?.adId ?? ''));
-
-  const handleAddToFavorite = useCallback(async (ad: FavoriteCarAd) => {
-    if (loading || loadingFavorites) return;
-
-    const abortController = new AbortController();
-    const responseFavorites = await sendRequestFavorites('/api/ad/favorites', {
-      method: 'POST',
-      data: {
-        adId: ad.adId,
-        isOfferOfTheDay: true,
-      },
-      withCredentials: true,
-      signal: abortController.signal,
-    });
-
-    if (responseFavorites && responseFavorites.status === 200) {
-      const { count, favorites } = responseFavorites.data || {};
-      if (count && +count > 0) {
-        dispatch(setFavoritesCount(count));
-      }
-
-      if (favorites && favorites?.length) {
-        dispatch(setFavoriteAds(favorites));
-      }
-    }
-  }, []);
 
   useEffect(() => {
     const getOfferOfTheDay = async () => {

@@ -3,7 +3,11 @@ import useHttpRequest from '../useHttpRequest/useHttp.hook';
 import { useCallback } from 'react';
 import { FavoriteCarAd, setFavoriteAds, setFavoritesCount } from '../../store/favorites/favorites.slice';
 
-const useAddToFavorite = () => {
+interface UseAddToFavorite {
+  isOfferOfTheDay?: boolean;
+}
+
+const useAddToFavorite = ({ isOfferOfTheDay = false }: UseAddToFavorite) => {
   const dispatch = useDispatch();
   const { sendRequest: sendRequestFavorites, loading: loadingFavorites, error: errorFavorites } = useHttpRequest();
 
@@ -15,7 +19,7 @@ const useAddToFavorite = () => {
       method: 'POST',
       data: {
         adId: ad.adId,
-        isOfferOfTheDay: true,
+        isOfferOfTheDay,
       },
       withCredentials: true,
       signal: abortController.signal,

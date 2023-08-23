@@ -1,41 +1,16 @@
+import { useRef } from 'react';
 import { Heart, Warning } from 'phosphor-react';
-import { FavoriteCarAd, setFavoriteAds, setFavoritesCount } from '../../store/favorites/favorites.slice';
-import { useCallback, useRef } from 'react';
-import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
-import { useDispatch } from 'react-redux';
+import { FavoriteCarAd } from '../../store/favorites/favorites.slice';
 import { ClipLoader } from 'react-spinners';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from '../UI/TopLevelNotification/topLevelNotification.component';
 import BackupImage from '../../assets/missing-image.jpg';
+import useAddToFavorite from '../../hooks/useAddToFavorite/useAddToFavorite.hook';
 
 const FavoriteCardItem = ({ adId, currency, name, price, thumbnail, location }: FavoriteCarAd) => {
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
-  const { sendRequest: sendRequestFavorites, loading: loadingFavorites, error: errorFavorites } = useHttpRequest();
-  const dispatch = useDispatch();
-  const handleAddToFavorite = useCallback(async (ad: FavoriteCarAd) => {
-    const abortController = new AbortController();
-    const responseFavorites = await sendRequestFavorites('/api/ad/favorites', {
-      method: 'POST',
-      data: {
-        adId: ad.adId,
-        isOfferOfTheDay: false,
-      },
-      withCredentials: true,
-      signal: abortController.signal,
-    });
-
-    if (responseFavorites && responseFavorites.status === 200) {
-      const { count, favorites } = responseFavorites.data || {};
-      if (count && +count > 0) {
-        dispatch(setFavoritesCount(count));
-      }
-
-      if (favorites && favorites?.length) {
-        dispatch(setFavoriteAds(favorites));
-      }
-    }
-  }, []);
+  const { errorFavorites, handleAddToFavorite, loadingFavorites } = useAddToFavorite({ isOfferOfTheDay: false });
 
   if (errorFavorites) {
     if (errorFavorites instanceof Error) {
