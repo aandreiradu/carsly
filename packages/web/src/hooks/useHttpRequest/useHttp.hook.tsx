@@ -1,19 +1,19 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Dispatch, SetStateAction, useCallback, useState } from 'react';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { useCallback, useState } from 'react';
 import _axios from '../../api/axios/axios';
 import useAxiosInterceptors from '../useAxiosInterceptors/useAxiosInterceptors.hook';
 
-export interface HttpReqRes<T> {
+export interface HttpRequestResult<T> {
   data: T | null;
-  loading: boolean;
   error: Error | null;
-  sendRequest: (url: string, options: AxiosRequestConfig) => Promise<void | AxiosResponse>;
-  setError?: Dispatch<SetStateAction<Error | null>>;
+  loading: boolean;
+  sendRequest: (url: string, options?: AxiosRequestConfig) => Promise<AxiosResponse<T> | void>;
+  setError: (error: Error | null) => void;
 }
 
-const useHttpRequest = () => {
+const useHttpRequest = <T,>(): HttpRequestResult<T> => {
   const axiosInterceptors = useAxiosInterceptors();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<T | null>(null);
   const [loading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -25,7 +25,7 @@ const useHttpRequest = () => {
       }
 
       setIsLoading(true);
-      const response = await axiosInterceptors(url, options);
+      const response = await axiosInterceptors<T>(url, options);
       setData(response.data);
       return response;
     } catch (error: unknown) {
@@ -37,9 +37,7 @@ const useHttpRequest = () => {
         setError(new Error('An unknown error occurred.'));
       }
     } finally {
-      // setTimeout(() => {
       setIsLoading(false);
-      // }, 6000);
     }
   }, []);
 

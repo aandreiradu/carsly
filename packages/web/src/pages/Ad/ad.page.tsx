@@ -48,7 +48,6 @@ import { PulseLoader } from 'react-spinners';
 import { insertAd } from '../../store/ad/ad.slice';
 
 const Ad = ({ title }: AdPageProps) => {
-  console.log('rerender');
   const topViewRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
   const dispatch = useDispatch();
