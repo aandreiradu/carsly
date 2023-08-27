@@ -1,7 +1,6 @@
 import { Heart, Warning } from 'phosphor-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useCallback, useEffect, useRef } from 'react';
-import { FavoriteCarAd, setFavoritesCount, setFavoriteAds } from '../../store/favorites/favorites.slice';
+import { useEffect, useRef } from 'react';
 import { selectIsFavoriteAd } from '../../store/favorites/favorites.selector';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { type OfferOfTheDay, setOfferOfTheDay } from '../../store/ad/ad.slice';
@@ -13,6 +12,7 @@ import { ClipLoader } from 'react-spinners';
 import BackupImage from '../../assets/missing-image.jpg';
 import { Skeleton } from '@mui/material';
 import useAddToFavorite from '../../hooks/useAddToFavorite/useAddToFavorite.hook';
+import { Link } from 'react-router-dom';
 
 const yelloDefault = 'rgb(253 224 71)';
 
@@ -35,7 +35,7 @@ const OfferOfTheDay = () => {
         const { data, status } = responseOffer;
         const offerOfTheDay = data as OfferOfTheDay;
         if (status === 200 && offerOfTheDay?.adId) {
-          dispatch(setOfferOfTheDay(data));
+          dispatch(setOfferOfTheDay(offerOfTheDay));
         }
       }
     };
@@ -99,10 +99,12 @@ const OfferOfTheDay = () => {
               height="400px"
             />
           ) : (
-            <img
-              className="z-0 w-full h-full md:h-full max-h-80 md:max-h-[40%] object-cover object-center brightness-75 rounded-lg rounded-bl-none rounded-br-none"
-              src={offerOfTheDay?.thumbnail ? 'http://localhost:5174/' + offerOfTheDay?.thumbnail : BackupImage}
-            />
+            <Link className="z-0 w-full h-full md:h-full max-h-80 md:max-h-[40%]" to={`/ad/${offerOfTheDay.adId}`}>
+              <img
+                className="z-0 w-full h-full object-cover object-center brightness-75 rounded-lg rounded-bl-none rounded-br-none"
+                src={offerOfTheDay?.thumbnail ? 'http://localhost:5174/' + offerOfTheDay?.thumbnail : BackupImage}
+              />
+            </Link>
           )}
 
           <div
