@@ -6,6 +6,7 @@ import Persist from './components/Persist/persist.component';
 import Ad from './pages/Ad/ad.page';
 import NotFound from './pages/NotFound/notfound.page';
 import FavoritePage from './pages/Favorites/favorites.page';
+import AdDetailsPage from './pages/AdDetails/adDetails.page';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route index path="/" element={<Home />} />
         <Route path="/auto/add" element={<Ad title="Sell Your Car Now" />} />
         <Route path="/favorites" element={<FavoritePage />} />
+        <Route path="/ad/:adId" element={<AdDetailsPage />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
