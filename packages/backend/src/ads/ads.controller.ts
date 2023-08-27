@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Req,
   UseFilters,
@@ -19,6 +20,8 @@ import { createAdMapFormData } from 'src/utils/mapFormData';
 import { CreateAdDTO } from './dto/create-ad.dto';
 import { AddFavoriteDTO } from './dto/favorite-ad.dto';
 import { ExtendedRequest, InjectUserId } from 'src/guards';
+import { Public } from 'src/decorators';
+import { AdDetailsDto } from './dto/ad.dto';
 
 @Controller('api/ad')
 export class AdsController {
@@ -87,5 +90,10 @@ export class AdsController {
   @Get('latest')
   async getLatestAds() {
     return this.adsService.getLatestAds();
+  }
+
+  @Get('/:adId')
+  async getAdDetailsById(@Param() dto: AdDetailsDto) {
+    return this.adsService.getAdDetailsById(dto.adId);
   }
 }

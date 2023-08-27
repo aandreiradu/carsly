@@ -17,6 +17,7 @@ import {
 import { CreateAdDTO } from './dto/create-ad.dto';
 import { ConfigService } from '@nestjs/config';
 import { AddFavoriteDTO } from './dto/favorite-ad.dto';
+import { AdDetailsDto } from './dto/ad.dto';
 export interface CreateAd extends CreateAdDTO {
   userId: string;
   filePaths?: string[];
@@ -118,6 +119,9 @@ export class AdsService {
 
   async getAdsByUserId(userId: string): Promise<Ad[]> {
     try {
+      if (!userId) {
+        throw new BadRequestException('Missing userId');
+      }
       return this.adRepository.getAdsByUserId(userId);
     } catch (error) {
       throw error;
@@ -203,5 +207,9 @@ export class AdsService {
     } else {
       return this.cacheLatestAds;
     }
+  }
+
+  async getAdDetailsById(adId: string) {
+    return this.adRepository.getAdDetailsById(adId);
   }
 }

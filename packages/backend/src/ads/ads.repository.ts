@@ -269,4 +269,15 @@ export class AdRepository {
       location: ad.sellerCity,
     }));
   }
+
+  async getAdDetailsById(adId: string): Promise<Ad> {
+    return this.prismaService.ad.findFirst({
+      where: {
+        id: adId,
+      },
+      include: {
+        images: true,
+      },
+    });
+  }
 }
