@@ -7,6 +7,7 @@ import TopLevelNotification, {
 } from '../UI/TopLevelNotification/topLevelNotification.component';
 import BackupImage from '../../assets/missing-image.jpg';
 import useAddToFavorite from '../../hooks/useAddToFavorite/useAddToFavorite.hook';
+import { Link } from 'react-router-dom';
 
 const FavoriteCardItem = ({ adId, currency, name, price, thumbnail, location }: FavoriteCarAd) => {
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
@@ -35,11 +36,13 @@ const FavoriteCardItem = ({ adId, currency, name, price, thumbnail, location }: 
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
       <div className="w-full border border-red-500 rounded-md cursor-pointer">
         <div className="h-48 w-full">
-          <img
-            className="w-full h-full object-cover rounded-tl-md rounded-tr-md"
-            src={thumbnail ? `${import.meta.env.VITE_BACKEND_URL}/${thumbnail}` : BackupImage}
-            alt={name ?? 'ad thumbnail'}
-          />
+          <Link className="w-full h-full" to={`/ad/${adId}`}>
+            <img
+              className="w-full h-full object-cover rounded-tl-md rounded-tr-md"
+              src={thumbnail ? `${import.meta.env.VITE_BACKEND_URL}/${thumbnail}` : BackupImage}
+              alt={name ?? 'ad thumbnail'}
+            />
+          </Link>
         </div>
         <div className="flex flex-col p-4 gap-2">
           <div className="flex items-start justify-between gap-4">
