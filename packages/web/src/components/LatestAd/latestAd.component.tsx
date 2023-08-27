@@ -9,6 +9,7 @@ import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from '../UI/TopLevelNotification/topLevelNotification.component';
 import { useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 interface ILatestAd extends LatestAd {}
 
@@ -51,10 +52,12 @@ const LatestAd = ({ adId, currency, name, price, thumbnail, location }: ILatestA
           )}
         </button>
 
-        <img
-          className="select-none pointer-events-none rounded-lg h-full w-full bg-cover bg-center max-h-[70%] rounded-bl-none rounded-br-none"
-          src={thumbnail ? `${import.meta.env.VITE_BACKEND_URL}/${thumbnail}` : BackUpAdImage}
-        />
+        <Link className="h-full w-full max-h-[70%] " to={`/ad/${adId}`}>
+          <img
+            className="select-none pointer-events-none rounded-lg h-full w-full bg-cover bg-center rounded-bl-none rounded-br-none"
+            src={thumbnail ? `${import.meta.env.VITE_BACKEND_URL}/${thumbnail}` : BackUpAdImage}
+          />
+        </Link>
 
         <div className="px-2 py-1 select-none h-full max-h-[30%]">
           <p className="text-sm">{name}</p>
