@@ -22,6 +22,18 @@ export default {
       },
       transitionProperty: {
         width: 'width',
+        height: 'height',
+      },
+      expendHeight: {
+        from: {
+          height: '200px',
+        },
+        to: {
+          height: '600px',
+        },
+      },
+      animation: {
+        expendHeight: 'expendHeight 1s linear',
       },
     },
   },
