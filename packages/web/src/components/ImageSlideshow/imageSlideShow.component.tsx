@@ -69,7 +69,7 @@ const ImageSlideShow = ({ imagesSource, classNames, isLoading = false }: ImageSl
   return (
     <div className={`${cn('flex flex-col relative ', classNames)}`}>
       <div className="w-full bg-gray-100 flex items-center justify-center">
-        {carouselImagesLen > 0 && (
+        {carouselImagesLen > 1 && (
           <div
             className={`w-10 h-10 lg:w-14 lg:h-14 absolute cursor-pointer top-[50%] -translate-y-[50%] md:top-[35%] md:-translate-y-[35%] left-0 bg-white rounded-md`}
           >
@@ -86,7 +86,7 @@ const ImageSlideShow = ({ imagesSource, classNames, isLoading = false }: ImageSl
           className="h-[250px] w-full md:h-[450px] md:w-[650px] bg-contain bg-no-repeat bg-center"
           src={currentCarouselImage ? `${import.meta.env.VITE_BACKEND_URL}/${currentCarouselImage}` : BackupImage}
         />
-        {carouselImagesLen > 0 && (
+        {carouselImagesLen > 1 && (
           <div className="w-10 h-10 lg:w-14 lg:h-14 absolute cursor-pointer top-[50%] -translate-y-[50%] md:top-[35%] md:-translate-y-[35%] right-0 bg-white rounded-md">
             <CaretRight onClick={handleImageChange.bind(this, 'RIGHT')} height={'full'} width={'full'} />
           </div>
@@ -101,16 +101,18 @@ const ImageSlideShow = ({ imagesSource, classNames, isLoading = false }: ImageSl
         <Image />
         {`${carouselCurrentIndex} / ${carouselImagesLen || 1}`}
       </button>
-      <ul className="hidden md:flex mt-2 w-fullbg-green-400 items-center gap-3 overflow-y-auto">
-        {carouselImages.map((img, index) => (
-          <img
-            id={`${index}`}
-            className="h-32 overflow-hidden flex-shrink-0"
-            key={`${index}__`}
-            src={img?.path ? `${import.meta.env.VITE_BACKEND_URL}/${img.path}` : BackupImage}
-          />
-        ))}
-      </ul>
+      {carouselImagesLen > 1 && (
+        <ul className="hidden md:flex mt-2 w-fullbg-green-400 items-center gap-3 overflow-y-auto">
+          {carouselImages.map((img, index) => (
+            <img
+              id={`${index}`}
+              className="h-32 overflow-hidden flex-shrink-0"
+              key={`${index}__`}
+              src={img?.path ? `${import.meta.env.VITE_BACKEND_URL}/${img.path}` : BackupImage}
+            />
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
