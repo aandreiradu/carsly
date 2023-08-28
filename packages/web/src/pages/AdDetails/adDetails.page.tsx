@@ -31,7 +31,7 @@ const AdDetailsPage = () => {
       return;
     }
 
-    !info ? getAdDetailsById(adId) : console.log('am deja');
+    !info && getAdDetailsById(adId);
   }, [adId]);
 
   if (error) {
@@ -49,16 +49,19 @@ const AdDetailsPage = () => {
       <Nav showOnAllScreens={true} setShowComponent={() => {}} />
       <section className="h-full max-h-[98%] mx-auto max-w-7xl md:px-4 lg:px-8">
         <div className="flex flex-col md:flex-row h-full gap-0 md:gap-5">
-          <ImageSlideShow classNames="w-full md:w-[75%]" imagesSource={info?.images || []} isLoading={true} />
-          {info && <AdCarShortDetails {...info} isLoading={true} />}
+          <ImageSlideShow classNames="w-full md:w-[75%]" imagesSource={info?.images || []} isLoading={loading} />
+          {info && (
+            <AdCarShortDetails {...info} adId={info.id} isLoading={loading} thumbnail={info?.images[0]?.path || ''} />
+          )}
         </div>
-        {info && <AdTechnicalDetails {...info} />}
+        {info && <AdTechnicalDetails {...info} isLoading={loading} />}
         <AdSellerDetails
           header="Informations about seller"
           className="flex md:hidden w-full flex-col border border-black p-2 my-4"
           sellerCity={info?.sellerCity ?? ''}
           sellerName={info?.sellerFullName ?? ''}
           sellerPhoneNumber={info?.sellerPhoneNumber ?? ''}
+          isLoading={loading}
         />
       </section>
     </>

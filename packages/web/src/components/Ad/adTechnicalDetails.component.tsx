@@ -1,11 +1,49 @@
 import { useState } from 'react';
 import { Ad } from '../../types/ad.types';
 import { CaretDown, CaretUp } from 'phosphor-react';
+import { Skeleton } from '@mui/material';
 
-const AdTechnicalDetails = (props: Ad) => {
+interface AdTechnicalDetailsProps extends Ad {
+  isLoading?: boolean;
+}
+
+const AdTechnicalDetails = (props: AdTechnicalDetailsProps) => {
   const [showFullDetais, setShowFullDetails] = useState<boolean>(false);
+
+  let contentLoading = (
+    <div className={`w-full  md:w-1/2 overflow-hidden flex flex-col my-2`}>
+      <div className="mx-2 md:mx-0">
+        <Skeleton className="" sx={{ bgcolor: 'grey.400' }} variant="text" animation="wave" width="30%" height="30px" />
+      </div>
+      <div
+        className={`grid grid-cols-2 ${
+          !showFullDetais ? 'h-[200px]' : 'h-[600px]'
+        } overflow-hidden animate-expendHeight transition-height px-2 md:px-0`}
+      >
+        <div className="flex flex-col gap-1">
+          {Array(6)
+            .fill(0)
+            .map((_, idx) => (
+              <Skeleton key={idx} sx={{ bgcolor: 'grey.400' }} variant="text" animation="wave" width="70%" height="32px" />
+            ))}
+        </div>
+        <div className="flex flex-col gap-1 ">
+          {Array(6)
+            .fill(0)
+            .map((_, idx) => (
+              <Skeleton key={idx} sx={{ bgcolor: 'grey.400' }} variant="text" animation="wave" width="100%" height="32px" />
+            ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (props.isLoading) {
+    return contentLoading;
+  }
+
   return (
-    <div className={`w-full  md:w-1/2 overflow-hidden flex flex-col`}>
+    <div className={`w-full  md:w-1/2 overflow-hidden flex flex-col my-2`}>
       <p className="my-2 font-bold leading-4 text-base px-2 md:px-0">Details</p>
       <div
         className={`grid grid-cols-2 ${
@@ -52,13 +90,15 @@ const AdTechnicalDetails = (props: Ad) => {
         </div>
       </div>
 
-      <button
-        onClick={() => setShowFullDetails((prev) => !prev)}
-        className="w-36 h-9 flex items-center justify-center gap-1 my-1 text-sm text-blue-500"
-      >
-        {!showFullDetais ? `Show full details` : `Hide details`}
-        {!showFullDetais ? <CaretDown /> : <CaretUp />}
-      </button>
+      {!props.isLoading && (
+        <button
+          onClick={() => setShowFullDetails((prev) => !prev)}
+          className="w-36 h-9 flex items-center justify-center gap-1 my-1 text-sm text-blue-500"
+        >
+          {!showFullDetais ? `Show full details` : `Hide details`}
+          {!showFullDetais ? <CaretDown /> : <CaretUp />}
+        </button>
+      )}
     </div>
   );
 };
