@@ -2,14 +2,31 @@ import { useDispatch } from 'react-redux';
 import useHttpRequest from '../useHttpRequest/useHttp.hook';
 import { useCallback } from 'react';
 import { FavoriteCarAd, setFavoriteAds, setFavoritesCount } from '../../store/favorites/favorites.slice';
+import { CurrencyTypes } from '../../pages/SellNow/types';
 
 interface UseAddToFavorite {
   isOfferOfTheDay?: boolean;
 }
 
+interface AdToFavoritesResponse {
+  count: number;
+  favorites: {
+    adId: string;
+    name: string;
+    price: number;
+    currency: CurrencyTypes;
+    thumbnail: string | null;
+    location: string;
+  }[];
+}
+
 const useAddToFavorite = ({ isOfferOfTheDay = false }: UseAddToFavorite) => {
   const dispatch = useDispatch();
-  const { sendRequest: sendRequestFavorites, loading: loadingFavorites, error: errorFavorites } = useHttpRequest();
+  const {
+    sendRequest: sendRequestFavorites,
+    loading: loadingFavorites,
+    error: errorFavorites,
+  } = useHttpRequest<AdToFavoritesResponse>();
 
   const handleAddToFavorite = useCallback(async (ad: FavoriteCarAd) => {
     if (loadingFavorites) return;
