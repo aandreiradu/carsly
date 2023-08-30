@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CarService } from 'src/car/car.service';
-import { AdRepository, GetOfferOfTheDay } from './ads.repository';
+import { AdRepository } from './ads.repository';
 import {
   Ad,
   AdStatus,
@@ -17,7 +17,7 @@ import {
 import { CreateAdDTO } from './dto/create-ad.dto';
 import { ConfigService } from '@nestjs/config';
 import { AddFavoriteDTO } from './dto/favorite-ad.dto';
-import { AdDetailsDto } from './dto/ad.dto';
+import { type GetOfferOfTheDay } from './types';
 export interface CreateAd extends CreateAdDTO {
   userId: string;
   filePaths?: string[];

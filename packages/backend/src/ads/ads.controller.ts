@@ -20,7 +20,6 @@ import { createAdMapFormData } from 'src/utils/mapFormData';
 import { CreateAdDTO } from './dto/create-ad.dto';
 import { AddFavoriteDTO } from './dto/favorite-ad.dto';
 import { ExtendedRequest, InjectUserId } from 'src/guards';
-import { Public } from 'src/decorators';
 import { AdDetailsDto } from './dto/ad.dto';
 
 @Controller('api/ad')

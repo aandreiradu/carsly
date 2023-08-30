@@ -1,36 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAdDTOO } from './ads.service';
-import {
-  Ad,
-  AdFavorite,
-  AdStatus,
-  CurrencyTypes,
-  FuelType,
-} from '@prisma/client';
+import { Ad, AdFavorite, AdStatus } from '@prisma/client';
 import { AddFavoriteDTO } from './dto/favorite-ad.dto';
-
-export interface GetOfferOfTheDay {
-  adId: string;
-  thumbnail: string;
-  title: string;
-  fuel: FuelType;
-  price: number;
-  currency: CurrencyTypes;
-  year: number;
-  km: number;
-  engineSize: number;
-  description?: string;
-}
-
-interface LatestAd {
-  adId: string;
-  name: string;
-  price: number;
-  currency: CurrencyTypes;
-  thumbnail: string;
-  location?: string;
-}
+import { GetOfferOfTheDay, type TAdDetailsById, LatestAd } from './types';
+import {
+  polluationNormTypesLabels,
+  transmissionTypesLabels,
+  vehicleBodyTypesLabels,
+} from 'src/utils/mappings';
+import { capitalizeFirstLetter } from 'src/utils/text';
 
 @Injectable()
 export class AdRepository {
@@ -270,14 +249,47 @@ export class AdRepository {
     }));
   }
 
-  async getAdDetailsById(adId: string): Promise<Ad> {
-    return this.prismaService.ad.findFirst({
+  async getAdDetailsById(adId: string): Promise<TAdDetailsById> {
+    const adDetailsQuery = await this.prismaService.ad.findFirst({
       where: {
         id: adId,
       },
       include: {
         images: true,
+        brand: {
+          select: {
+            name: true,
+          },
+        },
+        model: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
+
+    const brandName = adDetailsQuery.brand.name.toUpperCase() || '';
+    const modelName = adDetailsQuery.model.name.toUpperCase() || '';
+
+    delete adDetailsQuery['brand'];
+    delete adDetailsQuery['model'];
+
+    const adDetails = {
+      ...adDetailsQuery,
+      brandName,
+      modelName,
+      transmission: capitalizeFirstLetter(
+        transmissionTypesLabels[adDetailsQuery.transmission] || '',
+      ),
+      polluationNorm: capitalizeFirstLetter(
+        polluationNormTypesLabels[adDetailsQuery.polluationNorm] || '',
+      ),
+      bodyType: capitalizeFirstLetter(
+        vehicleBodyTypesLabels[adDetailsQuery.bodyType] || '',
+      ),
+    } as TAdDetailsById;
+
+    return adDetails;
   }
 }
