@@ -1,6 +1,6 @@
 import Carousel from '../../components/Carousel/carousel.component';
 import MainLayout from '../../components/Layouts/Main/main.layout';
-import { Heart, Star, Warning } from 'phosphor-react';
+import { Warning } from 'phosphor-react';
 import Nav from '../../components/Nav/nav.component';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import _axios from '../../api/axios/axios';
@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ShowComponentProps } from '../../types/index.types';
 import Sidebar from '../../components/Sidebar/sidebar.component';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCarsBrands } from '../../store/cars/cars.slice';
+import { CarBrand, setCarsBrands } from '../../store/cars/cars.slice';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from '../../components/UI/TopLevelNotification/topLevelNotification.component';
@@ -17,6 +17,7 @@ import OfferOfTheDay from '../../components/OfferOfTheDay/offerOfTheDay.componen
 import { setFavoriteAds, setFavoritesCount } from '../../store/favorites/favorites.slice';
 import { selectFavoriteAds } from '../../store/favorites/favorites.selector';
 import LatestAdsPage from '../LatestAds/latestAds.page';
+import { IGetFavoriteAds } from '../../types/ad.types';
 
 const categories = ['All Cars', 'Electric', 'Gasoline', 'Hybrids', 'Oldest', 'Newest'];
 
@@ -25,8 +26,8 @@ const Home = () => {
   const favoriteAds = useSelector(selectFavoriteAds);
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const dispatch = useDispatch();
-  const { sendRequest, error } = useHttpRequest();
-  const { sendRequest: SRGetFavoritesAds, error: errorFavoritesAds } = useHttpRequest();
+  const { sendRequest, error } = useHttpRequest<{ carsBrands: CarBrand[] }>();
+  const { sendRequest: SRGetFavoritesAds, error: errorFavoritesAds } = useHttpRequest<IGetFavoriteAds>();
   const [_, setShowComponent] = useState<ShowComponentProps>({ show: false, componentName: '' });
 
   useEffect(() => {
@@ -38,8 +39,7 @@ const Home = () => {
 
       if (brandsResponse) {
         const { status, data } = brandsResponse;
-
-        if (status === 200 && data?.carsBrands) {
+        if (status === 200 && data.carsBrands.length > 0) {
           dispatch(setCarsBrands({ carsBrands: data.carsBrands }));
         }
       }

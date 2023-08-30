@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-type CarBrand = {
+export type CarBrand = {
   description: string;
   name: string;
   yearOfEST: string;

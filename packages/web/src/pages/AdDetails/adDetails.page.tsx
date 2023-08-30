@@ -12,12 +12,18 @@ import AdSellerDetails from '../../components/Ad/adSellerDetails.component';
 import AdTechnicalDetails from '../../components/Ad/adTechnicalDetails.component';
 import AdCarShortDetails from '../../components/Ad/adCarShortDetails.component';
 
+export interface AdTechnicalDetailsProps extends Ad {
+  isLoading?: boolean;
+  brandName: string;
+  modelName: string;
+}
+
 const AdDetailsPage = () => {
   const { adId } = useParams();
-  const { sendRequest, loading, error } = useHttpRequest<Ad>();
+  const { sendRequest, loading, error } = useHttpRequest<AdTechnicalDetailsProps>();
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const navigate = useNavigate();
-  const [info, setInfo] = useState<Ad>();
+  const [info, setInfo] = useState<AdTechnicalDetailsProps>();
 
   const getAdDetailsById = async (adId: string) => {
     const adDetails = await sendRequest(`/api/ad/${adId}`);

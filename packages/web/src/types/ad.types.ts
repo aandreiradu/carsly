@@ -67,3 +67,15 @@ export interface Ad {
     adId: string;
   }[];
 }
+
+export interface IGetFavoriteAds {
+  count: number;
+  favorites: {
+    adId: string;
+    name: string;
+    price: number;
+    currency: CurrencyTypes;
+    thumbnail: string;
+    location: string;
+  }[];
+}
