@@ -1,11 +1,7 @@
 import { useState } from 'react';
-import { Ad } from '../../types/ad.types';
 import { CaretDown, CaretUp } from 'phosphor-react';
 import { Skeleton } from '@mui/material';
-
-interface AdTechnicalDetailsProps extends Ad {
-  isLoading?: boolean;
-}
+import { type AdTechnicalDetailsProps } from '../../pages/AdDetails/adDetails.page';
 
 const AdTechnicalDetails = (props: AdTechnicalDetailsProps) => {
   const [showFullDetais, setShowFullDetails] = useState<boolean>(false);
@@ -70,8 +66,8 @@ const AdTechnicalDetails = (props: AdTechnicalDetailsProps) => {
           <p className="overflow-hidden text-sm h-8">Service card</p>
         </div>
         <div className="flex flex-col gap-1 ">
-          <p className="overflow-hidden text-sm h-8">{props?.carBrandId}</p>
-          <p className="overflow-hidden text-sm h-8">{props?.carModelId}</p>
+          <p className="overflow-hidden text-sm h-8">{props?.brandName}</p>
+          <p className="overflow-hidden text-sm h-8">{props?.modelName}</p>
           <p className="overflow-hidden text-sm h-8">{props?.year}</p>
           <p className="overflow-hidden text-sm h-8">{props?.KM}</p>
           <p className="overflow-hidden text-sm h-8">{props?.fuelType}</p>
