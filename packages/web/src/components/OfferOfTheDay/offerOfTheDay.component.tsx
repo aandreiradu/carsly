@@ -118,23 +118,23 @@ const OfferOfTheDay = () => {
               </div>
             ) : (
               <>
-                <h2 className="font-kanit text-2xl font-bold tracking-wider max-h-10 overflow-hidden">
+                <h2 className="font-kanit text-2xl font-bold tracking-wider max-h-10 h-full overflow-hidden">
                   {offerOfTheDay?.title ?? 'N/A'}
                 </h2>
                 <ul className="px-0 flex items-center my-3 space-x-4 overflow-x-auto overflow-y-hidden">
-                  <li className="bg-[#2f2e2e] w-24 h-16 flex items-center justify-center text-center flex-col p-1 md:p-3 rounded-lg">
+                  <li className="bg-[#2f2e2e] w-24 h-20 flex items-center justify-center text-center flex-col p-1 md:p-3 rounded-lg">
                     <span className="text-sm">KM</span>
                     <span className="text-base font-bold">{offerOfTheDay?.km ?? 'N/A'}</span>
                   </li>
-                  <li className="bg-[#2f2e2e] w-24 h-16 flex items-center justify-center text-center flex-col p-1 md:p-3 rounded-lg">
+                  <li className="bg-[#2f2e2e] w-24 h-20 flex items-center justify-center text-center flex-col p-1 md:p-3 rounded-lg">
                     <span className="text-sm">Fuel</span>
                     <span className="text-base font-bold">{offerOfTheDay?.fuel ?? 'N/A'}</span>
                   </li>
-                  <li className="bg-[#2f2e2e] w-24 h-16 flex items-center justify-center text-center flex-col p-1 md:p-3 rounded-lg">
+                  <li className="bg-[#2f2e2e] w-24 h-20 flex items-center justify-center text-center flex-col p-1 md:p-3 rounded-lg">
                     <span className="text-sm">Year</span>
                     <span className="text-base font-bold">{offerOfTheDay?.year ?? 'N/A'}</span>
                   </li>
-                  <li className="bg-[#2f2e2e] w-24 h-16 flex items-center justify-center text-center flex-col p-1 md:p-3 rounded-lg">
+                  <li className="bg-[#2f2e2e] w-24 h-20 flex items-center justify-center text-center flex-col p-1 md:p-3 rounded-lg">
                     <span className="text-sm">Engine</span>
                     <span className="text-base font-bold">
                       {offerOfTheDay?.engineSize ? `${offerOfTheDay.engineSize}cm3` : 'N/A'}
@@ -144,7 +144,7 @@ const OfferOfTheDay = () => {
                 <textarea
                   readOnly={true}
                   defaultValue={offerOfTheDay?.description || 'No description'}
-                  className="focus:outline-0! outline-0! p-0 bg-transparent text-white my-2 text-base leading-loose min-h-[140px] max-h-48 md:max-h-64 overflow-auto border-none resize-none"
+                  className="focus:outline-0! outline-0! p-0 bg-transparent text-white my-2 text-base leading-loose min-h-[140px] max-h-48 md:max-h-80 h-full overflow-auto border-none resize-none"
                 ></textarea>
               </>
             )}
