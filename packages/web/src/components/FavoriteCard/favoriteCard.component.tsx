@@ -34,7 +34,7 @@ const FavoriteCardItem = ({ adId, currency, name, price, thumbnail, location }: 
   return (
     <>
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
-      <div className="w-full border border-red-500 rounded-md cursor-pointer">
+      <div className="w-full border shadow-xl rounded-md cursor-pointer">
         <div className="h-48 w-full">
           <Link className="w-full h-full" to={`/ad/${adId}`}>
             <img
