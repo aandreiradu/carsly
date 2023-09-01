@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { CaretDown, CaretUp } from 'phosphor-react';
 import { Skeleton } from '@mui/material';
 import { type AdTechnicalDetailsProps } from '../../pages/AdDetails/adDetails.page';
 
 const AdTechnicalDetails = (props: AdTechnicalDetailsProps) => {
   const [showFullDetais, setShowFullDetails] = useState<boolean>(false);
+  const [showFullDescription, setShowFullDescription] = useState<boolean>(false);
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
   let contentLoading = (
     <div className={`w-full  md:w-1/2 overflow-hidden flex flex-col my-2`}>
@@ -31,6 +33,18 @@ const AdTechnicalDetails = (props: AdTechnicalDetailsProps) => {
             ))}
         </div>
       </div>
+      <div className="px-2 mt-6 w-full">
+        <div className="my-2">
+          <Skeleton sx={{ bgcolor: 'grey.400' }} variant="text" animation="wave" width="40%" height="30px" />
+        </div>
+        <Skeleton className="overflow-hidden" variant="rectangular" animation="wave" height="176px" />
+      </div>
+      <div className="px-2 mt-2 w-full">
+        <div className="my-2">
+          <Skeleton sx={{ bgcolor: 'grey.400' }} variant="text" animation="wave" width="40%" height="30px" />
+        </div>
+        <Skeleton className="overflow-hidden" variant="rectangular" animation="wave" height="100px" />
+      </div>
     </div>
   );
 
@@ -43,7 +57,7 @@ const AdTechnicalDetails = (props: AdTechnicalDetailsProps) => {
       <p className="my-2 font-bold leading-4 text-base px-2 md:px-0">Details</p>
       <div
         className={`grid grid-cols-2 ${
-          !showFullDetais ? 'h-[200px]' : 'h-[600px]'
+          !showFullDetais ? 'h-44 overflow-hidden' : 'h-[444px] overflow-y-auto'
         } overflow-hidden animate-expendHeight transition-height px-2 md:px-0`}
       >
         <div className="flex flex-col gap-1">
@@ -89,11 +103,40 @@ const AdTechnicalDetails = (props: AdTechnicalDetailsProps) => {
       {!props.isLoading && (
         <button
           onClick={() => setShowFullDetails((prev) => !prev)}
-          className="w-36 h-9 flex items-center justify-center gap-1 my-1 text-sm text-blue-500"
+          className="px-2 md:px-0 h-9 flex items-center justify-start gap-1 my-1 text-sm text-blue-500"
         >
-          {!showFullDetais ? `Show full details` : `Hide details`}
+          {!showFullDetais ? `Show more` : `Hide`}
           {!showFullDetais ? <CaretDown /> : <CaretUp />}
         </button>
+      )}
+
+      {props?.description && (
+        <>
+          <p className="my-2 font-bold leading-4 text-base px-2 md:px-0">Description</p>
+          <textarea
+            ref={descriptionRef}
+            readOnly={true}
+            defaultValue={props.description}
+            className={`outline-none resize-none border-none focus:outline-none focus:border-none active:border-none overflow-hidden text-black px-2 md:px-0 mt-2 text-base animate-expendHeight transition-height
+            ${!showFullDescription ? 'h-20 overflow-hidden' : 'h-[300px] overflow-y-auto'} `}
+          />
+          {!props.isLoading && (
+            <button
+              onClick={() =>
+                setShowFullDescription((prev) => {
+                  if (prev) {
+                    descriptionRef.current?.scrollTo(0, 0);
+                  }
+                  return !prev;
+                })
+              }
+              className="px-2 md:px-0 h-9 flex items-center justify-start gap-1 mb-1 text-sm text-blue-500"
+            >
+              {!showFullDescription ? `Show more` : `Hide`}
+              {!showFullDescription ? <CaretDown /> : <CaretUp />}
+            </button>
+          )}
+        </>
       )}
     </div>
   );
