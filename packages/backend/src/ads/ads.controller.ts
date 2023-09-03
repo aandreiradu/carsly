@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -6,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   Req,
   UseFilters,
   UseGuards,
@@ -20,7 +22,8 @@ import { createAdMapFormData } from 'src/utils/mapFormData';
 import { CreateAdDTO } from './dto/create-ad.dto';
 import { AddFavoriteDTO } from './dto/favorite-ad.dto';
 import { ExtendedRequest, InjectUserId } from 'src/guards';
-import { AdDetailsDto } from './dto/ad.dto';
+import { AdDetailsDto, QueryAdDTO } from './dto/ad.dto';
+import { Public } from 'src/decorators';
 
 @Controller('api/ad')
 export class AdsController {
@@ -64,20 +67,20 @@ export class AdsController {
     return this.adsService.getAdsByUserId(req?.user?.sub);
   }
 
-  @Get('offerOfTheDay')
+  @Get('/offerOfTheDay')
   async getOfferOfTheDay() {
     return this.adsService.getOfferOfTheDay();
   }
 
   @UseGuards(InjectUserId)
-  @Get('favorites')
+  @Get('/favorites')
   @HttpCode(HttpStatus.OK)
   async getFavoritesByUserId(@Req() req: ExtendedRequest) {
     return this.adsService.getFavoriteAdsByUserId(req['user']?.sub ?? null);
   }
 
   @UseGuards(InjectUserId)
-  @Post('favorites')
+  @Post('/favorites')
   @HttpCode(HttpStatus.OK)
   async favoritesHandler(@Req() req: Request, @Body() dto: AddFavoriteDTO) {
     return this.adsService.addOrRemoveFavorites({
@@ -86,9 +89,17 @@ export class AdsController {
     });
   }
 
-  @Get('latest')
+  @Get('/latest')
   async getLatestAds() {
     return this.adsService.getLatestAds();
+  }
+
+  @Get('/search')
+  async searchAdsController(@Query() query?: QueryAdDTO) {
+    if (!query || Object.keys(query).length === 0) {
+      throw new BadRequestException('Filters not provided');
+    }
+    return this.adsService.searchAd(query);
   }
 
   @Get('/:adId')
