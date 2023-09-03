@@ -18,6 +18,8 @@ import { CreateAdDTO } from './dto/create-ad.dto';
 import { ConfigService } from '@nestjs/config';
 import { AddFavoriteDTO } from './dto/favorite-ad.dto';
 import { type GetOfferOfTheDay } from './types';
+import { QueryAdDTO } from './dto/ad.dto';
+import { mapQueryDataToModel } from 'src/utils/ad.utils';
 export interface CreateAd extends CreateAdDTO {
   userId: string;
   filePaths?: string[];
@@ -211,5 +213,15 @@ export class AdsService {
 
   async getAdDetailsById(adId: string) {
     return this.adRepository.getAdDetailsById(adId);
+  }
+
+  async searchAd(query: QueryAdDTO) {
+    const searchQuery = mapQueryDataToModel(query);
+
+    if (!searchQuery) {
+      throw new BadRequestException('No filters passed');
+    }
+
+    return this.adRepository.searchAd(searchQuery);
   }
 }

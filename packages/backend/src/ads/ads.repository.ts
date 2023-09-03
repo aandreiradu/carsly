@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAdDTOO } from './ads.service';
 import { Ad, AdFavorite, AdStatus } from '@prisma/client';
@@ -10,6 +10,7 @@ import {
   vehicleBodyTypesLabels,
 } from 'src/utils/mappings';
 import { capitalizeFirstLetter } from 'src/utils/text';
+import { SearchQueryModelMap } from 'src/utils/ad.utils';
 
 @Injectable()
 export class AdRepository {
@@ -249,7 +250,7 @@ export class AdRepository {
     }));
   }
 
-  async getAdDetailsById(adId: string): Promise<TAdDetailsById> {
+  async getAdDetailsById(adId: string): Promise<TAdDetailsById | string> {
     const adDetailsQuery = await this.prismaService.ad.findFirst({
       where: {
         id: adId,
@@ -268,6 +269,9 @@ export class AdRepository {
         },
       },
     });
+
+    if (!adDetailsQuery)
+      throw new NotFoundException('Could not found details for requested ad');
 
     const brandName = adDetailsQuery.brand.name.toUpperCase() || '';
     const modelName = adDetailsQuery.model.name.toUpperCase() || '';
@@ -291,5 +295,35 @@ export class AdRepository {
     } as TAdDetailsById;
 
     return adDetails;
+  }
+
+  async searchAd(query: SearchQueryModelMap) {
+    const searchQuery = await this.prismaService.ad.findMany({
+      where: {
+        ...query,
+      },
+      select: {
+        title: true,
+        KM: true,
+        year: true,
+        fuelType: true,
+        bodyType: true,
+        images: true,
+        price: true,
+        currency: true,
+        vehicleOrigin: true,
+        sellerCity: true,
+        sellerFullName: true,
+        sellerPhoneNumber: true,
+        color: true,
+        colorType: true,
+        noOfDoors: true,
+      },
+    });
+
+    return searchQuery.map((data) => ({
+      ...data,
+      images: data.images.slice(0, 1)[0]?.path,
+    }));
   }
 }
