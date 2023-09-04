@@ -323,7 +323,7 @@ export class AdRepository {
 
     return searchQuery.map((data) => ({
       ...data,
-      images: data.images.slice(0, 1)[0]?.path,
+      images: data.images.slice(0, 1)[0]?.path || '',
     }));
   }
 }
