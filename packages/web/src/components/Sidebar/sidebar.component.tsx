@@ -1,18 +1,20 @@
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import SidebarLink, { SidebarLinkProps } from '../SidebarLink/sidebarlink.component';
-import { House, User, Heart, SignOut, PlusCircle } from 'phosphor-react';
+import { House, User, Heart, SignOut, PlusCircle, MagnifyingGlass } from 'phosphor-react';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAccessToken } from '../../store/user/user.slice';
 import { useNavigate } from 'react-router-dom';
 import { SideBarProps } from '../../types/index.types';
 import { selectFavoritesCount } from '../../store/favorites/favorites.selector';
+import SearchMinified, { SearchMinifiedHandlers } from '../Search/search-minified.component';
 
 const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
+  const searchMinifiedRef = useRef<SearchMinifiedHandlers>(null);
   const favoritesCount = useSelector(selectFavoritesCount);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { data, error, sendRequest } = useHttpRequest();
+  const { data, error, sendRequest } = useHttpRequest<{ message: string; status: number }>();
   const sidebarLinks: SidebarLinkProps[] = [
     {
       label: 'Home',
@@ -20,6 +22,12 @@ const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
       href: '/',
       icon: <House className="w-6 h-6 text-white group-hover:text-black" />,
       isActive: true,
+    },
+    {
+      label: 'Search',
+      isLink: false,
+      icon: <MagnifyingGlass className="w-6 h-6 text-white group-hover:text-black" />,
+      isActive: false,
     },
     {
       label: 'Sell Your Car',
@@ -89,25 +97,29 @@ const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
   }, [error, data]);
 
   return (
-    <div className="hidden md:flex h-full w-full md:max-w-[100px] lg:max-w-[150px] bg-[#1f1f1f] flex-col items-center justify-center">
-      <ul className="flex flex-col space-y-10">
-        {sidebarLinks.map((link) => (
-          <SidebarLink
-            key={link.label}
-            label={link.label}
-            icon={link.icon}
-            href={link.href}
-            isLink={link.isLink}
-            onClick={() => {
-              activeLinkHandler(link.label);
-              link.label === 'Sign Out' && handleLogoutRequest();
-            }}
-            isActive={activeLink === link.label ? true : false}
-            setShowComponent={setShowComponent}
-          />
-        ))}
-      </ul>
-    </div>
+    <>
+      <SearchMinified ref={searchMinifiedRef} />
+      <div className="hidden md:flex h-full w-full md:max-w-[100px] lg:max-w-[150px] bg-[#1f1f1f] flex-col items-center justify-center">
+        <ul className="flex flex-col space-y-10">
+          {sidebarLinks.map((link) => (
+            <SidebarLink
+              key={link.label}
+              label={link.label}
+              icon={link.icon}
+              href={link.href}
+              isLink={link.isLink}
+              onClick={() => {
+                activeLinkHandler(link.label);
+                link.label === 'Sign Out' && handleLogoutRequest();
+                link.label === 'Search' && searchMinifiedRef.current?.display();
+              }}
+              isActive={activeLink === link.label ? true : false}
+              setShowComponent={setShowComponent}
+            />
+          ))}
+        </ul>
+      </div>
+    </>
   );
 });
 
