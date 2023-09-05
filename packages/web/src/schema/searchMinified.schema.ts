@@ -2,42 +2,44 @@ import { z } from 'zod';
 import { CountriesTypes, FuelType } from '../pages/SellNow/types';
 
 export const searchMinifiedSchema = z.object({
-  brand: z
-    .string({
-      required_error: 'Please select the brand',
-      invalid_type_error: 'Please select a valid brand',
-    })
-    .min(1),
+  brand: z.string({
+    required_error: 'Please select a brand',
+    invalid_type_error: 'Please select a valid brand',
+  }),
   model: z
     .string({
       required_error: 'Please select a model',
       invalid_type_error: 'Please select a valid model',
     })
-    .nonempty(),
+    .optional(),
 
-  priceMax: z.number().min(0),
+  priceMax: z.coerce.number().optional(),
 
-  firstRegister: z.number().min(1900),
+  firstRegister: z.coerce.number().min(1900).optional(),
 
-  kmMax: z.string().or(z.number()),
+  kmMax: z.string().or(z.number()).optional(),
 
-  fuel: z.object({
-    value: z.nativeEnum(FuelType, {
-      description: 'Please select a valid fuel type',
-      required_error: 'Please select a fuel type',
-      invalid_type_error: 'Please select a valid fuel type',
-    }),
-    label: z.string(),
-  }),
+  fuel: z
+    .object({
+      value: z.nativeEnum(FuelType, {
+        description: 'Please select a valid fuel type',
+        required_error: 'Please select a fuel type',
+        invalid_type_error: 'Please select a valid fuel type',
+      }),
+      label: z.string(),
+    })
+    .optional(),
 
-  vehicleOrigin: z.object({
-    value: z.nativeEnum(CountriesTypes, {
-      description: 'Please select a country',
-      required_error: 'Please select a country',
-      invalid_type_error: 'Please select a valid country',
-    }),
-    label: z.string(),
-  }),
+  vehicleOrigin: z
+    .object({
+      value: z.nativeEnum(CountriesTypes, {
+        description: 'Please select a country',
+        required_error: 'Please select a country',
+        invalid_type_error: 'Please select a valid country',
+      }),
+      label: z.string(),
+    })
+    .optional(),
 });
 
-export type SearchMinifiedProps = z.infer<typeof searchMinifiedSchema>;
+export type SearchMinifiedSchema = z.infer<typeof searchMinifiedSchema>;
