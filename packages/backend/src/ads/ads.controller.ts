@@ -23,7 +23,6 @@ import { CreateAdDTO } from './dto/create-ad.dto';
 import { AddFavoriteDTO } from './dto/favorite-ad.dto';
 import { ExtendedRequest, InjectUserId } from 'src/guards';
 import { AdDetailsDto, QueryAdDTO } from './dto/ad.dto';
-import { Public } from 'src/decorators';
 
 @Controller('api/ad')
 export class AdsController {
@@ -99,7 +98,9 @@ export class AdsController {
     if (!query || Object.keys(query).length === 0) {
       throw new BadRequestException('Filters not provided');
     }
-    return this.adsService.searchAd(query);
+    return {
+      results: this.adsService.searchAd(query),
+    };
   }
 
   @Get('/:adId')
