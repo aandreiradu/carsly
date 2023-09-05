@@ -100,12 +100,9 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
     const handleBrandChange = async (brand: string) => {
       if (!allModels[brand]) {
         const respModels = await fetchModelsByBrand(brand);
-        console.log('respModels', respModels);
         if (respModels) {
           const { data, status } = respModels;
           if (status === 200 && data && data?.brandModels && data?.brand) {
-            console.log('before', adPageForm.getValues('model'));
-            console.log('after', adPageForm.getValues('model'));
             if (data.brandModels[data.brand].length === 0) {
               /* reset selects */
               adPageForm.setValue('brand', '');
@@ -220,11 +217,10 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                     placeholder="10000 EUR"
                     id="price"
                     type="number"
-                    className="border-none bg-transparent text-black"
+                    className="border-none bg-transparent text-black flex-1 md:flex-initial"
                     error={adPageForm.formState.errors.priceMax?.message}
                     disabled={loading}
                   />
-                  <p>EUR</p>
                 </div>
               </div>
               <div className="w-full h-fit flex flex-col">
