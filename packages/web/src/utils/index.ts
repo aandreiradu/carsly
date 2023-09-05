@@ -13,8 +13,30 @@ export const buildAdPageFormData = <T extends object>(data: T) => {
       formData.append(i, String(!!data[i]));
     }
   }
-
-  console.log('formdata to return', formData);
-
   return formData;
+};
+
+type QuerySearchObj = {
+  value: string;
+  label: string;
+};
+
+export const buildQuerySearchAd = <T extends object>(data: T): string => {
+  const querySearch = new URLSearchParams();
+  for (const key in data) {
+    console.log({
+      key,
+      value: data[key],
+      tok: typeof key,
+      tov: typeof data[key],
+    });
+    if (data[key]) {
+      if (typeof data[key] == 'object') {
+        querySearch.set(key, (data[key] as QuerySearchObj).value);
+      } else {
+        querySearch.set(key, data[key] as string);
+      }
+    }
+  }
+  return querySearch.toString();
 };

@@ -5,9 +5,9 @@ import Label from '../UI/Label/label.component';
 import Select from '../UI/Select/select.component';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllModels, selectCarsBrands, selectModelsByBrandDataSource } from '../../store/cars/cars.selector';
-import { Controller } from 'react-hook-form';
+import { Controller, SubmitHandler } from 'react-hook-form';
 import { useZodForm } from '../../hooks/useZodForm/useZodForm.hook';
-import { searchMinifiedSchema } from '../../schema/searchMinified.schema';
+import { SearchMinifiedSchema, searchMinifiedSchema } from '../../schema/searchMinified.schema';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
@@ -16,6 +16,8 @@ import { setModelsByBrand } from '../../store/cars/cars.slice';
 import { Input } from '../UI/Input/input.component';
 import { sellNowYearsSorted } from '../../config/settings';
 import { CountriesTypes, FuelType, countriesDictionary, fuelTypeDictionary } from '../../pages/SellNow/types';
+import { buildQuerySearchAd } from '../../utils';
+import { ClipLoader } from 'react-spinners';
 
 export type SearchMinifiedHandlers = {
   display: () => void;
@@ -47,10 +49,30 @@ type FetchModelsByBrand = {
   brand: string;
 };
 
+type SearchAdRes = {
+  results: {
+    KM: number;
+    bodyType: string;
+    color: string;
+    colorType: string;
+    currency: string;
+    fuelType: string;
+    images: string;
+    noOfDoors: number;
+    price: number;
+    sellerCity: string;
+    sellerFullName: string;
+    sellerPhoneNumber: string;
+    title: string;
+    vehicleOrigin: string;
+    year: number;
+  }[];
+};
+
 const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
   ({ className, hasCloseButton = false }, ref) => {
     const [showMinifiedSearch, setShowMinifiedSearch] = useState<boolean>(false);
-    const adPageForm = useZodForm({
+    const searchMinifiedForm = useZodForm({
       schema: searchMinifiedSchema,
     });
     const carsBrands = useSelector(selectCarsBrands).map((value) => ({
@@ -60,8 +82,9 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
     const allModels = useSelector(getAllModels());
     const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
     const { sendRequest, error, loading } = useHttpRequest<FetchModelsByBrand>();
+    const { sendRequest: searchAdRequest, error: errorSearchAd, loading: loadingSearchAd } = useHttpRequest<SearchAdRes>();
     const dispatch = useDispatch();
-    const cachedModels = useSelector(selectModelsByBrandDataSource(adPageForm.getValues('brand')));
+    const cachedModels = useSelector(selectModelsByBrandDataSource(searchMinifiedForm.getValues('brand') ?? ''));
 
     if (error) {
       console.error('error ad', error);
@@ -94,7 +117,7 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
           signal: contorller.signal,
         });
       },
-      [adPageForm.watch('brand')],
+      [searchMinifiedForm.watch('brand')],
     );
 
     const handleBrandChange = async (brand: string) => {
@@ -105,8 +128,8 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
           if (status === 200 && data && data?.brandModels && data?.brand) {
             if (data.brandModels[data.brand].length === 0) {
               /* reset selects */
-              adPageForm.setValue('brand', '');
-              adPageForm.setValue('model', '');
+              searchMinifiedForm.setValue('brand', '');
+              searchMinifiedForm.setValue('model', '');
 
               if (topLevelNotificationRef) {
                 topLevelNotificationRef.current?.display({
@@ -138,6 +161,24 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
       }
     };
 
+    const onSubmit: SubmitHandler<SearchMinifiedSchema> = async (data) => {
+      const queryURL = buildQuerySearchAd<SearchMinifiedSchema>(data);
+      const responseSearchAd = await searchAdRequest(`/api/ad/search?${queryURL}`, {
+        method: 'GET',
+        withCredentials: true,
+      });
+
+      if (responseSearchAd) {
+        if (!responseSearchAd?.data?.results?.length) {
+          topLevelNotificationRef.current?.display({
+            message: 'Search returned no results for the specified filters',
+            icon: <Info className="w-14 h-8 text-yellow-400" />,
+          });
+          return;
+        }
+      }
+    };
+
     if (!showMinifiedSearch) return null;
 
     return (
@@ -154,7 +195,8 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
             {hasCloseButton && (
               <XCircle onClick={hide} width={32} height={28} className="absolute top-1 right-1 text-black cursor-pointer" />
             )}
-            <motion.div
+            <motion.form
+              onSubmit={searchMinifiedForm.handleSubmit(onSubmit)}
               initial={{ opacity: 0, scale: 0, translateX: '-100%' }}
               animate={{ opacity: 1, scale: 1, translateX: '0%' }}
               exit={{ opacity: 0, scale: 0, translateX: '100%' }}
@@ -169,7 +211,7 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                   Brand
                 </Label>
                 <Controller
-                  control={adPageForm.control}
+                  control={searchMinifiedForm.control}
                   name="brand"
                   render={({ field: { onChange } }) => (
                     <Select
@@ -179,7 +221,7 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                       }}
                       dataSource={carsBrands}
                       classNameWrapper="border-none bg-gray-200 rounded-lg h-full h-[41px]"
-                      error={adPageForm.formState.errors.brand?.message}
+                      error={searchMinifiedForm.formState.errors.brand?.message}
                       disabled={loading}
                     />
                   )}
@@ -193,14 +235,14 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                   Model
                 </Label>
                 <Controller
-                  control={adPageForm.control}
+                  control={searchMinifiedForm.control}
                   name="model"
                   render={({ field: { onChange } }) => (
                     <Select
                       onChange={(e: { value: string }) => onChange(e.value)}
                       dataSource={cachedModels}
                       classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
-                      error={adPageForm.formState.errors.model?.message}
+                      error={searchMinifiedForm.formState.errors.model?.message}
                       disabled={loading}
                     />
                   )}
@@ -212,13 +254,13 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                 </Label>
                 <div className="flex items-center bg-gray-200 rounded-lg p-0">
                   <Input
-                    {...adPageForm.register('priceMax')}
+                    {...searchMinifiedForm.register('priceMax')}
                     labelClasses="my-2"
                     placeholder="10000 EUR"
                     id="price"
                     type="number"
                     className="border-none bg-transparent text-black flex-1 md:flex-initial"
-                    error={adPageForm.formState.errors.priceMax?.message}
+                    error={searchMinifiedForm.formState.errors.priceMax?.message}
                     disabled={loading}
                   />
                 </div>
@@ -228,7 +270,7 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                   Year
                 </Label>
                 <Controller
-                  control={adPageForm.control}
+                  control={searchMinifiedForm.control}
                   name="firstRegister"
                   render={({ field: { onChange } }) => (
                     <Select
@@ -237,20 +279,20 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                       }}
                       dataSource={sellNowYearsSorted}
                       classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
-                      error={adPageForm.formState.errors.firstRegister?.message}
+                      error={searchMinifiedForm.formState.errors.firstRegister?.message}
                     />
                   )}
                 />
               </div>
               <div className="w-full h-fit flex flex-col">
                 <Input
-                  {...adPageForm.register('kmMax')}
+                  {...searchMinifiedForm.register('kmMax')}
                   label="Km Up To"
                   labelClasses="my-2"
                   id="km"
                   type="number"
                   className="border-none bg-gray-200 rounded-lg text-black"
-                  error={adPageForm.formState.errors.kmMax?.message}
+                  error={searchMinifiedForm.formState.errors.kmMax?.message}
                   disabled={loading}
                 />
               </div>
@@ -262,7 +304,7 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                   Fuel
                 </Label>
                 <Controller
-                  control={adPageForm.control}
+                  control={searchMinifiedForm.control}
                   name="fuel"
                   render={({ field: { onChange } }) => (
                     <Select
@@ -272,7 +314,7 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                       dataSource={fuelTypeDictionary}
                       disabled={loading}
                       classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
-                      error={adPageForm.formState.errors.fuel?.message}
+                      error={searchMinifiedForm.formState.errors.fuel?.message}
                     />
                   )}
                 />
@@ -285,7 +327,7 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                   Vehicle origin
                 </Label>
                 <Controller
-                  control={adPageForm.control}
+                  control={searchMinifiedForm.control}
                   name="vehicleOrigin"
                   render={({ field: { onChange } }) => (
                     <Select
@@ -294,14 +336,16 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                       }}
                       dataSource={countriesDictionary}
                       classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
-                      error={adPageForm.formState.errors.vehicleOrigin?.message}
+                      error={searchMinifiedForm.formState.errors.vehicleOrigin?.message}
                       disabled={loading}
                     />
                   )}
                 />
               </div>
-              <button className="w-full p-1 h-10 bg-yellow-400 text-black mt-auto rounded-md cursor-pointer">Search</button>
-            </motion.div>
+              <button className="my-4 md:mb-0 md:mt-auto w-full p-1 h-10 flex items-center justify-center bg-yellow-400 text-black rounded-md cursor-pointer">
+                {!loadingSearchAd ? 'Search' : <ClipLoader color="black" size={25} />}
+              </button>
+            </motion.form>
           </motion.div>
         </AnimatePresence>
       </>
