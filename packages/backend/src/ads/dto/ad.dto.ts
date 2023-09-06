@@ -1,5 +1,6 @@
 import {
   CarsColors,
+  CountriesTypes,
   FuelType,
   GearboxTypes,
   VehicleBodyType,
@@ -44,20 +45,27 @@ export class QueryAdDTO {
   @Type(() => Number)
   @IsOptional()
   @IsNumber()
-  public readonly KM: number;
+  public readonly kmUpTo: number;
+
+  // @Type(() => Number)
+  // @IsOptional()
+  // @IsNumber()
+  // @Min(0, { message: 'Price min cannot be negative' })
+  // public readonly priceMin: number;
+
+  // @Type(() => Number)
+  // @IsOptional()
+  // @IsNumber()
+  // @Min(0, { message: 'Price max cannot be negative' })
+  // @Validate(PriceRangeValidator)
+  // public readonly priceMax: number;
 
   @Type(() => Number)
   @IsOptional()
   @IsNumber()
-  @Min(0, { message: 'Price min cannot be negative' })
-  public readonly priceMin: number;
-
-  @Type(() => Number)
-  @IsOptional()
-  @IsNumber()
-  @Min(0, { message: 'Price max cannot be negative' })
+  @Min(0, { message: 'Price cannot be negative' })
   @Validate(PriceRangeValidator)
-  public readonly priceMax: number;
+  public readonly priceUpTo: number;
 
   @Type(() => Number)
   @IsOptional()
@@ -86,4 +94,13 @@ export class QueryAdDTO {
   @IsEnum(CarsColors)
   @IsOptional()
   public readonly color: CarsColors;
+
+  @Type(() => Number)
+  @IsOptional()
+  public readonly year: number;
+
+  @Type(() => String)
+  @IsEnum(CountriesTypes)
+  @IsOptional()
+  public readonly vehicleOrigin: CountriesTypes;
 }

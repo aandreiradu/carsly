@@ -98,8 +98,11 @@ export class AdsController {
     if (!query || Object.keys(query).length === 0) {
       throw new BadRequestException('Filters not provided');
     }
+
+    const resultSearch = await this.adsService.searchAd(query);
+
     return {
-      results: this.adsService.searchAd(query),
+      results: resultSearch,
     };
   }
 

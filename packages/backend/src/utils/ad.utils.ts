@@ -1,15 +1,33 @@
 import { BadRequestException } from '@nestjs/common';
-import { FuelType } from '@prisma/client';
+import { CountriesTypes, FuelType } from '@prisma/client';
 import { QueryAdDTO } from 'src/ads/dto/ad.dto';
 
 export type SearchQueryModelMap = {
   brand?: {
-    name: string;
+    name: {
+      equals: string;
+    };
   };
   model?: {
-    name: string;
+    name: {
+      equals: string;
+    };
   };
-  fuelType?: FuelType;
+  fuelType?: {
+    equals: FuelType;
+  };
+  priceUpTo?: {
+    lte: number;
+  };
+  year?: {
+    equals: number;
+  };
+  kmUpTo?: {
+    lte: number;
+  };
+  vehicleOrigin?: {
+    equals: CountriesTypes;
+  };
 };
 
 export const mapQueryDataToModel = (query: QueryAdDTO): SearchQueryModelMap => {
@@ -29,28 +47,79 @@ export const mapQueryDataToModel = (query: QueryAdDTO): SearchQueryModelMap => {
     throw new BadRequestException('No query params provided');
   }
 
-  let searchQuery: SearchQueryModelMap = {};
+  let searchQuery = {};
 
   for (const key in query) {
-    if (key === 'brand') {
-      searchQuery = {
-        ...searchQuery,
-        brand: {
-          name: query[key].trim().toLowerCase(),
-        },
-      };
-    } else if (key === 'model') {
-      searchQuery = {
-        ...searchQuery,
-        model: {
-          name: query[key].trim().toLowerCase(),
-        },
-      };
-    } else if (key === 'fuel') {
-      searchQuery = {
-        ...searchQuery,
-        fuelType: query[key],
-      };
+    switch (key as keyof QueryAdDTO) {
+      case 'brand': {
+        searchQuery = {
+          ...searchQuery,
+          brand: {
+            name: {
+              equals: query[key].trim().toLowerCase(),
+            },
+          },
+        };
+        break;
+      }
+      case 'model': {
+        searchQuery = {
+          ...searchQuery,
+          model: {
+            name: {
+              equals: query[key].trim().toLowerCase(),
+            },
+          },
+        };
+        break;
+      }
+      case 'fuel': {
+        searchQuery = {
+          ...searchQuery,
+          fuelType: {
+            equals: query[key],
+          },
+        };
+        break;
+      }
+
+      case 'priceUpTo': {
+        searchQuery = {
+          ...searchQuery,
+          price: {
+            lte: query[key],
+          },
+        };
+        break;
+      }
+
+      case 'year': {
+        searchQuery = {
+          ...searchQuery,
+          year: {
+            equals: query[key],
+          },
+        };
+        break;
+      }
+      case 'kmUpTo': {
+        searchQuery = {
+          ...searchQuery,
+          KM: {
+            lte: query[key],
+          },
+        };
+        break;
+      }
+      case 'vehicleOrigin': {
+        searchQuery = {
+          ...searchQuery,
+          vehicleOrigin: {
+            equals: query[key],
+          },
+        };
+        break;
+      }
     }
   }
 
