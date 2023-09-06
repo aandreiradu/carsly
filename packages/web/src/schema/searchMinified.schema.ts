@@ -13,11 +13,14 @@ export const searchMinifiedSchema = z.object({
     })
     .optional(),
 
-  priceMax: z.coerce.number().optional(),
+  priceUpTo: z.coerce.number().optional(),
 
-  firstRegister: z.coerce.number().min(1900).optional(),
+  year: z.coerce.number().min(1900).optional(),
 
-  kmMax: z.string().or(z.number()).optional(),
+  kmUpTo: z
+    .string()
+    .or(z.number().min(0, { message: 'KM should ' }))
+    .optional(),
 
   fuel: z
     .object({

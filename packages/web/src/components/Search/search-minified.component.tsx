@@ -86,12 +86,12 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
     const dispatch = useDispatch();
     const cachedModels = useSelector(selectModelsByBrandDataSource(searchMinifiedForm.getValues('brand') ?? ''));
 
-    if (error) {
+    if (error || errorSearchAd) {
       console.error('error ad', error);
       if (topLevelNotificationRef) {
         topLevelNotificationRef.current?.display({
           icon: <Info className="w-14 h-8 text-red-600" />,
-          message: `${error.message ?? 'Someting went wrong. Please try again later'}`,
+          message: `${error?.message ?? errorSearchAd?.message ?? 'Someting went wrong. Please try again later'}`,
         });
       }
     }
@@ -254,13 +254,13 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                 </Label>
                 <div className="flex items-center bg-gray-200 rounded-lg p-0">
                   <Input
-                    {...searchMinifiedForm.register('priceMax')}
+                    {...searchMinifiedForm.register('priceUpTo')}
                     labelClasses="my-2"
                     placeholder="10000 EUR"
                     id="price"
                     type="number"
                     className="border-none bg-transparent text-black flex-1 md:flex-initial"
-                    error={searchMinifiedForm.formState.errors.priceMax?.message}
+                    error={searchMinifiedForm.formState.errors.priceUpTo?.message}
                     disabled={loading}
                   />
                 </div>
@@ -271,7 +271,7 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                 </Label>
                 <Controller
                   control={searchMinifiedForm.control}
-                  name="firstRegister"
+                  name="year"
                   render={({ field: { onChange } }) => (
                     <Select
                       onChange={(e: { value: string }) => {
@@ -279,20 +279,20 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                       }}
                       dataSource={sellNowYearsSorted}
                       classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
-                      error={searchMinifiedForm.formState.errors.firstRegister?.message}
+                      error={searchMinifiedForm.formState.errors.year?.message}
                     />
                   )}
                 />
               </div>
               <div className="w-full h-fit flex flex-col">
                 <Input
-                  {...searchMinifiedForm.register('kmMax')}
+                  {...searchMinifiedForm.register('kmUpTo')}
                   label="Km Up To"
                   labelClasses="my-2"
                   id="km"
                   type="number"
                   className="border-none bg-gray-200 rounded-lg text-black"
-                  error={searchMinifiedForm.formState.errors.kmMax?.message}
+                  error={searchMinifiedForm.formState.errors.kmUpTo?.message}
                   disabled={loading}
                 />
               </div>
