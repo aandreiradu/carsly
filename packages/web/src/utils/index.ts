@@ -24,12 +24,6 @@ type QuerySearchObj = {
 export const buildQuerySearchAd = <T extends object>(data: T): string => {
   const querySearch = new URLSearchParams();
   for (const key in data) {
-    console.log({
-      key,
-      value: data[key],
-      tok: typeof key,
-      tov: typeof data[key],
-    });
     if (data[key]) {
       if (typeof data[key] == 'object') {
         querySearch.set(key, (data[key] as QuerySearchObj).value);

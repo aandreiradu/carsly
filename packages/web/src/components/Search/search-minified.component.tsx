@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Info, Warning, XCircle } from 'phosphor-react';
+import { ArrowSquareIn, Info, Warning, XCircle } from 'phosphor-react';
 import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import Label from '../UI/Label/label.component';
 import Select from '../UI/Select/select.component';
@@ -18,6 +18,8 @@ import { sellNowYearsSorted } from '../../config/settings';
 import { CountriesTypes, FuelType, countriesDictionary, fuelTypeDictionary } from '../../pages/SellNow/types';
 import { buildQuerySearchAd } from '../../utils';
 import { ClipLoader } from 'react-spinners';
+import { saveSearch, type FetchModelsByBrand, type SearchAdRes } from '../../store/search/search.slice';
+import { getCachedSearchs } from '../../store/search/search.selector';
 
 export type SearchMinifiedHandlers = {
   display: () => void;
@@ -43,36 +45,9 @@ type SearchMinifiedProps = {
 //     brand: string;
 // }
 
-type FetchModelsByBrand = {
-  status: number;
-  brandModels: Record<string, string[]>;
-  brand: string;
-};
-
-type SearchAdRes = {
-  results: {
-    KM: number;
-    bodyType: string;
-    color: string;
-    colorType: string;
-    currency: string;
-    fuelType: string;
-    images: string;
-    noOfDoors: number;
-    price: number;
-    sellerCity: string;
-    sellerFullName: string;
-    sellerPhoneNumber: string;
-    title: string;
-    vehicleOrigin: string;
-    year: number;
-  }[];
-
-  resultsCount: number;
-};
-
 const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
   ({ className, hasCloseButton = false }, ref) => {
+    const [resultsFound, setResultsFound] = useState<number>(-1);
     const [showMinifiedSearch, setShowMinifiedSearch] = useState<boolean>(false);
     const searchMinifiedForm = useZodForm({
       schema: searchMinifiedSchema,
@@ -87,6 +62,7 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
     const { sendRequest: searchAdRequest, error: errorSearchAd, loading: loadingSearchAd } = useHttpRequest<SearchAdRes>();
     const dispatch = useDispatch();
     const cachedModels = useSelector(selectModelsByBrandDataSource(searchMinifiedForm.getValues('brand') ?? ''));
+    const cachedSearchResults = useSelector(getCachedSearchs);
 
     if (error || errorSearchAd) {
       console.error('error ad', error);
@@ -97,6 +73,8 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
         });
       }
     }
+
+    console.log('resultsFound', resultsFound);
 
     const display = () => {
       setShowMinifiedSearch(true);
@@ -164,19 +142,42 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
     };
 
     const onSubmit: SubmitHandler<SearchMinifiedSchema> = async (data) => {
+      setResultsFound(-1);
       const queryURL = buildQuerySearchAd<SearchMinifiedSchema>(data);
-      const responseSearchAd = await searchAdRequest(`/api/ad/search?${queryURL}`, {
-        method: 'GET',
-        withCredentials: true,
-      });
 
-      if (responseSearchAd) {
-        if (!responseSearchAd.data.resultsCount) {
-          topLevelNotificationRef.current?.display({
-            message: 'Search returned no results for the specified filters',
-            icon: <Info className="w-14 h-8 text-yellow-400" />,
-          });
-          return;
+      let cachedSearch = null;
+      if (cachedSearchResults) {
+        cachedSearch = cachedSearchResults[queryURL];
+      }
+
+      if (cachedSearch) {
+        setResultsFound(cachedSearch.resultsCount);
+        /*
+          TODO: redirect to another route to see the results
+        */
+      } else {
+        const responseSearchAd = await searchAdRequest(`/api/ad/search?${queryURL}`, {
+          method: 'GET',
+          withCredentials: true,
+        });
+
+        if (responseSearchAd) {
+          if (!responseSearchAd.data.resultsCount) {
+            topLevelNotificationRef.current?.display({
+              message: 'Search returned no results for the specified filters',
+              icon: <Info className="w-14 h-8 text-yellow-400" />,
+            });
+            return;
+          }
+
+          dispatch(
+            saveSearch({
+              query: queryURL,
+              results: responseSearchAd.data.results,
+              resultsCount: responseSearchAd.data.resultsCount,
+            }),
+          );
+          setResultsFound(responseSearchAd.data.resultsCount);
         }
       }
     };
@@ -344,8 +345,22 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                   )}
                 />
               </div>
-              <button className="my-4 md:mb-0 md:mt-auto w-full p-1 h-10 flex items-center justify-center bg-yellow-400 text-black rounded-md cursor-pointer">
-                {!loadingSearchAd ? 'Search' : <ClipLoader color="black" size={25} />}
+              <button
+                disabled={loading || loadingSearchAd}
+                className="my-4 md:mb-0 md:mt-auto w-full p-1 h-10 flex items-center justify-center bg-yellow-400 text-black rounded-md cursor-pointer"
+              >
+                {loadingSearchAd ? (
+                  <ClipLoader color="black" size={25} />
+                ) : resultsFound > -1 ? (
+                  <div className="flex items-center gap-2">
+                    <p className="text-base font-bold">
+                      Found {resultsFound} {resultsFound === 1 ? 'matching' : 'matchings'}
+                    </p>
+                    <ArrowSquareIn color="black" size={20} />
+                  </div>
+                ) : (
+                  'Search'
+                )}
               </button>
             </motion.form>
           </motion.div>
