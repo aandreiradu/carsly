@@ -67,6 +67,8 @@ type SearchAdRes = {
     vehicleOrigin: string;
     year: number;
   }[];
+
+  resultsCount: number;
 };
 
 const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
@@ -169,7 +171,7 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
       });
 
       if (responseSearchAd) {
-        if (!responseSearchAd?.data?.results?.length) {
+        if (!responseSearchAd.data.resultsCount) {
           topLevelNotificationRef.current?.display({
             message: 'Search returned no results for the specified filters',
             icon: <Info className="w-14 h-8 text-yellow-400" />,

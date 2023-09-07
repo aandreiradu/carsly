@@ -103,6 +103,7 @@ export class AdsController {
 
     return {
       results: resultSearch,
+      resultsCount: resultSearch.length,
     };
   }
 
