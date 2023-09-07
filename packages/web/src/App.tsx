@@ -17,13 +17,32 @@ import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from './components/UI/TopLevelNotification/topLevelNotification.component';
 import { Warning } from 'phosphor-react';
+import { CarBrand, setCarsBrands } from './store/cars/cars.slice';
+import { selectCarsBrands } from './store/cars/cars.selector';
 
 function App() {
   const favoriteAds = useSelector(selectFavoriteAds);
+  const carsBrands = useSelector(selectCarsBrands);
   const dispatch = useDispatch();
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const { sendRequest: SRGetFavoritesAds, error: errorFavoritesAds } = useHttpRequest<IGetFavoriteAds>();
+  const { sendRequest, error } = useHttpRequest<{ carsBrands: CarBrand[] }>();
+
   useEffect(() => {
+    const getCarsBrands = async () => {
+      const brandsResponse = await sendRequest('/api/car/brands', {
+        method: 'GET',
+        withCredentials: true,
+      });
+
+      if (brandsResponse) {
+        const { status, data } = brandsResponse;
+        if (status === 200 && data.carsBrands.length > 0) {
+          dispatch(setCarsBrands({ carsBrands: data.carsBrands }));
+        }
+      }
+    };
+
     const getFavoritesAdsByUser = async () => {
       const favoriteAds = await SRGetFavoritesAds('/api/ad/favorites', {
         method: 'GET',
@@ -42,15 +61,16 @@ function App() {
       }
     };
 
+    carsBrands?.length === 0 && getCarsBrands();
     favoriteAds?.length === 0 && getFavoritesAdsByUser();
   }, []);
 
-  if (errorFavoritesAds) {
-    if (errorFavoritesAds instanceof Error) {
+  if (errorFavoritesAds || error) {
+    if ((errorFavoritesAds || error) instanceof Error) {
       if (topLevelNotificationRef) {
         topLevelNotificationRef.current?.display({
           icon: <Warning className="w-14 h-8 text-red-600" />,
-          message: errorFavoritesAds?.message || 'Something went wrong. Please try again later!',
+          message: error?.message || errorFavoritesAds?.message || 'Something went wrong. Please try again later!',
         });
       }
     } else {
