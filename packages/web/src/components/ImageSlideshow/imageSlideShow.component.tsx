@@ -2,14 +2,12 @@ import { useEffect, useState } from 'react';
 import { CaretLeft, CaretRight } from 'phosphor-react';
 import BackupImage from '../../assets/missing-image.jpg';
 import { Image } from 'phosphor-react';
-import { cn } from '../UI/Checkbox/checkbox.component';
 import { Skeleton } from '@mui/material';
+import { cn } from '../../utils/styling.utils';
 
 export type ImageSlideShow = {
   imagesSource: {
-    id: string;
     path: string;
-    adId: string;
   }[];
   classNames?: string;
   isLoading?: boolean;

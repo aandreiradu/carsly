@@ -1,6 +1,5 @@
 import { forwardRef } from 'react';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { cn } from '../../../utils/styling.utils';
 
 type CheckboxProps = {
   label: string;
@@ -11,10 +10,6 @@ type CheckboxProps = {
   onChange?: any;
   error?: string;
 };
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
 
 const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   ({ label, id, className, wrapperClassNames, labelClassNames, error, ...props }, ref) => {

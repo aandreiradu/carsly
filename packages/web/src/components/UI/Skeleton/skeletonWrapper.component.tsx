@@ -1,5 +1,5 @@
 import { Skeleton } from '@mui/material';
-import { cn } from '../Checkbox/checkbox.component';
+import { cn } from '../../../utils/styling.utils';
 
 interface LoadingSkeletonContentProps {
   count?: number;

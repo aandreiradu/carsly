@@ -1,7 +1,7 @@
 import { MapPin, Phone } from 'phosphor-react';
-import { cn } from '../UI/Checkbox/checkbox.component';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@mui/material';
+import { cn } from '../../utils/styling.utils';
 
 interface AdSellerDetailsProps {
   sellerName: string;

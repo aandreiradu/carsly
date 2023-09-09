@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getAllModels, selectCarsBrands, selectModelsByBrandDataSource } from '../../store/cars/cars.selector';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { useCallback, useEffect, useRef } from 'react';
-import { setCarsBrands, setModelsByBrand } from '../../store/cars/cars.slice';
+import { CarBrand, setCarsBrands, setModelsByBrand } from '../../store/cars/cars.slice';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from '../../components/UI/TopLevelNotification/topLevelNotification.component';
@@ -41,19 +41,24 @@ import {
   transmissionDictionary,
 } from '../SellNow/types';
 import { noOfDorsDictionary } from '../../config/settings';
-import File from '../../components/UI/File/file.component';
 import { buildAdPageFormData } from '../../utils';
 import Nav from '../../components/Nav/nav.component';
 import { PulseLoader } from 'react-spinners';
-import { insertAd } from '../../store/ad/ad.slice';
+import { type Ad, insertAd } from '../../store/ad/ad.slice';
+import FileComponent from '../../components/UI/File/file.component';
+import MainLayout from '../../components/Layouts/Main/main.layout';
+import Sidebar from '../../components/Sidebar/sidebar.component';
 
 const Ad = ({ title }: AdPageProps) => {
   const topViewRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
   const dispatch = useDispatch();
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
-  const { sendRequest, error, loading } = useHttpRequest();
-  const { sendRequest: createAdRequest, loading: createAdLoading } = useHttpRequest();
+  const { sendRequest, error, loading } = useHttpRequest<{ brandModels: CarBrand[]; brand: string }>();
+  const { sendRequest: createAdRequest, loading: createAdLoading } = useHttpRequest<{
+    message: string;
+    ad: Ad;
+  }>();
   const adPageForm = useZodForm({
     schema: adSchema,
     defaultValues: {
@@ -108,8 +113,6 @@ const Ad = ({ title }: AdPageProps) => {
       if (respModels) {
         const { data, status } = respModels;
         if (status === 200 && data && data?.brandModels && data?.brand) {
-          console.log('before', adPageForm.getValues('model'));
-          console.log('after', adPageForm.getValues('model'));
           if (data.brandModels[data.brand].length === 0) {
             /* reset selects */
             adPageForm.setValue('brand', '');
@@ -222,13 +225,12 @@ const Ad = ({ title }: AdPageProps) => {
     [adPageForm.watch('brand')],
   );
 
-  console.log('m', adPageForm.watch('model'));
-
   return (
-    <>
+    <MainLayout className="bg-white">
       <div ref={topViewRef}></div>
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
-      <Nav setShowComponent={() => {}} showOnAllScreens={true} />
+      <Nav setShowComponent={() => {}} />
+      <Sidebar setShowComponent={() => {}} />
       <form
         encType="multipart/form-data"
         ref={formRef}
@@ -766,7 +768,7 @@ const Ad = ({ title }: AdPageProps) => {
             name={'images'}
             control={adPageForm.control}
             render={() => (
-              <File
+              <FileComponent
                 maxAcceptedFiles={5}
                 wrapperClasses="bg-gray-200 mt-2 p-4 lg:min-h-[200px] rounded-lg text-white"
                 buttonClasses="text-white bg-indigo-500 rounded-lg"
@@ -1097,7 +1099,7 @@ const Ad = ({ title }: AdPageProps) => {
           {!createAdLoading ? 'Submit' : <PulseLoader color="#fff" />}
         </button>
       </form>
-    </>
+    </MainLayout>
   );
 };
 

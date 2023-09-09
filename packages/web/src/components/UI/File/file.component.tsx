@@ -1,9 +1,9 @@
 import { ChangeEvent, ComponentPropsWithRef, useCallback, useEffect, useRef, useState } from 'react';
-import { cn } from '../Checkbox/checkbox.component';
 import TopLevelNotification, { TopLevelNotificationHandlers } from '../TopLevelNotification/topLevelNotification.component';
 import { Camera, Info, Warning, X } from 'phosphor-react';
 import AdSectionHeaderWithImage from '../../Ad/adSectionHeaderWithImage.component';
 import { dataUrlToFile } from '../../../utils/dataUrl-to-Files';
+import { cn } from '../../../utils/styling.utils';
 
 type FileComponentProps = ComponentPropsWithRef<'input'> & {
   wrapperClasses?: string;

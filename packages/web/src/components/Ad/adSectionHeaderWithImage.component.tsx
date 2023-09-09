@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { cn } from '../UI/Checkbox/checkbox.component';
+import { cn } from '../../utils/styling.utils';
 type AdSectionHeaderLabelProps = {
   title: string;
   image?: ReactNode;

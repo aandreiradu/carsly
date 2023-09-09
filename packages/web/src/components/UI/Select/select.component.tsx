@@ -1,7 +1,7 @@
 import { Fragment, forwardRef, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CaretUp, CaretDown, Check } from 'phosphor-react';
-import { cn } from '../Checkbox/checkbox.component';
+import { cn } from '../../../utils/styling.utils';
 
 export type SelectProps = {
   dataSource: {
