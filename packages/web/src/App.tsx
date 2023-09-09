@@ -19,6 +19,7 @@ import TopLevelNotification, {
 import { Warning } from 'phosphor-react';
 import { CarBrand, setCarsBrands } from './store/cars/cars.slice';
 import { selectCarsBrands } from './store/cars/cars.selector';
+import SearchResultsPage from './pages/SearchResults/searchResults.page';
 
 function App() {
   const favoriteAds = useSelector(selectFavoriteAds);
@@ -95,6 +96,7 @@ function App() {
           <Route path="/auto/add" element={<Ad title="Sell Your Car Now" />} />
           <Route path="/favorites" element={<FavoritePage />} />
           <Route path="/ad/:adId" element={<AdDetailsPage />} />
+          <Route path="/search" element={<SearchResultsPage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

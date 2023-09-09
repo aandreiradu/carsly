@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { CurrencyTypes } from '../../pages/SellNow/types';
 
 export interface FetchModelsByBrand {
   status: number;
@@ -6,34 +7,31 @@ export interface FetchModelsByBrand {
   brand: string;
 }
 
-export interface SearchAdRes {
-  results: {
-    KM: number;
-    bodyType: string;
-    color: string;
-    colorType: string;
-    currency: string;
-    fuelType: string;
-    images: string;
-    noOfDoors: number;
-    price: number;
-    sellerCity: string;
-    sellerFullName: string;
-    sellerPhoneNumber: string;
-    title: string;
-    vehicleOrigin: string;
-    year: number;
-  };
-  resultsCount: number;
+export interface AdCarDetailsProps {
+  id: string;
+  title: string;
+  year: number;
+  KM: number;
+  fuelType: string;
+  bodyType: string;
+  price: number;
+  currency: CurrencyTypes;
+  isNegotiable?: boolean | null;
+  sellerCity: string;
+  sellerFullName: string;
+  sellerPhoneNumber: string;
+  isLoading?: boolean;
+  thumbnail: string;
+  location?: string;
+  engineSize: string | number;
+  power: number;
+  description?: string;
 }
 
-// queries = {
-//     'brand=audi&model=a7' : {
-//        results:  Pick<>,
-//        count: number
-//     }
-// }
-
+export interface SearchAdRes {
+  results: AdCarDetailsProps[];
+  resultsCount: number;
+}
 interface SearchResult {
   queries: {
     [query in string]: SearchAdRes;
