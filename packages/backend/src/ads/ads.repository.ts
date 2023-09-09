@@ -303,6 +303,7 @@ export class AdRepository {
         ...query,
       },
       select: {
+        id: true,
         title: true,
         KM: true,
         year: true,
@@ -318,12 +319,15 @@ export class AdRepository {
         color: true,
         colorType: true,
         noOfDoors: true,
+        engineSize: true,
+        power: true,
+        description: true,
       },
     });
 
     return searchQuery.map((data) => ({
       ...data,
-      images: data.images.slice(0, 1)[0]?.path || '',
+      thumbnail: data.images.slice(0, 1)[0]?.path || '',
     }));
   }
 }
