@@ -18,7 +18,7 @@ export enum AdStatus {
   'EXPIRED' = 'EXPIRED',
 }
 
-interface Ad {
+export interface Ad {
   id: string;
   isDamaged: boolean | null;
   isRightHandDrive: boolean | null;

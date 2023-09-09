@@ -99,7 +99,7 @@ const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
   return (
     <>
       <SearchMinified ref={searchMinifiedRef} />
-      <div className="hidden md:flex h-full w-full md:max-w-[100px] lg:max-w-[150px] bg-[#1f1f1f] flex-col items-center justify-center">
+      <div className="hidden md:flex h-screen w-full md:max-w-[100px] lg:max-w-[150px] bg-[#1f1f1f] flex-col items-center justify-center">
         <ul className="flex flex-col space-y-10">
           {sidebarLinks.map((link) => (
             <SidebarLink

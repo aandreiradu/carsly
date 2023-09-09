@@ -3,7 +3,7 @@ import { selectFavoriteAds } from '../../store/favorites/favorites.selector';
 import Nav from '../../components/Nav/nav.component';
 import FavoriteCardItem from '../../components/FavoriteCard/favoriteCard.component';
 import { useEffect, useRef } from 'react';
-import { setFavoriteAds, setFavoritesCount } from '../../store/favorites/favorites.slice';
+import { FavoriteCarAd, setFavoriteAds, setFavoritesCount } from '../../store/favorites/favorites.slice';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
@@ -11,6 +11,8 @@ import TopLevelNotification, {
 import { Warning } from 'phosphor-react';
 import { Skeleton } from '@mui/material';
 import { Link } from 'react-router-dom';
+import MainLayout from '../../components/Layouts/Main/main.layout';
+import Sidebar from '../../components/Sidebar/sidebar.component';
 
 interface LoadingContentProps {
   count?: number;
@@ -36,7 +38,11 @@ const LoadingContent = ({ count = 1 }: LoadingContentProps) => {
 const FavoritePage = () => {
   const dispatch = useDispatch();
   const favoriteAds = useSelector(selectFavoriteAds);
-  const { sendRequest: SRGetFavoritesAds, error: errorFavoritesAds, loading: loadingFavoriteAds } = useHttpRequest();
+  const {
+    sendRequest: SRGetFavoritesAds,
+    error: errorFavoritesAds,
+    loading: loadingFavoriteAds,
+  } = useHttpRequest<{ count: number; favorites: FavoriteCarAd[] }>();
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
 
   useEffect(() => {
@@ -80,9 +86,10 @@ const FavoritePage = () => {
   }
 
   return (
-    <>
+    <MainLayout className="bg-white">
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
-      <Nav showOnAllScreens={true} setShowComponent={() => {}} />
+      <Nav setShowComponent={() => {}} />
+      <Sidebar setShowComponent={() => {}} />
       <section className="h-full my-6 max-h-[98%] mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         {!favoriteAds.length ? (
           <EmptyFavoriteAds />
@@ -106,7 +113,7 @@ const FavoritePage = () => {
           </ul>
         )}
       </section>
-    </>
+    </MainLayout>
   );
 };
 

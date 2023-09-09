@@ -4,33 +4,15 @@ import { Heart, Warning } from 'phosphor-react';
 import { useSelector } from 'react-redux';
 import { selectIsFavoriteAd } from '../../store/favorites/favorites.selector';
 import useAddToFavorite from '../../hooks/useAddToFavorite/useAddToFavorite.hook';
-import { CurrencyTypes } from '../../pages/SellNow/types';
 import { ClipLoader } from 'react-spinners';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from '../UI/TopLevelNotification/topLevelNotification.component';
 import { useRef } from 'react';
-
-interface AdCarShortDetailsProps {
-  adId: string;
-  title: string;
-  year: number;
-  KM: number;
-  fuelType: string;
-  bodyType: string;
-  price: number;
-  currency: CurrencyTypes;
-  isNegotiable?: boolean | null;
-  sellerCity: string;
-  sellerFullName: string;
-  sellerPhoneNumber: string;
-  isLoading?: boolean;
-  thumbnail: string;
-  location?: string;
-}
+import type { AdCarDetailsProps } from '../../store/search/search.slice';
 
 const AdCarShortDetails = ({
-  adId,
+  id,
   title,
   year,
   fuelType,
@@ -45,9 +27,9 @@ const AdCarShortDetails = ({
   isLoading = false,
   thumbnail,
   location = 'Romania',
-}: AdCarShortDetailsProps) => {
+}: AdCarDetailsProps) => {
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
-  const isFavAd = useSelector(selectIsFavoriteAd(adId ?? ''));
+  const isFavAd = useSelector(selectIsFavoriteAd(id ?? ''));
   const { errorFavorites, handleAddToFavorite, loadingFavorites } = useAddToFavorite({ isOfferOfTheDay: false });
 
   if (isLoading) {
@@ -88,7 +70,7 @@ const AdCarShortDetails = ({
             isLoading || loadingFavorites ? 'w-12' : 'w-28'
           } md:my-2 ml-auto transition-width duration-300 flex items-center justify-center gap-1 first-letter:cursor-pointer py-2 px-2 bg-[#1f1f1f] text-white text-xl font-kanit active:outline-none focus:outline-none disabled:pointer-events-none`}
           onClick={handleAddToFavorite.bind(this, {
-            adId: adId ?? '',
+            adId: id ?? '',
             currency: currency ?? null,
             name: title ?? null,
             price: price ?? 0,

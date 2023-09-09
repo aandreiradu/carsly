@@ -57,7 +57,12 @@ const AdDetailsPage = () => {
         <div className="flex flex-col md:flex-row h-full gap-0 md:gap-5">
           <ImageSlideShow classNames="w-full md:w-[75%]" imagesSource={info?.images || []} isLoading={loading} />
           {info && (
-            <AdCarShortDetails {...info} adId={info.id} isLoading={loading} thumbnail={info?.images[0]?.path || ''} />
+            <AdCarShortDetails
+              {...info}
+              description={info.description ?? ''}
+              isLoading={loading}
+              thumbnail={info?.images[0]?.path || ''}
+            />
           )}
         </div>
         {info && <AdTechnicalDetails {...info} isLoading={loading} />}

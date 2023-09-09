@@ -20,6 +20,7 @@ import { buildQuerySearchAd } from '../../utils';
 import { ClipLoader } from 'react-spinners';
 import { saveSearch, type FetchModelsByBrand, type SearchAdRes } from '../../store/search/search.slice';
 import { getCachedSearchs } from '../../store/search/search.selector';
+import { useNavigate } from 'react-router-dom';
 
 export type SearchMinifiedHandlers = {
   display: () => void;
@@ -47,6 +48,7 @@ type SearchMinifiedProps = {
 
 const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
   ({ className, hasCloseButton = false }, ref) => {
+    const navigate = useNavigate();
     const [resultsFound, setResultsFound] = useState<number>(-1);
     const [showMinifiedSearch, setShowMinifiedSearch] = useState<boolean>(false);
     const searchMinifiedForm = useZodForm({
@@ -65,7 +67,6 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
     const cachedSearchResults = useSelector(getCachedSearchs);
 
     if (error || errorSearchAd) {
-      console.error('error ad', error);
       if (topLevelNotificationRef) {
         topLevelNotificationRef.current?.display({
           icon: <Info className="w-14 h-8 text-red-600" />,
@@ -152,9 +153,12 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
 
       if (cachedSearch) {
         setResultsFound(cachedSearch.resultsCount);
-        /*
-          TODO: redirect to another route to see the results
-        */
+        hide();
+        navigate(`/search?${queryURL}`, {
+          state: {
+            queryURL,
+          },
+        });
       } else {
         const responseSearchAd = await searchAdRequest(`/api/ad/search?${queryURL}`, {
           method: 'GET',
@@ -164,7 +168,7 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
         if (responseSearchAd) {
           if (!responseSearchAd.data.resultsCount) {
             topLevelNotificationRef.current?.display({
-              message: 'Search returned no results for the specified filters',
+              message: 'No results found with selected filters',
               icon: <Info className="w-14 h-8 text-yellow-400" />,
             });
             return;
@@ -178,6 +182,12 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
             }),
           );
           setResultsFound(responseSearchAd.data.resultsCount);
+          hide();
+          navigate(`/search?${queryURL}`, {
+            state: {
+              queryURL,
+            },
+          });
         }
       }
     };
