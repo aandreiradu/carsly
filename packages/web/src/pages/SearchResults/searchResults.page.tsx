@@ -36,10 +36,10 @@ const SearchResultsPage = () => {
       <Sidebar setShowComponent={() => {}} />
       {NoResultsContent}
       {searchResults && searchResults?.resultsCount > 0 && (
-        <div className="w-full px-2 py-6 lg:px-56 lg:py-10 flex flex-col gap-10">
+        <div className="w-full px-2 py-6 lg:px-56 lg:py-10 flex flex-col gap-10 overflow-y-auto">
           <h3 className="text-2xl font-bold font-kanit">Found {searchResults?.resultsCount} results</h3>
           {searchResults?.results.map((result) => (
-            <SearchResultItem key={result.title} {...result} />
+            <SearchResultItem key={result.id} {...result} />
           ))}
         </div>
       )}

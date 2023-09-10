@@ -45,7 +45,7 @@ const SearchResultItem = (props: AdCarDetailsProps) => {
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
       <div
         onClick={handleNavigateToAd}
-        className="w-full flex flex-col md:flex-row h-[350px] md:h-[240px] shadow-2xl border border-black rounded-md overflow-hidden cursor-pointer"
+        className="w-full flex flex-col md:flex-row h-[350px] md:h-[240px] shadow-2xl border border-black rounded-md cursor-pointer"
       >
         <img
           src={props.thumbnail ? `${import.meta.env.VITE_BACKEND_URL}/${props.thumbnail}` : BackupImage}
