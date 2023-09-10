@@ -6,7 +6,7 @@ import { selectAccessToken } from '../../store/user/user.selector';
 import { AxiosError } from 'axios';
 
 const Persist = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const refresh = useRefreshToken();
   const navigate = useNavigate();
   const { accessToken: isAuth } = useSelector(selectAccessToken);
