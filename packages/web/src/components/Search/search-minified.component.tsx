@@ -32,20 +32,6 @@ type SearchMinifiedProps = {
   hasCloseButton?: boolean;
 };
 
-// type BrandModels<TBrand extends string> = {
-//     [brand in TBrand]: string[];
-// };
-
-// type BrandModels = {
-//     [brand: string]: string[];
-//   };
-
-// type FetchModelsByBrand<TBrand extends BrandModels> = {
-//     status: number,
-//     brandModels: TBrand,
-//     brand: string;
-// }
-
 const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
   ({ className, hasCloseButton = false }, ref) => {
     const navigate = useNavigate();
@@ -63,8 +49,10 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
     const { sendRequest, error, loading } = useHttpRequest<FetchModelsByBrand>();
     const { sendRequest: searchAdRequest, error: errorSearchAd, loading: loadingSearchAd } = useHttpRequest<SearchAdRes>();
     const dispatch = useDispatch();
-    const cachedModels = useSelector(selectModelsByBrandDataSource(searchMinifiedForm.getValues('brand') ?? ''));
+    const cachedModels = useSelector(selectModelsByBrandDataSource(searchMinifiedForm.getValues('brand')?.value ?? ''));
     const cachedSearchResults = useSelector(getCachedSearchs);
+
+    console.log(searchMinifiedForm.formState.errors);
 
     if (error || errorSearchAd) {
       if (topLevelNotificationRef) {
@@ -74,8 +62,6 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
         });
       }
     }
-
-    console.log('resultsFound', resultsFound);
 
     const display = () => {
       setShowMinifiedSearch(true);
@@ -102,6 +88,12 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
     );
 
     const handleBrandChange = async (brand: string) => {
+      searchMinifiedForm.resetField('model');
+      if (!brand) {
+        searchMinifiedForm.resetField('brand');
+        return;
+      }
+
       if (!allModels[brand]) {
         const respModels = await fetchModelsByBrand(brand);
         if (respModels) {
@@ -109,8 +101,8 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
           if (status === 200 && data && data?.brandModels && data?.brand) {
             if (data.brandModels[data.brand].length === 0) {
               /* reset selects */
-              searchMinifiedForm.setValue('brand', '');
-              searchMinifiedForm.setValue('model', '');
+              searchMinifiedForm.resetField('model');
+              searchMinifiedForm.resetField('brand');
 
               if (topLevelNotificationRef) {
                 topLevelNotificationRef.current?.display({
@@ -228,8 +220,16 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                   name="brand"
                   render={({ field: { onChange } }) => (
                     <Select
+                      value={searchMinifiedForm.getValues('brand')}
+                      clearValue={() => {
+                        searchMinifiedForm.resetField('brand');
+                        searchMinifiedForm.resetField('model');
+                      }}
                       onChange={(e: { value: string }) => {
-                        onChange(e.value);
+                        onChange({
+                          value: e.value,
+                          label: e.value,
+                        });
                         handleBrandChange(e.value);
                       }}
                       dataSource={carsBrands}
@@ -252,7 +252,14 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                   name="model"
                   render={({ field: { onChange } }) => (
                     <Select
-                      onChange={(e: { value: string }) => onChange(e.value)}
+                      clearValue={() => searchMinifiedForm.resetField('model')}
+                      value={searchMinifiedForm.getValues('model') || { label: '', value: '' }}
+                      onChange={(e: { value: string }) => {
+                        onChange({
+                          value: e.value,
+                          label: e.value,
+                        });
+                      }}
                       dataSource={cachedModels}
                       classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                       error={searchMinifiedForm.formState.errors.model?.message}
@@ -287,8 +294,13 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                   name="year"
                   render={({ field: { onChange } }) => (
                     <Select
+                      clearValue={() => searchMinifiedForm.resetField('year')}
+                      value={searchMinifiedForm.getValues('year') || { label: '', value: 0 }}
                       onChange={(e: { value: string }) => {
-                        onChange(e.value);
+                        onChange({
+                          value: e.value,
+                          label: e.value,
+                        });
                       }}
                       dataSource={sellNowYearsSorted}
                       classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
@@ -321,8 +333,13 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                   name="fuel"
                   render={({ field: { onChange } }) => (
                     <Select
+                      clearValue={() => searchMinifiedForm.resetField('fuel')}
+                      value={searchMinifiedForm.getValues('fuel') || { label: '', value: '' }}
                       onChange={(e: { value: FuelType; label: string }) => {
-                        onChange({ ...e });
+                        onChange({
+                          value: e.value,
+                          label: e.value,
+                        });
                       }}
                       dataSource={fuelTypeDictionary}
                       disabled={loading}
@@ -344,8 +361,13 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
                   name="vehicleOrigin"
                   render={({ field: { onChange } }) => (
                     <Select
+                      clearValue={() => searchMinifiedForm.resetField('vehicleOrigin')}
+                      value={searchMinifiedForm.getValues('fuel') || { label: '', value: '' }}
                       onChange={(e: { value: CountriesTypes; label: string }) => {
-                        onChange({ ...e });
+                        onChange({
+                          value: e.value,
+                          label: e.value,
+                        });
                       }}
                       dataSource={countriesDictionary}
                       classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"

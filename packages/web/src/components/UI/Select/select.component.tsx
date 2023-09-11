@@ -1,6 +1,6 @@
 import { Fragment, forwardRef, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
-import { CaretUp, CaretDown, Check } from 'phosphor-react';
+import { CaretUp, CaretDown, X } from 'phosphor-react';
 import { cn } from '../../../utils/styling.utils';
 
 export type SelectProps = {
@@ -13,41 +13,73 @@ export type SelectProps = {
   classNameListbox?: string;
   disabled?: boolean;
   error?: string;
+  value: {
+    label: string | number;
+    value: string | number;
+  };
+  clearValue: () => void;
 };
 
 const Select = forwardRef<HTMLDivElement, SelectProps>(
-  ({ disabled = false, classNameListbox, classNameWrapper, dataSource, onChange, error }, ref) => {
+  (
+    {
+      clearValue,
+      disabled = false,
+      classNameListbox,
+      classNameWrapper,
+      dataSource,
+      onChange,
+      error,
+      value = { label: '', value: '' },
+    },
+    ref,
+  ) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selected, setSelected] = useState<{ value: string | number; label: string }>({ value: '' || '', label: '' });
+    const [selected, setSelected] = useState(value);
 
-    const handleOpen = () => setIsOpen((prev) => !prev);
+    const handleOpen = () => {
+      setIsOpen((prev) => !prev);
+    };
 
     return (
-      <div className={`relative h-full visible ${disabled && 'hidden'}`} onClick={handleOpen}>
+      <div className={`relative h-full visible ${disabled && 'hidden'}`}>
         <Listbox
           ref={ref}
-          value={selected}
-          onChange={(e: { value: string | number; label: string }) => {
+          value={value}
+          onChange={(e: { value: string | number; label: string | number }) => {
             setSelected({ ...e });
             onChange(e);
           }}
         >
-          <div className={`${cn('relative w-full', classNameWrapper)}`}>
+          <div className={`${cn('relative w-full', classNameWrapper)}`} onClick={handleOpen}>
             <Listbox.Button
               aria-disabled={disabled}
               className={`relative visible  text-black w-full cursor-default h-full rounded-lg bg-transparent 
-                      pl-1 pr-10 text-left  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 
-                      focus-visible:ring-white focus-visible:ring-opacity-75 
-                      focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm
-                      ${disabled && 'hidden opacity-50 cursor-not-allowed'}        
-              `}
+                        pl-1 pr-10 text-left  focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 
+                        focus-visible:ring-white focus-visible:ring-opacity-75 
+                        focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm
+                        ${disabled && 'hidden opacity-50 cursor-not-allowed'}        
+                `}
             >
-              <span className="block truncate px-2">{selected.label}</span>
-              <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                {isOpen && !disabled ? (
+              <span className="block truncate px-2">{value?.label}</span>
+              <span className="absolute inset-y-0 right-0 flex items-center pr-2 z-50">
+                {!selected?.value && !isOpen && !disabled ? (
                   <CaretDown className="h-5 w-5 text-black" aria-hidden="true" />
-                ) : (
+                ) : !selected?.value ? (
                   <CaretUp className="h-5 w-5 text-black" aria-hidden="true" />
+                ) : (
+                  <X
+                    className="h-5 w-5 text-black z-50"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelected((prev) => ({
+                        ...prev,
+                        label: '',
+                        value: '',
+                      }));
+                      clearValue();
+                    }}
+                  />
                 )}
               </span>
             </Listbox.Button>
@@ -55,7 +87,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
               <Listbox.Options
                 aria-disabled={disabled}
                 className={`${cn(
-                  'z-40 absolute top-10 max-h-40 w-full overflow-auto rounded-md bg-white py-1 text-base  ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm',
+                  'z-[99] absolute top-10 max-h-40 w-full overflow-auto rounded-md bg-white py-1 text-base  ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm',
                   classNameListbox,
                 )}`}
               >
@@ -70,14 +102,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(
                     value={{ value: data.value, label: data.label }}
                   >
                     {({ selected }) => (
-                      <>
-                        <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{data.label}</span>
-                        {selected ? (
-                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
-                            <Check className="h-5 w-5" aria-hidden="true" />
-                          </span>
-                        ) : null}
-                      </>
+                      <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{data.label}</span>
                     )}
                   </Listbox.Option>
                 ))}
