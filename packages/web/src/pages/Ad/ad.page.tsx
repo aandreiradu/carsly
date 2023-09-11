@@ -69,7 +69,7 @@ const Ad = ({ title }: AdPageProps) => {
     value: value.name,
     label: value.name,
   }));
-  const cachedModels = useSelector(selectModelsByBrandDataSource(adPageForm.getValues('brand')));
+  const cachedModels = useSelector(selectModelsByBrandDataSource(adPageForm.getValues('brand')?.value));
   const allModels = useSelector(getAllModels());
 
   const handleIsDamaged = (args: boolean) => {
@@ -115,8 +115,8 @@ const Ad = ({ title }: AdPageProps) => {
         if (status === 200 && data && data?.brandModels && data?.brand) {
           if (data.brandModels[data.brand].length === 0) {
             /* reset selects */
-            adPageForm.setValue('brand', '');
-            adPageForm.setValue('model', '');
+            adPageForm.resetField('brand');
+            adPageForm.resetField('model');
 
             if (topLevelNotificationRef) {
               topLevelNotificationRef.current?.display({
@@ -236,7 +236,7 @@ const Ad = ({ title }: AdPageProps) => {
         ref={formRef}
         id="adForm"
         onSubmit={adPageForm.handleSubmit(onSubmit)}
-        className="w-full min-h-screen bg-white px-5 py-3 md:px-16 md:py-7 xl:px-64 xl:py-14 font-kanit text-black "
+        className="w-full bg-white px-5 py-3 md:px-16 md:py-7 xl:px-64 xl:py-14 font-kanit text-black overflow-y-auto"
       >
         <h1 className=" text-xl font-bold py-4 tracking-wide lg:text-3xl lg:py-1 lg:tracking-wider">{title}</h1>
         <AdSectionHeaderWithImage title="Vehicle details" labelText="OPTIONAL" className="lg:mb-1" />
@@ -436,6 +436,10 @@ const Ad = ({ title }: AdPageProps) => {
               name="year"
               render={({ field: { onChange } }) => (
                 <Select
+                  value={adPageForm.getValues('year')}
+                  clearValue={() => {
+                    adPageForm.resetField('year');
+                  }}
                   onChange={(e: { value: string }) => {
                     const yearRegistration = +adPageForm.getValues('yearOfRegistration');
                     if (+e.value > yearRegistration) {
@@ -444,7 +448,10 @@ const Ad = ({ title }: AdPageProps) => {
                       });
                     } else {
                       adPageForm.clearErrors('year');
-                      onChange(e.value);
+                      onChange({
+                        value: e.value,
+                        label: e.value,
+                      });
                     }
                   }}
                   dataSource={sellNowYearsSorted}
@@ -466,8 +473,16 @@ const Ad = ({ title }: AdPageProps) => {
               name="brand"
               render={({ field: { onChange } }) => (
                 <Select
+                  value={adPageForm.getValues('brand')}
+                  clearValue={() => {
+                    adPageForm.resetField('brand');
+                    adPageForm.resetField('model');
+                  }}
                   onChange={(e: { value: string }) => {
-                    onChange(e.value);
+                    onChange({
+                      value: e.value,
+                      label: e.value,
+                    });
                     handleBrandChange(e.value);
                   }}
                   dataSource={carsBrands}
@@ -490,11 +505,22 @@ const Ad = ({ title }: AdPageProps) => {
               name="model"
               render={({ field: { onChange } }) => (
                 <Select
-                  onChange={(e: { value: string }) => onChange(e.value)}
+                  value={adPageForm.getValues('model')}
+                  clearValue={() => {
+                    adPageForm.resetField('model');
+                  }}
+                  onChange={(e: { value: string }) =>
+                    onChange({
+                      value: e.value,
+                      label: e.value,
+                    })
+                  }
                   dataSource={cachedModels}
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.model?.message}
-                  disabled={allModels[adPageForm.watch('brand')]?.length === 0 || !adPageForm.watch('brand') || loading}
+                  disabled={
+                    allModels[adPageForm.watch('brand')?.value]?.length === 0 || !adPageForm.watch('brand') || loading
+                  }
                 />
               )}
             />
@@ -511,11 +537,20 @@ const Ad = ({ title }: AdPageProps) => {
               name="fuel"
               render={({ field: { onChange } }) => (
                 <Select
+                  value={adPageForm.getValues('fuel')}
+                  clearValue={() => {
+                    adPageForm.resetField('fuel');
+                  }}
                   onChange={(e: { value: FuelType; label: string }) => {
-                    onChange({ ...e });
+                    onChange({
+                      value: e.value,
+                      label: e.value,
+                    });
                   }}
                   dataSource={fuelTypeDictionary}
-                  disabled={!adPageForm.watch('model') || allModels[adPageForm.watch('brand')]?.length === 0 || loading}
+                  disabled={
+                    !adPageForm.watch('model') || allModels[adPageForm.watch('brand')?.value]?.length === 0 || loading
+                  }
                   classNameWrapper="border-none bg-gray-200 rounded-lg h-[41px]"
                   error={adPageForm.formState.errors.fuel?.message}
                 />
@@ -562,8 +597,11 @@ const Ad = ({ title }: AdPageProps) => {
               name="noOfDoors"
               render={({ field: { onChange } }) => (
                 <Select
+                  value={adPageForm.getValues('noOfDoors')}
+                  clearValue={() => {
+                    adPageForm.resetField('noOfDoors');
+                  }}
                   onChange={(e: { value: number }) => {
-                    // adPageForm.setValue('noOfDoors', +e.value);
                     onChange({ ...e });
                   }}
                   dataSource={noOfDorsDictionary}
@@ -586,6 +624,10 @@ const Ad = ({ title }: AdPageProps) => {
               name="gearbox"
               render={({ field: { onChange } }) => (
                 <Select
+                  value={adPageForm.getValues('gearbox')}
+                  clearValue={() => {
+                    adPageForm.resetField('gearbox');
+                  }}
                   onChange={(e: { value: GearboxTypes; label: string }) => {
                     adPageForm.setValue('gearbox', { ...e });
                     onChange({ ...e });
@@ -610,6 +652,10 @@ const Ad = ({ title }: AdPageProps) => {
               name="transmission"
               render={({ field: { onChange } }) => (
                 <Select
+                  value={adPageForm.getValues('transmission')}
+                  clearValue={() => {
+                    adPageForm.resetField('transmission');
+                  }}
                   onChange={(e: { value: TransmissionTypes; label: string }) => {
                     onChange({ ...e });
                   }}
@@ -636,6 +682,10 @@ const Ad = ({ title }: AdPageProps) => {
               name="polluationNorm"
               render={({ field: { onChange } }) => (
                 <Select
+                  value={adPageForm.getValues('polluationNorm')}
+                  clearValue={() => {
+                    adPageForm.resetField('polluationNorm');
+                  }}
                   onChange={(e: { value: PolluationNormTypes; label: string }) => {
                     onChange({ ...e });
                   }}
@@ -677,6 +727,10 @@ const Ad = ({ title }: AdPageProps) => {
               name="bodyType"
               render={({ field: { onChange } }) => (
                 <Select
+                  value={adPageForm.getValues('bodyType')}
+                  clearValue={() => {
+                    adPageForm.resetField('bodyType');
+                  }}
                   onChange={(e: { value: VehicleBodyType; label: string }) => {
                     console.log('e este', e);
                     onChange({ ...e });
@@ -702,6 +756,10 @@ const Ad = ({ title }: AdPageProps) => {
               name="color"
               render={({ field: { onChange } }) => (
                 <Select
+                  value={adPageForm.getValues('color')}
+                  clearValue={() => {
+                    adPageForm.resetField('color');
+                  }}
                   onChange={(e: { value: CarsColorsTypes; label: string }) => {
                     onChange({ ...e });
                   }}
@@ -726,8 +784,11 @@ const Ad = ({ title }: AdPageProps) => {
               name="colorType"
               render={({ field: { onChange } }) => (
                 <Select
+                  value={adPageForm.getValues('colorType')}
+                  clearValue={() => {
+                    adPageForm.resetField('colorType');
+                  }}
                   onChange={(e: { value: ColorTypes; label: string }) => {
-                    // adPageForm.setValue('colorType', { ...e });
                     onChange({ ...e });
                   }}
                   dataSource={carsColorsTypesDictionary}
@@ -750,8 +811,11 @@ const Ad = ({ title }: AdPageProps) => {
               name="seats"
               render={({ field: { onChange } }) => (
                 <Select
+                  value={adPageForm.getValues('seats')}
+                  clearValue={() => {
+                    adPageForm.resetField('seats');
+                  }}
                   onChange={(e: { value: number; label: string }) => {
-                    // adPageForm.setValue('seats', {...e});
                     onChange({ ...e });
                   }}
                   dataSource={noOfSeatsDictionary}
@@ -854,6 +918,10 @@ const Ad = ({ title }: AdPageProps) => {
               name="vehicleOrigin"
               render={({ field: { onChange } }) => (
                 <Select
+                  value={adPageForm.getValues('vehicleOrigin')}
+                  clearValue={() => {
+                    adPageForm.resetField('vehicleOrigin');
+                  }}
                   onChange={(e: { value: CountriesTypes; label: string }) => {
                     console.log('eeeee', e);
                     onChange({ ...e });
@@ -993,8 +1061,11 @@ const Ad = ({ title }: AdPageProps) => {
               name="currency"
               render={({ field: { onChange } }) => (
                 <Select
+                  value={adPageForm.getValues('currency')}
+                  clearValue={() => {
+                    adPageForm.resetField('currency');
+                  }}
                   onChange={(e: { value: CurrencyTypes; label: string }) => {
-                    // adPageForm.setValue('currency', { ...e });
                     onChange({ ...e });
                   }}
                   dataSource={currencyDictionary}

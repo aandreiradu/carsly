@@ -58,22 +58,38 @@ export const adSchema = z.object({
     .min(1900, { message: 'Year of registration should be greater than or equal to 1900' }),
 
   // Technical Details
-  year: z.coerce.number({
-    required_error: 'Please select the year',
-    invalid_type_error: `Please input a valid year. Accepted values 1900 - ${new Date().getFullYear()}`,
+  year: z.object({
+    value: z.coerce.number({
+      required_error: 'Please select the year',
+      invalid_type_error: `Please input a valid year. Accepted values 1900 - ${new Date().getFullYear()}`,
+    }),
+    label: z.coerce.number({
+      required_error: 'Please select the year',
+      invalid_type_error: `Please input a valid year. Accepted values 1900 - ${new Date().getFullYear()}`,
+    }),
   }),
-  brand: z
-    .string({
-      required_error: 'Please select the brand',
-      invalid_type_error: 'Please select a valid brand',
-    })
-    .min(1),
-  model: z
-    .string({
-      required_error: 'Please select a model',
-      invalid_type_error: 'Please select a valid model',
-    })
-    .nonempty(),
+  brand: z.object(
+    {
+      value: z.coerce.string({
+        description: 'Please select a brand',
+        required_error: 'Please select a brand',
+        invalid_type_error: 'Please select a brand',
+      }),
+      label: z.string(),
+    },
+    { required_error: 'Please select a brand' },
+  ),
+  model: z.object(
+    {
+      value: z.coerce.string({
+        description: 'Please select a model',
+        required_error: 'Please select a model',
+        invalid_type_error: 'Please select a model',
+      }),
+      label: z.string(),
+    },
+    { required_error: 'Please select a model' },
+  ),
   fuel: z.object({
     value: z.nativeEnum(FuelType, {
       description: 'Please select a valid fuel type',
