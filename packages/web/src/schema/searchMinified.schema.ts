@@ -2,24 +2,44 @@ import { z } from 'zod';
 import { CountriesTypes, FuelType } from '../pages/SellNow/types';
 
 export const searchMinifiedSchema = z.object({
-  brand: z.string({
-    required_error: 'Please select a brand',
-    invalid_type_error: 'Please select a valid brand',
-  }),
+  brand: z.object(
+    {
+      value: z.coerce.string({
+        description: 'Please select a brand',
+        required_error: 'Please select a brand',
+        invalid_type_error: 'Please select a brand',
+      }),
+      label: z.string(),
+    },
+    { required_error: 'Please select a brand' },
+  ),
+
   model: z
-    .string({
-      required_error: 'Please select a model',
-      invalid_type_error: 'Please select a valid model',
-    })
+    .object(
+      {
+        value: z.coerce.string({
+          description: 'Please select a model',
+          required_error: 'Please select a model',
+          invalid_type_error: 'Please select a model',
+        }),
+        label: z.string(),
+      },
+      { required_error: 'Please select a model' },
+    )
     .optional(),
 
   priceUpTo: z.coerce.number().optional(),
 
-  year: z.coerce.number().min(1900).optional(),
+  year: z
+    .object({
+      value: z.coerce.number().min(1900),
+      label: z.coerce.number().min(1900),
+    })
+    .optional(),
 
   kmUpTo: z
     .string()
-    .or(z.number().min(0, { message: 'KM should ' }))
+    .or(z.number().min(0, { message: 'KM should be greater than 0' }))
     .optional(),
 
   fuel: z
