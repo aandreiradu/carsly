@@ -20,6 +20,7 @@ import { Warning } from 'phosphor-react';
 import { CarBrand, setCarsBrands } from './store/cars/cars.slice';
 import { selectCarsBrands } from './store/cars/cars.selector';
 import SearchResultsPage from './pages/SearchResults/searchResults.page';
+import { selectAccessToken } from './store/user/user.selector';
 
 function App() {
   const favoriteAds = useSelector(selectFavoriteAds);
@@ -28,6 +29,7 @@ function App() {
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const { sendRequest: SRGetFavoritesAds, error: errorFavoritesAds } = useHttpRequest<IGetFavoriteAds>();
   const { sendRequest, error } = useHttpRequest<{ carsBrands: CarBrand[] }>();
+  const { accessToken } = useSelector(selectAccessToken);
 
   useEffect(() => {
     const getCarsBrands = async () => {
@@ -62,8 +64,10 @@ function App() {
       }
     };
 
-    carsBrands?.length === 0 && getCarsBrands();
-    favoriteAds?.length === 0 && getFavoritesAdsByUser();
+    if (accessToken) {
+      carsBrands?.length === 0 && getCarsBrands();
+      favoriteAds?.length === 0 && getFavoritesAdsByUser();
+    }
   }, []);
 
   if (errorFavoritesAds || error) {
@@ -92,7 +96,7 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
 
         <Route element={<Persist />}>
-          <Route index path="/" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/auto/add" element={<Ad title="Sell Your Car Now" />} />
           <Route path="/favorites" element={<FavoritePage />} />
           <Route path="/ad/:adId" element={<AdDetailsPage />} />
