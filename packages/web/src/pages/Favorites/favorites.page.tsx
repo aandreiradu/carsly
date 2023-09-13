@@ -90,7 +90,7 @@ const FavoritePage = () => {
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
       <Nav setShowComponent={() => {}} />
       <Sidebar setShowComponent={() => {}} />
-      <section className="h-full my-6 max-h-[98%] mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+      <section className="h-full my-6 max-h-[98%] md:mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         {!favoriteAds.length ? (
           <EmptyFavoriteAds />
         ) : (
