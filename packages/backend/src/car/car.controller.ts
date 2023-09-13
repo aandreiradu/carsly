@@ -13,12 +13,14 @@ import { CreateCarBrandDTO } from './dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { SuccessResponse } from 'src/config/types';
 import { CreateCarModelDTO } from './dto/create-car-model.dto';
+import { Roles } from 'src/decorators';
 
 @Controller('/api/car')
 export class CarController {
   constructor(private carsService: CarService) {}
 
   @Post('/brands')
+  @Roles(['admin'])
   async createCarBrand(
     @Body() dto: CreateCarBrandDTO,
   ): Promise<SuccessResponse> {
@@ -28,15 +30,12 @@ export class CarController {
         dto.yearOfEst = new Date(dto.yearOfEst).toISOString();
       }
 
-      await this.carsService.getBrandIdByName(dto.name);
-
       await this.carsService.createCarBrand(dto);
       return {
         status: 201,
         message: 'Car Brand created successfully',
       };
     } catch (error) {
-      console.log(')))error', error);
       if (error.constructor.name === PrismaClientKnownRequestError.name) {
         if (error.code === 'P2002') {
           throw new ForbiddenException('Car brand already exists');
@@ -70,12 +69,13 @@ export class CarController {
   }
 
   @Post('/carmodel')
+  @Roles(['admin'])
   async createCarModel(
     @Body() dto: CreateCarModelDTO,
   ): Promise<SuccessResponse> {
     await this.carsService.createModelByBrand({
       ...dto,
-      name: dto.name.trim().toLocaleLowerCase(),
+      name: dto.name.trim().toLowerCase(),
     });
 
     return {

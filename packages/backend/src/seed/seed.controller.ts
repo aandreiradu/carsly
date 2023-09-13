@@ -5,7 +5,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { SeedService } from './seed.service';
-import { Public } from 'src/decorators';
+import { Roles } from 'src/decorators';
 import * as path from 'path';
 import { VehicleBodyType } from '@prisma/client';
 import { readFileUtf8 } from 'src/utils/readFile';
@@ -26,8 +26,8 @@ export class SeedController {
   cachedModels = {};
   constructor(private seedService: SeedService) {}
 
-  @Public()
   @Post('brands')
+  @Roles(['admin'])
   async seedBrandsBulk() {
     try {
       const fileData = await readFileUtf8<SeedBrands[]>(
@@ -44,8 +44,6 @@ export class SeedController {
             };
           }
         }
-
-        console.log('insertedModels', insertedModels);
 
         const brandToInsert = [];
         for (const idx in insertedModels) {
@@ -75,8 +73,8 @@ export class SeedController {
     }
   }
 
-  @Public()
   @Post('models')
+  @Roles(['admin'])
   async seedModelsBulk() {
     try {
       const parsedData = await readFileUtf8<SeedModels[]>(
