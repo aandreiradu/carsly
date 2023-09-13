@@ -37,7 +37,7 @@ const SignIn = () => {
     resolver: zodResolver(signinSchema),
     mode: 'onSubmit',
   });
-  const { data, error, loading, sendRequest } = useHttpRequest();
+  const { data, error, loading, sendRequest } = useHttpRequest<{ accessToken: string; firstName: string }>();
   let passwordRef = useRef<HTMLInputElement | null>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();

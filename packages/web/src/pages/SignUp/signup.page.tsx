@@ -24,13 +24,11 @@ const SignUp = () => {
     resolver: zodResolver(registerSchema),
     mode: 'onSubmit',
   });
-  const { error, loading, sendRequest } = useHttpRequest();
+  const { error, loading, sendRequest } = useHttpRequest<{ isSuccess: boolean; message: string }>();
   const passwordRef = useRef<HTMLInputElement | null>(null);
   const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
-  const { ref: refPassword, ...restPassword } = register('password');
-  const { ref: refConfirmPassword, ...restConfirmPassword } = register('confirmPassword');
 
   console.log('errors', errors);
 
@@ -90,7 +88,7 @@ const SignUp = () => {
       <form id="register" className="flex flex-col w-full  md:max-w-lg overflow-hidden" onSubmit={handleSubmit(onSubmit)}>
         <div className="w-full flex flex-wrap md:flex-nowrap gap-3 md:gap-5 items-center justify-between">
           {/* First name */}
-          <div className="flex-1 py-1 px-1 bg-yellow-300 flex rounded-xl h-14 w-full md:max-w-[245px]">
+          <div className="flex-1 py-1 px-1 bg-yellow-300 flex rounded-xl h-14 md:max-w-[200px]">
             <div className="pl-1 flex flex-col w-4/5">
               <Input
                 {...register('firstName')}
@@ -110,7 +108,7 @@ const SignUp = () => {
           </div>
 
           {/* Last name */}
-          <div className="flex-1 py-1 px-1 bg-yellow-300 flex rounded-xl h-14 w-full md:max-w-[245px]">
+          <div className="my-3 mt-5 md:my-0 flex-1 py-1 px-1 bg-yellow-300 flex rounded-xl h-14 md:max-w-[200px]">
             <div className="pl-1 flex flex-col w-4/5">
               <Input
                 {...register('lastName')}
