@@ -39,6 +39,7 @@ export class CarService {
     const carBrand = await this.prisma.carBrand.create({
       data: {
         ...dto,
+        name: dto.name.toLowerCase(),
       },
     });
 
@@ -107,15 +108,13 @@ export class CarService {
       },
     });
 
-    if (!existingModelQuery) {
-      console.log('Could not identify the model based on provided brand', {
+    if (existingModelQuery) {
+      console.log('This model already exists', {
         brandId,
         model,
         bodyType,
       });
-      throw new BadRequestException(
-        'Could not identify the model based on provided brand',
-      );
+      throw new BadRequestException('This model already exists');
     }
 
     return existingModelQuery?.id ?? null;
