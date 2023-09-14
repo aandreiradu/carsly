@@ -52,8 +52,6 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
     const cachedModels = useSelector(selectModelsByBrandDataSource(searchMinifiedForm.getValues('brand')?.value ?? ''));
     const cachedSearchResults = useSelector(getCachedSearchs);
 
-    console.log(searchMinifiedForm.formState.errors);
-
     if (error || errorSearchAd) {
       if (topLevelNotificationRef) {
         topLevelNotificationRef.current?.display({
