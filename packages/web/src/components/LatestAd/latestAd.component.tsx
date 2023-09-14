@@ -60,7 +60,7 @@ const LatestAd = ({ adId, currency, name, price, thumbnail, location }: ILatestA
         </Link>
 
         <div className="px-2 py-1 select-none h-full max-h-[30%]">
-          <p className="text-sm">{name}</p>
+          <p className="text-sm max-h-5 overflow-hidden">{name}</p>
           <div className="flex justify-between items-center h-full">
             <span className="text-base capitalize h-5 overflow-hidden text-ellipsis">{location}</span>
             <span className="text-xl font-kanit font-semibold flex items-center flex-col-reverse pb-2">
