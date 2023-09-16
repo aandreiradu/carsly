@@ -1,10 +1,10 @@
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef } from 'react';
 import SidebarLink, { SidebarLinkProps } from '../SidebarLink/sidebarlink.component';
 import { House, User, Heart, SignOut, PlusCircle, MagnifyingGlass } from 'phosphor-react';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAccessToken } from '../../store/user/user.slice';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { SideBarProps } from '../../types/index.types';
 import { selectFavoritesCount } from '../../store/favorites/favorites.selector';
 import SearchMinified, { SearchMinifiedHandlers } from '../Search/search-minified.component';
@@ -15,13 +15,14 @@ const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data, error, sendRequest } = useHttpRequest<{ message: string; status: number }>();
+  const location = useLocation();
   const sidebarLinks: SidebarLinkProps[] = [
     {
       label: 'Home',
       isLink: true,
       href: '/',
       icon: <House className="w-6 h-6 text-white group-hover:text-black" />,
-      isActive: true,
+      isActive: false,
     },
     {
       label: 'Search',
@@ -66,11 +67,6 @@ const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
       isActive: false,
     },
   ];
-  const [activeLink, setActiveLink] = useState(sidebarLinks[0].label);
-
-  const activeLinkHandler = useCallback((label: string) => {
-    setActiveLink(label);
-  }, []);
 
   const handleLogoutRequest = useCallback(async () => {
     await sendRequest('/auth/logout', {
@@ -109,11 +105,10 @@ const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
               href={link.href}
               isLink={link.isLink}
               onClick={() => {
-                activeLinkHandler(link.label);
                 link.label === 'Sign Out' && handleLogoutRequest();
                 link.label === 'Search' && searchMinifiedRef.current?.display();
               }}
-              isActive={activeLink === link.label ? true : false}
+              isActive={location?.pathname === link.href}
               setShowComponent={setShowComponent}
             />
           ))}

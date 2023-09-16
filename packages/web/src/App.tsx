@@ -68,7 +68,7 @@ function App() {
       carsBrands?.length === 0 && getCarsBrands();
       favoriteAds?.length === 0 && getFavoritesAdsByUser();
     }
-  }, []);
+  }, [accessToken]);
 
   if (errorFavoritesAds || error) {
     if ((errorFavoritesAds || error) instanceof Error) {

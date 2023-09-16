@@ -3,7 +3,7 @@ import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { List, X, User, Heart } from 'phosphor-react';
 import { SidebarLinkProps } from '../SidebarLink/sidebarlink.component';
 import { SideBarProps } from '../../types/index.types';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { setAccessToken } from '../../store/user/user.slice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,18 +15,19 @@ function classNames(...classes: string[]) {
 }
 
 const Nav = memo(function ({ showOnAllScreens }: SideBarProps) {
+  const location = useLocation();
   const searchMinifiedRef = useRef<SearchMinifiedHandlers>(null);
   const favoritesCount = useSelector(selectFavoritesCount);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { data, error, sendRequest } = useHttpRequest();
+  const { data, error, sendRequest } = useHttpRequest<{ message: string; status: number }>();
 
   const navigationLinks: Partial<SidebarLinkProps>[] = [
     {
       label: 'Home',
       isLink: true,
       href: '/',
-      isActive: true,
+      isActive: false,
     },
     {
       label: 'Search',
@@ -163,7 +164,7 @@ const Nav = memo(function ({ showOnAllScreens }: SideBarProps) {
                       key={item.label}
                       to={item.href ?? '/home'}
                       className={classNames(
-                        item.isActive
+                        location?.pathname === item.href
                           ? 'bg-default-yellow text-black'
                           : 'text-gray-300 hover:bg-default-yellow hover:text-black',
                         'rounded-md px-3 py-2 text-base font-medium flex items-center',
