@@ -9,15 +9,26 @@ import { PrismaService } from '@common/prisma/prisma.service';
 import { SignInDTO, SignUpDTO } from './dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { AuthAccountCreated, AuthTokens, JWTPayload } from './types/auth.types';
+import {
+  AuthAccountCreated,
+  AuthTokens,
+  JWTPayload,
+  UserResetPassword,
+} from './types/auth.types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { ResetPasswordDTO } from './dto/reset-password.dto';
+import { CryptoService } from '@common/utils/crypto';
+import type { NestError } from '@common/utils/types';
+import { type } from 'os';
+import { isNestError } from '@common/utils/errors';
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
     private config: ConfigService,
+    private crypto: CryptoService,
   ) {}
 
   async signUpLocal(dto: SignUpDTO): Promise<AuthAccountCreated> {
@@ -219,5 +230,105 @@ export class AuthService {
 
   async hashData(data: string) {
     return await argon.hash(data);
+  }
+
+  isUserBanned(userResetPassword: UserResetPassword): boolean {
+    if (!userResetPassword.resetPasswordBanTimestamp) {
+      return false;
+    }
+
+    const now = Date.now();
+    if (new Date(now) > userResetPassword.resetPasswordBanTimestamp) {
+      console.log('are ban dar a expirat');
+      return false;
+    }
+
+    return true;
+  }
+
+  async getResetPasswordToken(dto: ResetPasswordDTO): Promise<string> {
+    try {
+      const user = await this.getResetPasswordUser(dto);
+      let token = null;
+
+      if (!user || !Object.keys(user)) {
+        throw new BadRequestException('No user found');
+      }
+
+      /*
+       * Before generating a new token, make sure that user does not have any active bans
+       */
+      const userBanned = this.isUserBanned(user);
+      if (userBanned) {
+        throw new ConflictException(
+          `Your account is locked until ${user.resetPasswordBanTimestamp}`,
+        );
+      }
+
+      const now = Date.now();
+      const maxResetPasswordsAttempts =
+        +this.config.getOrThrow<number>('RESET_MAX_ATTEMPTS');
+      if (user.resetPasswordAttempts + 1 > maxResetPasswordsAttempts) {
+        const banUntil = +this.config.getOrThrow<number>('RESET_PASSWORD_BAN');
+        const banTimestamp = new Date(now + +(banUntil || 900) * 1000);
+        await this.prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            resetPasswordBanTimestamp: banTimestamp,
+            resetPasswordAttempts: maxResetPasswordsAttempts,
+          },
+        });
+        throw new ConflictException(
+          `You have exceeded token generation limit. Your account was disabled for 1 hour`,
+        );
+      }
+
+      token = this.crypto.generateRandomBytes();
+      const hashedToken = await this.hashData(token);
+      const tokenExpiration = +this.config.getOrThrow<number>(
+        'RESET_PASSWORD_TOKEN_EXPIRATION',
+      );
+      const resetTokenExpireDate = new Date(now + tokenExpiration * 1000);
+
+      await this.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          resetPasswordToken: hashedToken,
+          resetPasswordTokenExpiration: resetTokenExpireDate,
+          resetPasswordAttempts: user.resetPasswordAttempts + 1,
+          resetPasswordBanTimestamp: null,
+        },
+      });
+      console.log('i am generat token si i-am scos ban');
+      return token;
+    } catch (error) {
+      console.log(`Error RESET PASSWORD TOKEN`, error);
+
+      if (isNestError(error)) {
+        console.log('este nest error');
+        throw error;
+      }
+
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async getResetPasswordUser(dto: ResetPasswordDTO) {
+    return this.prisma.user.findFirst({
+      where: {
+        ...dto,
+      },
+      select: {
+        id: true,
+        resetPasswordAttempts: true,
+        resetPasswordToken: true,
+        resetPasswordTokenExpiration: true,
+        resetPasswordBanTimestamp: true,
+      },
+    });
   }
 }
