@@ -94,7 +94,6 @@ export class AuthService {
     }
 
     const tokens = await this.getTokens(user.id, user.email, 'ALL');
-    console.log('generated tokens', tokens);
 
     /* hash the rt before updating in the db */
 
@@ -131,7 +130,6 @@ export class AuthService {
 
     switch (type) {
       case 'ALL': {
-        console.log('case all reached');
         const [at, rt] = await Promise.all([
           this.jwtService.signAsync(jwtPayload, {
             expiresIn: '15m',
@@ -239,7 +237,12 @@ export class AuthService {
 
     const now = Date.now();
     if (new Date(now) > userResetPassword.resetPasswordBanTimestamp) {
-      console.log('are ban dar a expirat');
+      /*
+       * Ban expired.
+       * Force reset password attempts reset. In this case, we dont have to run 2 updates
+       * Passed by refference, we're going to modify the result of user query.
+       */
+      userResetPassword.resetPasswordAttempts = 0;
       return false;
     }
 
@@ -268,6 +271,7 @@ export class AuthService {
       const now = Date.now();
       const maxResetPasswordsAttempts =
         +this.config.getOrThrow<number>('RESET_MAX_ATTEMPTS');
+
       if (user.resetPasswordAttempts + 1 > maxResetPasswordsAttempts) {
         const banUntil = +this.config.getOrThrow<number>('RESET_PASSWORD_BAN');
         const banTimestamp = new Date(now + +(banUntil || 900) * 1000);
@@ -280,6 +284,7 @@ export class AuthService {
             resetPasswordAttempts: maxResetPasswordsAttempts,
           },
         });
+        console.log(`${user.id} was banned until ${banTimestamp}`);
         throw new ConflictException(
           `You have exceeded token generation limit. Your account was disabled for 1 hour`,
         );
@@ -303,13 +308,11 @@ export class AuthService {
           resetPasswordBanTimestamp: null,
         },
       });
-      console.log('i am generat token si i-am scos ban');
       return token;
     } catch (error) {
       console.log(`Error RESET PASSWORD TOKEN`, error);
 
       if (isNestError(error)) {
-        console.log('este nest error');
         throw error;
       }
 

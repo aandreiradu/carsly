@@ -1,6 +1,5 @@
 import { Response } from 'express';
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -12,7 +11,6 @@ import {
   Res,
   UnauthorizedException,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
 import { AuthService } from '@modules/auth/auth.service';
 import { SignInDTO, SignUpDTO } from '@modules/auth/dto';
@@ -24,7 +22,6 @@ import { Public } from '@common/decorators/public.decorator';
 import { GetCurrentUserId } from '@common/decorators';
 import { RtGuard } from '@common/guards';
 import { ResetPasswordDTO } from './dto/reset-password.dto';
-import { ResetPasswordPipe } from '@common/pipes/resetPassword.pipe';
 
 @Controller('auth')
 export class AuthController {
