@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
   randomBytes,
   createDecipheriv,
@@ -42,6 +42,17 @@ export class CryptoService {
       return iv.toString('hex') + ':' + encrypted.toString('hex');
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  generateRandomBytes = (): string => {
+    try {
+      const bytes = randomBytes(128).toString('hex');
+
+      return bytes;
+    } catch (error) {
+      console.log('error generateRandomBytes', error);
+      throw new InternalServerErrorException();
     }
   };
 }

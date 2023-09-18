@@ -35,3 +35,11 @@ export interface RequestMetadata extends Request {
     email?: string;
   };
 }
+
+export interface UserResetPassword {
+  id: string;
+  resetPasswordToken: string;
+  resetPasswordTokenExpiration: Date;
+  resetPasswordAttempts: number;
+  resetPasswordBanTimestamp: Date;
+}

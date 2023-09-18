@@ -21,6 +21,7 @@ import {
 import { Public } from '@common/decorators/public.decorator';
 import { GetCurrentUserId } from '@common/decorators';
 import { RtGuard } from '@common/guards';
+import { ResetPasswordDTO } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -105,5 +106,11 @@ export class AuthController {
 
       throw new InternalServerErrorException('Something went wrong');
     }
+  }
+
+  @Public()
+  @Post('/reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDTO) {
+    return this.authService.getResetPasswordToken(resetPasswordDto);
   }
 }

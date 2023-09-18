@@ -24,6 +24,11 @@ model User {
   AdFavorites  AdFavorite[]
   roles        String[]     @default([])
 
+  resetPasswordToken           String?   @default("")
+  resetPasswordTokenExpiration DateTime?
+  resetPasswordAttempts        Int       @default(0)
+  resetPasswordBanTimestamp    DateTime?
+
   @@map("users")
 }
 

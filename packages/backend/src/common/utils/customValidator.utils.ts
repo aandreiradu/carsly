@@ -42,3 +42,22 @@ export class PowerRangeValidator implements ValidatorConstraintInterface {
     return 'Power Max should be greater than or equal to Power Min';
   }
 }
+
+@ValidatorConstraint({ name: 'resetPasswordValidator', async: false })
+export class ResetPasswordValidator implements ValidatorConstraintInterface {
+  validate(_, args: ValidationArguments) {
+    const email = args.object['email'];
+    const username = args.object['username'];
+
+    console.log({
+      email,
+      username,
+    });
+
+    if (!email && !username) {
+      throw new BadRequestException('Missing email or username');
+    }
+
+    return true;
+  }
+}
