@@ -17,10 +17,8 @@ import {
 } from './types/auth.types';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { ResetPasswordDTO } from './dto/reset-password.dto';
+import { GetTokenResetPasswordDTO } from './dto/reset-password.dto';
 import { CryptoService } from '@common/utils/crypto';
-import type { NestError } from '@common/utils/types';
-import { type } from 'os';
 import { isNestError } from '@common/utils/errors';
 @Injectable()
 export class AuthService {
@@ -249,7 +247,7 @@ export class AuthService {
     return true;
   }
 
-  async getResetPasswordToken(dto: ResetPasswordDTO): Promise<string> {
+  async getResetPasswordToken(dto: GetTokenResetPasswordDTO): Promise<string> {
     try {
       const user = await this.getResetPasswordUser(dto);
       let token = null;
@@ -291,7 +289,7 @@ export class AuthService {
       }
 
       token = this.crypto.generateRandomBytes();
-      const hashedToken = await this.hashData(token);
+      // const hashedToken = await this.hashData(token);
       const tokenExpiration = +this.config.getOrThrow<number>(
         'RESET_PASSWORD_TOKEN_EXPIRATION',
       );
@@ -302,7 +300,7 @@ export class AuthService {
           id: user.id,
         },
         data: {
-          resetPasswordToken: hashedToken,
+          resetPasswordToken: token,
           resetPasswordTokenExpiration: resetTokenExpireDate,
           resetPasswordAttempts: user.resetPasswordAttempts + 1,
           resetPasswordBanTimestamp: null,
@@ -320,7 +318,7 @@ export class AuthService {
     }
   }
 
-  async getResetPasswordUser(dto: ResetPasswordDTO) {
+  async getResetPasswordUser(dto: GetTokenResetPasswordDTO) {
     return this.prisma.user.findFirst({
       where: {
         ...dto,
@@ -333,5 +331,57 @@ export class AuthService {
         resetPasswordBanTimestamp: true,
       },
     });
+  }
+
+  async getUserByResetToken(
+    token: string,
+  ): Promise<{ id: string; resetPasswordTokenExpiration: Date }> {
+    return this.prisma.user.findFirst({
+      where: {
+        resetPasswordToken: token,
+        resetPasswordTokenExpiration: {
+          gte: new Date(),
+        },
+      },
+      select: {
+        id: true,
+        resetPasswordTokenExpiration: true,
+      },
+    });
+  }
+
+  async verifyResetTokenPassword(token: string): Promise<{ id: string }> {
+    const user = await this.getUserByResetToken(token);
+
+    if (!user || !Object.keys(user).length) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    const now = new Date(Date.now());
+    if (now > user.resetPasswordTokenExpiration) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    return user;
+  }
+
+  async resetPassword(password: string, token: string): Promise<void> {
+    const user = await this.verifyResetTokenPassword(token);
+    const hashPassword = await this.hashData(password);
+
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: hashPassword,
+        resetPasswordAttempts: 0,
+        resetPasswordBanTimestamp: null,
+        resetPasswordToken: null,
+        resetPasswordTokenExpiration: null,
+      },
+    });
+
+    return;
   }
 }

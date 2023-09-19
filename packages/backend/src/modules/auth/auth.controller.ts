@@ -1,12 +1,15 @@
 import { Response } from 'express';
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
+  Param,
   Post,
+  Query,
   Req,
   Res,
   UnauthorizedException,
@@ -21,7 +24,10 @@ import {
 import { Public } from '@common/decorators/public.decorator';
 import { GetCurrentUserId } from '@common/decorators';
 import { RtGuard } from '@common/guards';
-import { ResetPasswordDTO } from './dto/reset-password.dto';
+import {
+  GetTokenResetPasswordDTO,
+  ResetPasswordDTO,
+} from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -31,7 +37,6 @@ export class AuthController {
   @Post('/local/signup')
   @HttpCode(HttpStatus.CREATED)
   signUpLocal(@Body() dto: SignUpDTO): Promise<AuthAccountCreated> {
-    console.log('dto received', dto);
     return this.authService.signUpLocal(dto);
   }
 
@@ -109,8 +114,39 @@ export class AuthController {
   }
 
   @Public()
-  @Post('/reset-password')
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDTO) {
+  @Post('/reset-password/token')
+  async getTokenResetPassword(
+    @Body() resetPasswordDto: GetTokenResetPasswordDTO,
+  ) {
     return this.authService.getResetPasswordToken(resetPasswordDto);
+  }
+
+  @Public()
+  @Get('/reset-password/verify/:token')
+  async verifyResetPasswordToken(@Param('token') token: string): Promise<void> {
+    if (!token) {
+      throw new BadRequestException('Missing params token');
+    }
+
+    const user = await this.authService.verifyResetTokenPassword(token);
+
+    if (!user || !Object.keys(user).length) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    return;
+  }
+
+  @Public()
+  @Post('/reset-password')
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDTO,
+    @Query('token') token: string,
+  ) {
+    if (!token) {
+      throw new BadRequestException('Missing token param');
+    }
+
+    return this.authService.resetPassword(resetPasswordDto.password, token);
   }
 }
