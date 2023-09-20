@@ -21,6 +21,8 @@ import { CarBrand, setCarsBrands } from './store/cars/cars.slice';
 import { selectCarsBrands } from './store/cars/cars.selector';
 import SearchResultsPage from './pages/SearchResults/searchResults.page';
 import { selectAccessToken } from './store/user/user.selector';
+import ForgotPasswordPage from './pages/ForgotPassword/forgot-password.page';
+import ForgotPasswordRequestTokenPage from './pages/ForgotPassword/forgot-password-request-token.page';
 
 function App() {
   const favoriteAds = useSelector(selectFavoriteAds);
@@ -94,6 +96,9 @@ function App() {
       <Routes>
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
+
+        <Route path="/account/reset-password" element={<ForgotPasswordRequestTokenPage />} />
+        <Route path="/account/reset-password/verify/:token" element={<ForgotPasswordPage />} />
 
         <Route element={<Persist />}>
           <Route path="/" element={<Home />} />

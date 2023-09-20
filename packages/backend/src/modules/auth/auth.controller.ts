@@ -117,8 +117,8 @@ export class AuthController {
   @Post('/reset-password/token')
   async getTokenResetPassword(
     @Body() resetPasswordDto: GetTokenResetPasswordDTO,
-  ) {
-    return this.authService.getResetPasswordToken(resetPasswordDto);
+  ): Promise<void> {
+    await this.authService.sendResetPasswordToken(resetPasswordDto);
   }
 
   @Public()
