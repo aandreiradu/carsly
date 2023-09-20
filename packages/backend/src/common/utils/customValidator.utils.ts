@@ -49,15 +49,30 @@ export class ResetPasswordValidator implements ValidatorConstraintInterface {
     const email = args.object['email'];
     const username = args.object['username'];
 
-    console.log({
-      email,
-      username,
-    });
-
     if (!email && !username) {
       throw new BadRequestException('Missing email or username');
     }
 
     return true;
+  }
+}
+
+@ValidatorConstraint({ name: 'confirmPasswordValidator', async: false })
+export class ConfirmPasswordValidator implements ValidatorConstraintInterface {
+  validate(
+    value: any,
+    validationArguments?: ValidationArguments,
+  ): boolean | Promise<boolean> {
+    const confirmPassword = value;
+    const password = validationArguments.object['password'];
+    if (confirmPassword && password && password !== confirmPassword) {
+      throw new BadRequestException(this.defaultMessage());
+    }
+
+    return true;
+  }
+
+  defaultMessage(): string {
+    return 'Passwords dont match';
   }
 }
