@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { CarModule } from '@modules/car/car.module';
 import { AdsModule } from '@modules/ads/ads.module';
 import { SeedModule } from '@common/seed/seed.module';
+import { SendGridModule } from '@modules/send-grid/send-grid.module';
 @Module({
   imports: [
     CacheModule.register({ isGlobal: true }),
@@ -17,6 +18,7 @@ import { SeedModule } from '@common/seed/seed.module';
     CarModule,
     AdsModule,
     SeedModule,
+    SendGridModule,
   ],
   providers: [
     {

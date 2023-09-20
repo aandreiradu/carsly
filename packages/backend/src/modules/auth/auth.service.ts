@@ -20,6 +20,7 @@ import { ConfigService } from '@nestjs/config';
 import { GetTokenResetPasswordDTO } from './dto/reset-password.dto';
 import { CryptoService } from '@common/utils/crypto';
 import { isNestError } from '@common/utils/errors';
+import { SendGridService } from '@modules/send-grid/send-grid.service';
 @Injectable()
 export class AuthService {
   constructor(
@@ -27,6 +28,7 @@ export class AuthService {
     private jwtService: JwtService,
     private config: ConfigService,
     private crypto: CryptoService,
+    private sendGridService: SendGridService,
   ) {}
 
   async signUpLocal(dto: SignUpDTO): Promise<AuthAccountCreated> {
@@ -247,13 +249,13 @@ export class AuthService {
     return true;
   }
 
-  async getResetPasswordToken(dto: GetTokenResetPasswordDTO): Promise<string> {
+  async sendResetPasswordToken(dto: GetTokenResetPasswordDTO): Promise<void> {
     try {
       const user = await this.getResetPasswordUser(dto);
       let token = null;
 
       if (!user || !Object.keys(user)) {
-        throw new BadRequestException('No user found');
+        throw new BadRequestException('No account associated with this email');
       }
 
       /*
@@ -289,7 +291,6 @@ export class AuthService {
       }
 
       token = this.crypto.generateRandomBytes();
-      // const hashedToken = await this.hashData(token);
       const tokenExpiration = +this.config.getOrThrow<number>(
         'RESET_PASSWORD_TOKEN_EXPIRATION',
       );
@@ -306,7 +307,23 @@ export class AuthService {
           resetPasswordBanTimestamp: null,
         },
       });
-      return token;
+
+      const frontBaseURL = this.config.getOrThrow<string>('FRONTEND_BASE_URL');
+      const resetPasswordLink = new URL(
+        `${frontBaseURL}/account/reset-password/verify/${token}`,
+      ).toString();
+
+      if (+this.config.getOrThrow<number>('PRODUCTION')) {
+        await this.sendGridService.sendMail({
+          from: 'raduandrei697@gmail.com',
+          subject: 'Reset Password Request',
+          to: dto.email,
+          text: `Reset password link ${resetPasswordLink}`,
+          html: `<strong>Reset password link ${resetPasswordLink}</strong>`,
+        });
+      } else {
+        console.log('resetPasswordLink', resetPasswordLink);
+      }
     } catch (error) {
       console.log(`Error RESET PASSWORD TOKEN`, error);
 
