@@ -68,7 +68,6 @@ const SignIn = () => {
   }, [error, data]);
 
   const onSubmit: SubmitHandler<SignInProps> = async (data) => {
-    console.log('data', data);
     submitButtonRef.current && (submitButtonRef.current.disabled = true);
     await sendRequest('/auth/local/signin', {
       method: 'POST',
@@ -146,6 +145,10 @@ const SignIn = () => {
             <Eye className="cursor-pointer w-6 h-10" color="#000" onClick={showPassword.bind(this, passwordRef)} />
           </div>
         </div>
+
+        <Link to={'/account/reset-password'} className="text-white text-right text-base my-2 font-kanit">
+          Forgot password?
+        </Link>
 
         <button
           // ref={submitButtonRef}
