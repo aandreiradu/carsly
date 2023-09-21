@@ -44,11 +44,11 @@ const useAddToFavorite = ({ isOfferOfTheDay = false }: UseAddToFavorite) => {
 
     if (responseFavorites && responseFavorites.status === 200) {
       const { count, favorites } = responseFavorites.data || {};
-      if (count && +count > 0) {
+      if (count && +count >= 0) {
         dispatch(setFavoritesCount(count));
       }
 
-      if (favorites && favorites?.length) {
+      if (favorites) {
         dispatch(setFavoriteAds(favorites));
       }
     }
