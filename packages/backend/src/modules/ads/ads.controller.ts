@@ -23,11 +23,13 @@ import { CreateAdDTO } from '@modules/ads/dto/create-ad.dto';
 import { AddFavoriteDTO } from '@modules/ads/dto/favorite-ad.dto';
 import { ExtendedRequest, InjectUserId } from '@common/guards';
 import { AdDetailsDto, QueryAdDTO } from '@modules/ads/dto/ad.dto';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
 @Controller('api/ad')
 export class AdsController {
   constructor(private adsService: AdsService) {}
 
+  @Throttle({ medium: { limit: 10, ttl: 1000 } })
   @Post()
   @UseFilters(ValidationFilter)
   @UseInterceptors(
@@ -61,16 +63,19 @@ export class AdsController {
     });
   }
 
+  @Throttle({ short: { limit: 3, ttl: 1000 } })
   @Get()
   async getAdsByUserId(@Req() req) {
     return this.adsService.getAdsByUserId(req?.user?.sub);
   }
 
+  @Throttle({ medium: { limit: 10, ttl: 1000 } })
   @Get('/offerOfTheDay')
   async getOfferOfTheDay() {
     return this.adsService.getOfferOfTheDay();
   }
 
+  @Throttle({ medium: { limit: 10, ttl: 1000 } })
   @UseGuards(InjectUserId)
   @Get('/favorites')
   @HttpCode(HttpStatus.OK)
@@ -78,6 +83,7 @@ export class AdsController {
     return this.adsService.getFavoriteAdsByUserId(req['user']?.sub ?? null);
   }
 
+  @Throttle({ medium: { limit: 10, ttl: 1000 } })
   @UseGuards(InjectUserId)
   @Post('/favorites')
   @HttpCode(HttpStatus.OK)
@@ -88,11 +94,13 @@ export class AdsController {
     });
   }
 
+  @SkipThrottle({ default: true })
   @Get('/latest')
   async getLatestAds() {
     return this.adsService.getLatestAds();
   }
 
+  @Throttle({ medium: { limit: 10, ttl: 1000 } })
   @Get('/search')
   async searchAdsController(@Query() query?: QueryAdDTO) {
     if (!query || Object.keys(query).length === 0) {
@@ -107,6 +115,7 @@ export class AdsController {
     };
   }
 
+  @Throttle({ medium: { limit: 10, ttl: 1000 } })
   @Get('/:adId')
   async getAdDetailsById(@Param() dto: AdDetailsDto) {
     return this.adsService.getAdDetailsById(dto.adId);

@@ -28,11 +28,13 @@ import {
   GetTokenResetPasswordDTO,
   ResetPasswordDTO,
 } from './dto/reset-password.dto';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Throttle({ short: { limit: 3, ttl: 1000 } })
   @Public()
   @Post('/local/signup')
   @HttpCode(HttpStatus.CREATED)
@@ -40,6 +42,7 @@ export class AuthController {
     return this.authService.signUpLocal(dto);
   }
 
+  @Throttle({ short: { limit: 3, ttl: 1000 } })
   @Public()
   @Post('/local/signin')
   @HttpCode(HttpStatus.OK)
@@ -64,6 +67,7 @@ export class AuthController {
     };
   }
 
+  @Throttle({ short: { limit: 5, ttl: 1000 } })
   @Public()
   @UseGuards(RtGuard)
   @Get('/refresh')
@@ -93,6 +97,7 @@ export class AuthController {
     return res.json(accessToken);
   }
 
+  @Throttle({ short: { limit: 3, ttl: 1000 } })
   @Get('/logout')
   @UseGuards(RtGuard)
   @HttpCode(HttpStatus.OK)

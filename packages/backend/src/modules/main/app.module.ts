@@ -9,10 +9,17 @@ import { CarModule } from '@modules/car/car.module';
 import { AdsModule } from '@modules/ads/ads.module';
 import { SeedModule } from '@common/seed/seed.module';
 import { SendGridModule } from '@modules/send-grid/send-grid.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 @Module({
   imports: [
     CacheModule.register({ isGlobal: true }),
     ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
     AuthModule,
     PrismaModule,
     CarModule,
@@ -28,6 +35,10 @@ import { SendGridModule } from '@modules/send-grid/send-grid.module';
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
     JwtService,
   ],

@@ -14,11 +14,13 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { SuccessResponse } from '@common/config/types';
 import { CreateCarModelDTO } from '@modules/car/dto/create-car-model.dto';
 import { Roles } from '@common/decorators';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
 @Controller('/api/car')
 export class CarController {
   constructor(private carsService: CarService) {}
 
+  @Throttle({ medium: { limit: 10, ttl: 1000 } })
   @Post('/brands')
   @Roles(['admin'])
   async createCarBrand(
@@ -51,6 +53,7 @@ export class CarController {
     }
   }
 
+  @SkipThrottle({ default: true })
   @Get('/brands')
   async getCarsBrands() {
     try {
@@ -68,6 +71,7 @@ export class CarController {
     }
   }
 
+  @Throttle({ medium: { limit: 10, ttl: 1000 } })
   @Post('/carmodel')
   @Roles(['admin'])
   async createCarModel(
@@ -84,6 +88,7 @@ export class CarController {
     };
   }
 
+  @SkipThrottle({ default: true })
   @Get('/carmodel/:name')
   async getModelsByBrand(@Param() params: { name: string }) {
     if (!params.name) {
