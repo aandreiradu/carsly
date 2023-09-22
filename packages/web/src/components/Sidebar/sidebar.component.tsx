@@ -44,9 +44,11 @@ const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
       icon: (
         <div className="relative">
           <Car className="w-6 h-6 text-white group-hover:text-black relative" />
-          <p className="absolute -top-2 left-4 py-[1px] px-1 w-5 h-5 rounded-xl flex items-center justify-center bg-yellow-400 text-black">
-            {myAdsCount}
-          </p>
+          {myAdsCount > 0 && (
+            <p className="absolute -top-2 left-4 py-[1px] px-1 w-5 h-5 rounded-xl flex items-center justify-center bg-yellow-400 text-black">
+              {myAdsCount}
+            </p>
+          )}
         </div>
       ),
       label: 'My Ads',
@@ -58,9 +60,11 @@ const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
       icon: (
         <div className="relative">
           <Heart className="w-6 h-6 text-white group-hover:text-black relative" />
-          <p className="absolute -top-2 left-4 py-[1px] px-1 w-5 h-5 rounded-xl flex items-center justify-center bg-yellow-400 text-black">
-            {favoritesCount}
-          </p>
+          {favoritesCount && (
+            <p className="absolute -top-2 left-4 py-[1px] px-1 w-5 h-5 rounded-xl flex items-center justify-center bg-yellow-400 text-black">
+              {favoritesCount}
+            </p>
+          )}
         </div>
       ),
       label: 'My Favorites',

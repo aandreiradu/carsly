@@ -50,14 +50,14 @@ const Nav = memo(function ({ showOnAllScreens }: SideBarProps) {
       isActive: false,
     },
     {
-      label: `My Ads - ${myAdsCount}`,
+      label: `My Ads - ${myAdsCount > 0 ? myAdsCount : ''}`,
       icon: <Car weight="fill" className="w-4 h-4 text-white group-hover:text-black relative ml-1" />,
       isLink: true,
       href: '/ad/me',
       isActive: false,
     },
     {
-      label: `My Favorites - ${favoritesCount}`,
+      label: `My Favorites - ${favoritesCount > 0 ? favoritesCount : ''}`,
       icon: <Heart weight="fill" className="w-4 h-4 text-white group-hover:text-black relative ml-1" />,
       isLink: true,
       href: '/favorites',
