@@ -34,3 +34,13 @@ export type TAdDetailsById = Ad & {
   transmission: TransmissionTypes;
   polluationNorm: PolluationNormTypes;
 };
+
+export interface AdDetailsMinified {
+  adId: string;
+  name: string;
+  price: number;
+  currency: CurrencyTypes;
+  thumbnail: string | null;
+  location: string;
+  createdAt?: Date;
+}
