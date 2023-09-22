@@ -8,3 +8,5 @@ export const selectOfferOfTheDay = createSelector(adState, (state) => state.offe
 export const selectLatestAds = createSelector(adState, (state) => state.latestAds);
 
 export const selectMyAds = createSelector(adState, (state) => state.myAds);
+
+export const selectMyAdsCount = createSelector(adState, (state) => state.myAdsCount);
