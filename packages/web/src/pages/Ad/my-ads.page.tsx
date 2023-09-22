@@ -1,9 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { selectFavoriteAds } from '../../store/favorites/favorites.selector';
 import Nav from '../../components/Nav/nav.component';
 import FavoriteCardItem from '../../components/FavoriteCard/favoriteCard.component';
 import { useEffect, useRef } from 'react';
-import { FavoriteCarAd, setFavoriteAds, setFavoritesCount } from '../../store/favorites/favorites.slice';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
@@ -13,6 +11,8 @@ import { Skeleton } from '@mui/material';
 import { Link } from 'react-router-dom';
 import MainLayout from '../../components/Layouts/Main/main.layout';
 import Sidebar from '../../components/Sidebar/sidebar.component';
+import { type MyAd, setMyAds } from '../../store/ad/ad.slice';
+import { selectMyAds } from '../../store/ad/ad.selector';
 
 interface LoadingContentProps {
   count?: number;
@@ -35,44 +35,45 @@ const LoadingContent = ({ count = 1 }: LoadingContentProps) => {
   );
 };
 
-const FavoritePage = () => {
+const MyAdsPage = () => {
   const dispatch = useDispatch();
-  const favoriteAds = useSelector(selectFavoriteAds);
+  const myAds = useSelector(selectMyAds);
   const {
-    sendRequest: SRGetFavoritesAds,
-    error: errorFavoritesAds,
-    loading: loadingFavoriteAds,
-  } = useHttpRequest<{ count: number; favorites: FavoriteCarAd[] }>();
+    sendRequest: SRGetMyAds,
+    error: errorMyAds,
+    loading: loadingMyAds,
+  } = useHttpRequest<{ count: number; userAds: MyAd[] }>();
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
 
   useEffect(() => {
     const getFavoritesAdsByUser = async () => {
-      const favoriteAds = await SRGetFavoritesAds('/api/ad/favorites', {
+      const myAdsRes = await SRGetMyAds('/api/ad/me', {
         method: 'GET',
         withCredentials: true,
       });
 
-      if (favoriteAds && favoriteAds.status === 200) {
-        const { count, favorites } = favoriteAds.data || {};
-        if (count && +count > 0) {
-          dispatch(setFavoritesCount(count));
-        }
-
-        if (favorites && favorites?.length) {
-          dispatch(setFavoriteAds(favorites));
+      if (myAdsRes && myAdsRes.status === 200) {
+        const { count, userAds } = myAdsRes.data || {};
+        if (userAds && userAds?.length) {
+          dispatch(
+            setMyAds({
+              myAds: userAds,
+              myAdsCount: count ?? userAds?.length ?? 0,
+            }),
+          );
         }
       }
     };
 
-    !favoriteAds?.length && getFavoritesAdsByUser();
+    !myAds?.length && getFavoritesAdsByUser();
   }, []);
 
-  if (errorFavoritesAds) {
-    if (errorFavoritesAds instanceof Error) {
+  if (errorMyAds) {
+    if (errorMyAds instanceof Error) {
       if (topLevelNotificationRef) {
         topLevelNotificationRef.current?.display({
           icon: <Warning className="w-14 h-8 text-red-600" />,
-          message: errorFavoritesAds?.message || 'Something went wrong. Please try again later!',
+          message: errorMyAds?.message || 'Something went wrong. Please try again later!',
         });
       }
     } else {
@@ -90,23 +91,24 @@ const FavoritePage = () => {
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
       <Nav setShowComponent={() => {}} />
       <Sidebar setShowComponent={() => {}} />
-      <section className="h-full my-2 md:my-6 md:mx-auto px-2 overflow-y-auto">
-        {!favoriteAds.length ? (
-          <EmptyFavoriteAds />
+      <section className="my-2 md:my-6 md:mx-auto px-2 overflow-y-auto">
+        {!myAds.length ? (
+          <EmptyAds />
         ) : (
           <ul className="grid grid-cols-1 gap-4 xl:grid-cols-4cols-258 lg:grid-cols-3cols-258 md:grid-cols-2cols-258 mb-10">
-            {loadingFavoriteAds ? (
-              <LoadingContent count={8} />
+            {loadingMyAds ? (
+              <LoadingContent count={4} />
             ) : (
-              favoriteAds.map((favItem) => (
+              myAds.map((myAd) => (
                 <FavoriteCardItem
-                  key={`${favItem.adId}`}
-                  name={favItem.name}
-                  adId={favItem.adId}
-                  currency={favItem.currency}
-                  price={favItem.price}
-                  thumbnail={favItem.thumbnail}
-                  location={favItem.location}
+                  key={`${myAd.adId}`}
+                  name={myAd.name}
+                  adId={myAd.adId}
+                  currency={myAd.currency}
+                  price={myAd.price}
+                  thumbnail={myAd.thumbnail}
+                  location={myAd.location}
+                  disableFavorite={true}
                 />
               ))
             )}
@@ -117,12 +119,12 @@ const FavoritePage = () => {
   );
 };
 
-const EmptyFavoriteAds = () => {
+const EmptyAds = () => {
   return (
     <div className="w-full flex items-center justify-center">
       <p className="text-lg text-ellipsis leading-6">
-        No favorites ads found. Let's add some{' '}
-        <Link className="font-bold italic text-blue-400" to={'/'}>
+        No ads found. Let's add one{' '}
+        <Link className="font-bold italic text-blue-400" to={'/auto/add'}>
           here
         </Link>
       </p>
@@ -130,4 +132,4 @@ const EmptyFavoriteAds = () => {
   );
 };
 
-export default FavoritePage;
+export default MyAdsPage;

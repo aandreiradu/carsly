@@ -64,9 +64,14 @@ export class AdsController {
   }
 
   @Throttle({ short: { limit: 3, ttl: 1000 } })
-  @Get()
+  @Get('/me')
   async getAdsByUserId(@Req() req) {
-    return this.adsService.getAdsByUserId(req?.user?.sub);
+    const userAds = await this.adsService.getAdsByUserId(req?.user?.sub);
+
+    return {
+      userAds,
+      count: userAds?.length || 0,
+    };
   }
 
   @Throttle({ medium: { limit: 10, ttl: 1000 } })

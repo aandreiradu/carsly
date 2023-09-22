@@ -3,7 +3,12 @@ import { PrismaService } from '@common/prisma/prisma.service';
 import { CreateAdDTOO } from './ads.service';
 import { Ad, AdFavorite, AdStatus } from '@prisma/client';
 import { AddFavoriteDTO } from './dto/favorite-ad.dto';
-import { GetOfferOfTheDay, type TAdDetailsById, LatestAd } from './types';
+import {
+  GetOfferOfTheDay,
+  type TAdDetailsById,
+  LatestAd,
+  AdDetailsMinified,
+} from './types';
 import {
   polluationNormTypesLabels,
   transmissionTypesLabels,
@@ -105,12 +110,40 @@ export class AdRepository {
     });
   }
 
-  async getAdsByUserId(userId: string): Promise<Ad[]> {
-    return this.prismaService.ad.findMany({
+  async getAdsByUserId(userId: string): Promise<AdDetailsMinified[]> {
+    const userAds = await this.prismaService.ad.findMany({
       where: {
         userId: userId,
       },
+      select: {
+        id: true,
+        images: {
+          select: {
+            path: true,
+          },
+        },
+        title: true,
+        fuelType: true,
+        price: true,
+        currency: true,
+        year: true,
+        KM: true,
+        engineSize: true,
+        description: true,
+        sellerCity: true,
+        createdAt: true,
+      },
     });
+
+    return userAds?.map((ad) => ({
+      adId: ad.id,
+      name: ad.title,
+      price: ad.price,
+      currency: ad.currency,
+      thumbnail: ad.images?.slice(0, 1)[0]?.path ?? null,
+      location: ad.sellerCity,
+      createdAt: ad.createdAt,
+    }));
   }
 
   async saveAdImages(filesPaths: string[], adId: string): Promise<void> {

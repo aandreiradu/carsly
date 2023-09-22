@@ -119,15 +119,11 @@ export class AdsService {
     }
   }
 
-  async getAdsByUserId(userId: string): Promise<Ad[]> {
-    try {
-      if (!userId) {
-        throw new BadRequestException('Missing userId');
-      }
-      return this.adRepository.getAdsByUserId(userId);
-    } catch (error) {
-      throw error;
+  async getAdsByUserId(userId: string) {
+    if (!userId) {
+      throw new BadRequestException('Missing userId');
     }
+    return this.adRepository.getAdsByUserId(userId);
   }
 
   async getFavoriteAdsByUserId(userId: string) {

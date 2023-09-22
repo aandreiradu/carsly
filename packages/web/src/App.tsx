@@ -23,6 +23,7 @@ import SearchResultsPage from './pages/SearchResults/searchResults.page';
 import { selectAccessToken } from './store/user/user.selector';
 import ForgotPasswordPage from './pages/ForgotPassword/forgot-password.page';
 import ForgotPasswordRequestTokenPage from './pages/ForgotPassword/forgot-password-request-token.page';
+import MyAdsPage from './pages/Ad/my-ads.page';
 
 function App() {
   const favoriteAds = useSelector(selectFavoriteAds);
@@ -105,6 +106,7 @@ function App() {
           <Route path="/auto/add" element={<Ad title="Sell Your Car Now" />} />
           <Route path="/favorites" element={<FavoritePage />} />
           <Route path="/ad/:adId" element={<AdDetailsPage />} />
+          <Route path="/ad/me" element={<MyAdsPage />} />
           <Route path="/search" element={<SearchResultsPage />} />
         </Route>
         <Route path="*" element={<NotFound />} />

@@ -8,6 +8,7 @@ export type FavoriteCarAd = {
   currency: CurrencyTypes | null;
   thumbnail: string | null;
   location?: string | null;
+  disableFavorite?: boolean;
 };
 
 export interface FavoritesState {

@@ -10,6 +10,11 @@ import {
   TransmissionTypes,
   VehicleBodyType,
 } from '../../pages/SellNow/types';
+import { FavoriteCarAd } from '../favorites/favorites.slice';
+
+export interface MyAd extends FavoriteCarAd {
+  createdAt?: Date;
+}
 
 export enum AdStatus {
   'PENDING' = 'PENDING',
@@ -93,12 +98,16 @@ export interface IADState {
   ads: Ad[];
   offerOfTheDay: OfferOfTheDay | null;
   latestAds: LatestAd[] | null;
+  myAds: any[];
+  myAdsCount: number;
 }
 
 const initialState: IADState = {
   ads: [],
   offerOfTheDay: null,
   latestAds: null,
+  myAds: [],
+  myAdsCount: 0,
 };
 
 export const adSlice = createSlice({
@@ -114,8 +123,18 @@ export const adSlice = createSlice({
     setLatestAds(state: IADState, action: PayloadAction<LatestAd[]>) {
       state.latestAds = action.payload;
     },
+    setMyAds(
+      state: IADState,
+      action: PayloadAction<{
+        myAds: MyAd[];
+        myAdsCount: number;
+      }>,
+    ) {
+      state.myAds = action.payload.myAds;
+      state.myAdsCount = action.payload.myAdsCount;
+    },
   },
 });
 
-export const { insertAd, setOfferOfTheDay, setLatestAds } = adSlice.actions;
+export const { insertAd, setOfferOfTheDay, setLatestAds, setMyAds } = adSlice.actions;
 export default adSlice.reducer;
