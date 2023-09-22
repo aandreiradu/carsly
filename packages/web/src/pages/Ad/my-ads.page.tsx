@@ -91,11 +91,11 @@ const MyAdsPage = () => {
       <TopLevelNotification ref={topLevelNotificationRef} hasCloseButton={false} dismissAfterXMs={5500} />
       <Nav setShowComponent={() => {}} />
       <Sidebar setShowComponent={() => {}} />
-      <section className="h-full my-6 max-h-[98%] md:mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+      <section className="my-2 md:my-6 md:mx-auto px-2 overflow-y-auto">
         {!myAds.length ? (
           <EmptyAds />
         ) : (
-          <ul className="grid grid-cols-1 gap-4 xl:grid-cols-4cols-258 lg:grid-cols-3cols-258 md:grid-cols-2cols-258">
+          <ul className="grid grid-cols-1 gap-4 xl:grid-cols-4cols-258 lg:grid-cols-3cols-258 md:grid-cols-2cols-258 mb-10">
             {loadingMyAds ? (
               <LoadingContent count={4} />
             ) : (
@@ -108,6 +108,7 @@ const MyAdsPage = () => {
                   price={myAd.price}
                   thumbnail={myAd.thumbnail}
                   location={myAd.location}
+                  disableFavorite={true}
                 />
               ))
             )}
