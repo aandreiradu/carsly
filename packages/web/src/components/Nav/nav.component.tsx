@@ -1,6 +1,6 @@
 import { Fragment, memo, useCallback, useEffect, useRef } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { List, X, User, Heart } from 'phosphor-react';
+import { List, X, User, Heart, Car } from 'phosphor-react';
 import { SidebarLinkProps } from '../SidebarLink/sidebarlink.component';
 import { SideBarProps } from '../../types/index.types';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { setAccessToken } from '../../store/user/user.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectFavoritesCount } from '../../store/favorites/favorites.selector';
 import SearchMinified, { SearchMinifiedHandlers } from '../Search/search-minified.component';
+import { selectMyAdsCount } from '../../store/ad/ad.selector';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -18,6 +19,7 @@ const Nav = memo(function ({ showOnAllScreens }: SideBarProps) {
   const location = useLocation();
   const searchMinifiedRef = useRef<SearchMinifiedHandlers>(null);
   const favoritesCount = useSelector(selectFavoritesCount);
+  const myAdsCount = useSelector(selectMyAdsCount);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data, error, sendRequest } = useHttpRequest<{ message: string; status: number }>();
@@ -45,6 +47,13 @@ const Nav = memo(function ({ showOnAllScreens }: SideBarProps) {
       label: 'My Profile',
       isLink: true,
       href: '/me',
+      isActive: false,
+    },
+    {
+      label: `My Ads - ${myAdsCount}`,
+      icon: <Car weight="fill" className="w-4 h-4 text-white group-hover:text-black relative ml-1" />,
+      isLink: true,
+      href: '/ad/me',
       isActive: false,
     },
     {
