@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useRef } from 'react';
 import SidebarLink, { SidebarLinkProps } from '../SidebarLink/sidebarlink.component';
-import { House, User, Heart, SignOut, PlusCircle, MagnifyingGlass } from 'phosphor-react';
+import { House, User, Heart, SignOut, PlusCircle, MagnifyingGlass, Car } from 'phosphor-react';
 import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAccessToken } from '../../store/user/user.slice';
@@ -8,10 +8,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { SideBarProps } from '../../types/index.types';
 import { selectFavoritesCount } from '../../store/favorites/favorites.selector';
 import SearchMinified, { SearchMinifiedHandlers } from '../Search/search-minified.component';
+import { selectMyAdsCount } from '../../store/ad/ad.selector';
 
 const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
   const searchMinifiedRef = useRef<SearchMinifiedHandlers>(null);
   const favoritesCount = useSelector(selectFavoritesCount);
+  const myAdsCount = useSelector(selectMyAdsCount);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data, error, sendRequest } = useHttpRequest<{ message: string; status: number }>();
@@ -37,6 +39,20 @@ const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
       isActive: false,
       icon: <PlusCircle className="w-6 h-6 text-white group-hover:text-black" />,
       setShowComponent: () => {},
+    },
+    {
+      icon: (
+        <div className="relative">
+          <Car className="w-6 h-6 text-white group-hover:text-black relative" />
+          <p className="absolute -top-2 left-4 py-[1px] px-1 w-5 h-5 rounded-xl flex items-center justify-center bg-yellow-400 text-black">
+            {myAdsCount}
+          </p>
+        </div>
+      ),
+      label: 'My Ads',
+      isLink: true,
+      href: '/ad/me',
+      isActive: false,
     },
     {
       icon: (
