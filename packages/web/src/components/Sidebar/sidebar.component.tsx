@@ -60,7 +60,7 @@ const Sidebar = memo(function ({ setShowComponent }: SideBarProps) {
       icon: (
         <div className="relative">
           <Heart className="w-6 h-6 text-white group-hover:text-black relative" />
-          {favoritesCount && (
+          {favoritesCount > 0 && (
             <p className="absolute -top-2 left-4 py-[1px] px-1 w-5 h-5 rounded-xl flex items-center justify-center bg-yellow-400 text-black">
               {favoritesCount}
             </p>

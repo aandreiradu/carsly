@@ -1,10 +1,8 @@
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { selectFavoriteAds } from '../../store/favorites/favorites.selector';
 import Nav from '../../components/Nav/nav.component';
 import FavoriteCardItem from '../../components/FavoriteCard/favoriteCard.component';
 import { useEffect, useRef } from 'react';
-import { FavoriteCarAd, setFavoriteAds, setFavoritesCount } from '../../store/favorites/favorites.slice';
-import useHttpRequest from '../../hooks/useHttpRequest/useHttp.hook';
 import TopLevelNotification, {
   TopLevelNotificationHandlers,
 } from '../../components/UI/TopLevelNotification/topLevelNotification.component';
@@ -13,6 +11,7 @@ import { Skeleton } from '@mui/material';
 import { Link } from 'react-router-dom';
 import MainLayout from '../../components/Layouts/Main/main.layout';
 import Sidebar from '../../components/Sidebar/sidebar.component';
+import useGetFavoriteAds from '../../hooks/useGetFavoriteAds/useGetFavoriteAds.hook';
 
 interface LoadingContentProps {
   count?: number;
@@ -36,34 +35,11 @@ const LoadingContent = ({ count = 1 }: LoadingContentProps) => {
 };
 
 const FavoritePage = () => {
-  const dispatch = useDispatch();
   const favoriteAds = useSelector(selectFavoriteAds);
-  const {
-    sendRequest: SRGetFavoritesAds,
-    error: errorFavoritesAds,
-    loading: loadingFavoriteAds,
-  } = useHttpRequest<{ count: number; favorites: FavoriteCarAd[] }>();
+  const { errorFavoritesAds, getFavoritesAdsByUser, loadingFavoriteAds } = useGetFavoriteAds();
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
 
   useEffect(() => {
-    const getFavoritesAdsByUser = async () => {
-      const favoriteAds = await SRGetFavoritesAds('/api/ad/favorites', {
-        method: 'GET',
-        withCredentials: true,
-      });
-
-      if (favoriteAds && favoriteAds.status === 200) {
-        const { count, favorites } = favoriteAds.data || {};
-        if (count && +count > 0) {
-          dispatch(setFavoritesCount(count));
-        }
-
-        if (favorites && favorites?.length) {
-          dispatch(setFavoriteAds(favorites));
-        }
-      }
-    };
-
     !favoriteAds?.length && getFavoritesAdsByUser();
   }, []);
 
