@@ -337,8 +337,6 @@ export class AdRepository {
       ),
     } as TAdDetailsById;
 
-    console.log('adDetailsadDetails', adDetails);
-
     return adDetails;
   }
 
