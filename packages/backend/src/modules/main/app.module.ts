@@ -10,6 +10,7 @@ import { AdsModule } from '@modules/ads/ads.module';
 import { SeedModule } from '@common/seed/seed.module';
 import { SendGridModule } from '@modules/send-grid/send-grid.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { UserModule } from '@modules/user/user.module';
 @Module({
   imports: [
     CacheModule.register({ isGlobal: true }),
@@ -26,6 +27,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     AdsModule,
     SeedModule,
     SendGridModule,
+    UserModule,
   ],
   providers: [
     {
