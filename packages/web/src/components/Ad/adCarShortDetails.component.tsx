@@ -27,6 +27,7 @@ const AdCarShortDetails = ({
   isLoading = false,
   thumbnail,
   location = 'Romania',
+  userId,
 }: AdCarDetailsProps) => {
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
   const isFavAd = useSelector(selectIsFavoriteAd(id ?? ''));
@@ -108,6 +109,7 @@ const AdCarShortDetails = ({
           sellerCity={sellerCity ?? ''}
           sellerName={sellerFullName ?? ''}
           sellerPhoneNumber={sellerPhoneNumber ?? ''}
+          userId={userId}
         />
       </div>
     </>

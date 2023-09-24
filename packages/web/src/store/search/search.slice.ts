@@ -26,6 +26,7 @@ export interface AdCarDetailsProps {
   engineSize: string | number;
   power: number;
   description?: string;
+  userId: string;
 }
 
 export interface SearchAdRes {
