@@ -147,6 +147,16 @@ export class AdRepository {
   }
 
   async saveAdImages(filesPaths: string[], adId: string): Promise<void> {
+    const thumbnail = filesPaths[0];
+    await this.prismaService.ad.update({
+      where: {
+        id: adId,
+      },
+      data: {
+        thumbnail,
+      },
+    });
+
     filesPaths.forEach(async (filePath) => {
       await this.prismaService.adImage.create({
         data: {
@@ -283,7 +293,7 @@ export class AdRepository {
     }));
   }
 
-  async getAdDetailsById(adId: string): Promise<TAdDetailsById | string> {
+  async getAdDetailsById(adId: string): Promise<TAdDetailsById> {
     const adDetailsQuery = await this.prismaService.ad.findFirst({
       where: {
         id: adId,
