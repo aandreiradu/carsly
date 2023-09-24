@@ -114,6 +114,7 @@ model Ad {
   sellerCity        String
   sellerPhoneNumber String
   images            AdImage[]
+  thumbnail         String?
   status            AdStatus      @default(PENDING)
 
   createdAt DateTime @default(now())
