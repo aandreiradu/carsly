@@ -16,6 +16,7 @@ import SearchResultsPage from './pages/SearchResults/searchResults.page';
 import ForgotPasswordPage from './pages/ForgotPassword/forgot-password.page';
 import ForgotPasswordRequestTokenPage from './pages/ForgotPassword/forgot-password-request-token.page';
 import MyAdsPage from './pages/Ad/my-ads.page';
+import UserAdsPage from './pages/Ad/user-ads.page';
 
 function App() {
   const topLevelNotificationRef = useRef<TopLevelNotificationHandlers>(null);
@@ -36,6 +37,7 @@ function App() {
           <Route path="/favorites" element={<FavoritePage />} />
           <Route path="/ad/:adId" element={<AdDetailsPage />} />
           <Route path="/ad/me" element={<MyAdsPage />} />
+          <Route path="/user/:userId/ads" element={<UserAdsPage />} />
           <Route path="/search" element={<SearchResultsPage />} />
         </Route>
         <Route path="*" element={<NotFound />} />

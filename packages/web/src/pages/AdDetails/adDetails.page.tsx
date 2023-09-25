@@ -16,6 +16,7 @@ export interface AdTechnicalDetailsProps extends Ad {
   isLoading?: boolean;
   brandName: string;
   modelName: string;
+  userId: string;
 }
 
 const AdDetailsPage = () => {
@@ -26,11 +27,15 @@ const AdDetailsPage = () => {
   const [info, setInfo] = useState<AdTechnicalDetailsProps>();
 
   const getAdDetailsById = async (adId: string) => {
-    const adDetails = await sendRequest(`/api/ad/${adId}`);
+    const adDetails = await sendRequest(`/api/ad/${adId}`, {
+      method: 'GET',
+      withCredentials: true,
+    });
     if (adDetails && adDetails?.data.id) {
       setInfo(adDetails.data);
     }
   };
+
   useEffect(() => {
     if (!adId) {
       navigate('/');
@@ -59,21 +64,21 @@ const AdDetailsPage = () => {
           {info && (
             <AdCarShortDetails
               {...info}
-              description={info.description ?? ''}
               isLoading={loading}
               thumbnail={info?.images[0]?.path || ''}
+              description={info.description ?? ''}
             />
           )}
         </div>
         {info && <AdTechnicalDetails {...info} isLoading={loading} />}
-        <AdSellerDetails
-          header="Informations about seller"
-          className="flex md:hidden w-full flex-col border border-black p-2 my-4"
-          sellerCity={info?.sellerCity ?? ''}
-          sellerName={info?.sellerFullName ?? ''}
-          sellerPhoneNumber={info?.sellerPhoneNumber ?? ''}
-          isLoading={loading}
-        />
+        {info && (
+          <AdSellerDetails
+            header="Informations about seller"
+            className="flex md:hidden w-full flex-col border border-black p-2 my-4"
+            {...info}
+            sellerName={info.sellerFullName}
+          />
+        )}
       </section>
     </>
   );
