@@ -79,3 +79,21 @@ export interface IGetFavoriteAds {
     location: string;
   }[];
 }
+
+export interface UserAd {
+  id: string;
+  title: string;
+  thumbnail: string;
+  price: number;
+  currency: CurrencyTypes;
+  year: number;
+  fuelType: FuelType;
+  KM: number;
+  power: number;
+  gearbox: GearboxTypes;
+  sellerCity: string;
+}
+
+export interface LoadingContentProps {
+  count?: number;
+}
