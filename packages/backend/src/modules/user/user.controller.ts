@@ -13,6 +13,9 @@ export class UserController {
     if (!req?.user?.sub) {
       throw new BadRequestException('Missing userId');
     }
-    return this.userService.listAds(req.user.sub);
+
+    return {
+      ads: await this.userService.listAds(req.user.sub),
+    };
   }
 }

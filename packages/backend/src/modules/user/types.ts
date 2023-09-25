@@ -1,6 +1,7 @@
 import { CurrencyTypes, FuelType, GearboxTypes } from '@prisma/client';
 
 export interface UserAds {
+  id: string;
   KM: number;
   year: number;
   fuelType: FuelType;
@@ -10,4 +11,5 @@ export interface UserAds {
   price: number;
   currency: CurrencyTypes;
   thumbnail: string;
+  sellerCity: string;
 }

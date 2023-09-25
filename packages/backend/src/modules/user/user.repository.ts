@@ -9,6 +9,7 @@ export class UserRepository {
   async listAds(userId: string): Promise<UserAds[]> {
     return this.prismaService.ad.findMany({
       select: {
+        id: true,
         title: true,
         thumbnail: true,
         price: true,
@@ -18,6 +19,7 @@ export class UserRepository {
         KM: true,
         power: true,
         gearbox: true,
+        sellerCity: true,
       },
       where: {
         userId,
