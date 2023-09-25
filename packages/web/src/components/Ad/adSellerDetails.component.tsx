@@ -48,6 +48,7 @@ const AdSellerDetails = ({
         <div className="flex justify-start md:justify-center my-5">
           <Link
             to={`/user/${userId}/ads`}
+            state={{ sellerName: sellerName }}
             className="flex items-center md:justify-center gap-1 text-sm relative after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-[#1f1f1f] after:hover:w-full after:hover:transition-width after:hover:ease-linear duration-1000"
           >
             More ads from this seller
