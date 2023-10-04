@@ -1,16 +1,11 @@
-import {
-  BadRequestException,
-  Injectable,
-  Inject,
-  CACHE_MANAGER,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCarBrandDTO } from './dto';
 import { PrismaService } from '@common/prisma/prisma.service';
 import { CreateCarModelDTO } from './dto/create-car-model.dto';
 import { capitalizeAll } from '@common/utils/helpers';
 import { VehicleBodyType } from '@prisma/client';
-import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
+import { RedisService } from '@common/redis/redis.service';
 
 export interface GetCarsBrands {
   name: string;
@@ -23,16 +18,12 @@ type CachedModelsByBrand = Record<string, string[]>;
 
 @Injectable()
 export class CarService {
-  carsBrands: GetCarsBrands[] = [];
   cachedModelsByBrand: CachedModelsByBrand = {};
-  #expireDateCacheModelsByBrand =
-    Date.now() +
-    +(this.configService.get('CACHE_MODELS_BY_BRAND_SECONDS') || 3600) * 1000;
 
   constructor(
     private prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private configService: ConfigService,
+    private readonly redisService: RedisService,
   ) {}
 
   async createCarBrand(dto: CreateCarBrandDTO) {
@@ -47,11 +38,10 @@ export class CarService {
   }
 
   async getCarsBrands(): Promise<GetCarsBrands[]> {
-    let carsBrands = (await this.cacheManager.get(
-      'carsBrands',
-    )) as GetCarsBrands[];
+    let carsBrands = await this.redisService.get<GetCarsBrands[]>('carsBrands');
 
     if (!carsBrands) {
+      console.log('fac call in baza');
       carsBrands = await this.prisma.carBrand.findMany({
         select: {
           name: true,
@@ -64,9 +54,7 @@ export class CarService {
         },
       });
 
-      await this.cacheManager.set('carsBrands', carsBrands, {
-        ttl: this.configService.get('configService') ?? 3600,
-      });
+      await this.redisService.set('carsBrands', carsBrands);
     }
 
     return carsBrands.map((d) => ({
@@ -147,17 +135,17 @@ export class CarService {
   async getModelsByBrands(
     brandName: string,
   ): Promise<{ brand: string; models: string[] }> {
-    const now = Date.now();
+    // const now = Date.now();
 
-    if (now > this.#expireDateCacheModelsByBrand) {
-      this.cachedModelsByBrand = {};
-    }
+    // if (now > this.#expireDateCacheModelsByBrand) {
+    //   this.cachedModelsByBrand = {};
+    // }
 
     if (
       !this.cachedModelsByBrand ||
-      !this.cachedModelsByBrand[brandName] ||
-      this.cachedModelsByBrand[brandName].length === 0
+      this.cachedModelsByBrand[brandName]?.length === 0
     ) {
+      console.log('model not found in cached memory', this.cachedModelsByBrand);
       const models = await this.prisma.carModel.findMany({
         where: {
           brand: {
@@ -180,6 +168,8 @@ export class CarService {
           ...this.cachedModelsByBrand,
           [brandName]: modelsMap,
         };
+
+        await this.redisService.set('models', modelsMap);
       }
 
       return {

@@ -13,7 +13,7 @@ import { CreateCarBrandDTO } from '@modules/car/dto/create-car-brand.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { SuccessResponse } from '@common/config/types';
 import { CreateCarModelDTO } from '@modules/car/dto/create-car-model.dto';
-import { Roles } from '@common/decorators';
+import { Public, Roles } from '@common/decorators';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
 @Controller('/api/car')
@@ -53,6 +53,7 @@ export class CarController {
     }
   }
 
+  @Public()
   @SkipThrottle({ default: true })
   @Get('/brands')
   async getCarsBrands() {

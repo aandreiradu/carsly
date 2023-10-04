@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { CryptoService } from '@common/utils/crypto';
 import { AtStrategy, RtStrategy } from '@modules/auth/strategies';
 import { SendGridService } from '@modules/send-grid/send-grid.service';
+import { RedisService } from '@common/redis/redis.service';
 
 @Module({
   imports: [JwtModule.register({})],
@@ -14,6 +15,7 @@ import { SendGridService } from '@modules/send-grid/send-grid.service';
     AtStrategy,
     RtStrategy,
     SendGridService,
+    RedisService,
   ],
   controllers: [AuthController],
   exports: [AuthService],

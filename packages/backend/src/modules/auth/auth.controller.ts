@@ -29,16 +29,20 @@ import {
   ResetPasswordDTO,
 } from './dto/reset-password.dto';
 import { Throttle } from '@nestjs/throttler';
+import { RedisService } from '@common/redis/redis.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private readonly redisService: RedisService,
+  ) {}
 
   @Throttle({ short: { limit: 3, ttl: 1000 } })
   @Public()
   @Post('/local/signup')
   @HttpCode(HttpStatus.CREATED)
-  signUpLocal(@Body() dto: SignUpDTO): Promise<AuthAccountCreated> {
+  async signUpLocal(@Body() dto: SignUpDTO): Promise<AuthAccountCreated> {
     return this.authService.signUpLocal(dto);
   }
 
