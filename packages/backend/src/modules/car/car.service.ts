@@ -18,7 +18,8 @@ type CachedModelsByBrand = Record<string, string[]>;
 
 @Injectable()
 export class CarService {
-  cachedModelsByBrand: CachedModelsByBrand = {};
+  cachedCarsBrands: GetCarsBrands[] | null = null;
+  cachedModelsByBrand: CachedModelsByBrand | null = null;
 
   constructor(
     private prisma: PrismaService,
@@ -38,10 +39,13 @@ export class CarService {
   }
 
   async getCarsBrands(): Promise<GetCarsBrands[]> {
-    let carsBrands = await this.redisService.get<GetCarsBrands[]>('carsBrands');
+    if (this.cachedCarsBrands && this.cachedCarsBrands.length > 0) {
+      return this.cachedCarsBrands;
+    }
 
-    if (!carsBrands) {
-      console.log('fac call in baza');
+    let carsBrands = await this.redisService.get<GetCarsBrands[]>('brands');
+
+    if (!carsBrands?.length) {
       carsBrands = await this.prisma.carBrand.findMany({
         select: {
           name: true,
@@ -54,9 +58,16 @@ export class CarService {
         },
       });
 
-      await this.redisService.set('carsBrands', carsBrands);
+      this.cachedCarsBrands = carsBrands;
+      await this.redisService.set('brands', carsBrands);
+
+      return carsBrands.map((d) => ({
+        ...d,
+        name: capitalizeAll(d.name),
+      }));
     }
 
+    this.cachedCarsBrands = carsBrands;
     return carsBrands.map((d) => ({
       ...d,
       name: capitalizeAll(d.name),
@@ -135,17 +146,11 @@ export class CarService {
   async getModelsByBrands(
     brandName: string,
   ): Promise<{ brand: string; models: string[] }> {
-    // const now = Date.now();
-
-    // if (now > this.#expireDateCacheModelsByBrand) {
-    //   this.cachedModelsByBrand = {};
-    // }
-
     if (
       !this.cachedModelsByBrand ||
+      !this.cachedModelsByBrand[brandName] ||
       this.cachedModelsByBrand[brandName]?.length === 0
     ) {
-      console.log('model not found in cached memory', this.cachedModelsByBrand);
       const models = await this.prisma.carModel.findMany({
         where: {
           brand: {
