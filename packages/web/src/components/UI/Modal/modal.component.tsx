@@ -1,8 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ReactNode, useCallback, useRef } from 'react';
-import { useImperativeHandle } from 'react';
+import { ReactNode, useCallback } from 'react';
 import { useState } from 'react';
-import { forwardRef } from 'react';
 import { ShowComponentProps } from '../../../types/index.types';
 import { ArrowLeft, XCircle } from 'phosphor-react';
 // import { ModalProps } from "../../types/index.types";
@@ -24,7 +22,7 @@ type ModalProps = {
 
 const Modal: React.ForwardRefRenderFunction<ModalHandlers, ModalProps> = (
   { setShowComponent, hasCloseButton, title, children, onClose, className, hasPrevButton, onPrev },
-  ref,
+  _ref,
 ) => {
   const [isOpen, setIsOpen] = useState(true);
 
