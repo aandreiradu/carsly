@@ -1,1 +1,1 @@
-CREATE DATABASE 'carsly';
+CREATE DATABASE carsly_db;

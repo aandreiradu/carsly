@@ -9,6 +9,8 @@ import { Roles } from '@common/decorators';
 import * as path from 'path';
 import { VehicleBodyType } from '@prisma/client';
 import { readFileUtf8 } from '@common/utils/readFile';
+import brandsSeed from '@common/seed/brands-seed.json';
+import modelsSeed from '@common/seed/models-seed.json';
 
 export interface SeedBrands {
   name: string;
@@ -31,8 +33,9 @@ export class SeedController {
   async seedBrandsBulk() {
     try {
       const fileData = await readFileUtf8<SeedBrands[]>(
-        path.join(__dirname, '../../brands-seed.json'),
+        path.join(__dirname, './brands-seed.json'),
       );
+      console.log('fileData', fileData);
       const insertedModels = {};
       if (fileData?.length) {
         for (let i = 0; i < fileData.length; i++) {
@@ -78,7 +81,7 @@ export class SeedController {
   async seedModelsBulk() {
     try {
       const parsedData = await readFileUtf8<SeedModels[]>(
-        path.join(__dirname, '../../models-seed.json'),
+        path.join(__dirname, './models-seed.json'),
       );
 
       if (parsedData?.length) {

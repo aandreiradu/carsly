@@ -1,22 +1,20 @@
 version: '3'
 services:
   dev-db:
-    image: postgres:12
-    volumes:
-      - db:/var/lib/mysql-dev
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    image: postgres:latest
+    container_name: carsly-dev-db
     restart: always
-    ports:
-      - 5434:5432
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD : 123
-      POSTGRES_DB: carsly
-
-  redis:
-    image: redis:latest
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: carsly_db
     ports:
-      - 6379:6379
+      - 5434:5432
+    volumes:
+      - dev-db:/var/lib/postgresql/data
+  
+  redis:
+    image: redis:7
 
   carsly-backend:
     build:
@@ -44,4 +42,4 @@ services:
       - '5173:5173'
 
 volumes:
-  db: 
+  dev-db: 

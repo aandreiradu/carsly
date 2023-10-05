@@ -25,7 +25,8 @@ RUN pnpm install -r --offline
 
 # Build backend
 RUN echo $VITE_BACKEND_URL
-RUN VITE_BACKEND_URL=$VITE_BACKEND_URL pnpm --filter web build
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+RUN pnpm --filter web build
 
 
 RUN echo 'ENDING WEB DOCKERFILE'

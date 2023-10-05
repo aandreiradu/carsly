@@ -7,7 +7,12 @@
     "assets": [
       "config.*.yaml",
       "assets/**",
-      "uploads/**"
+      "uploads/**",
+      {
+        "include": "./src/common/seed",
+        "outDir": "dist/common/seed",
+        "watchAssets": true
+      }
     ]
   }
 }

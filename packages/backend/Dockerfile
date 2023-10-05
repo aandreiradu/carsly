@@ -1,4 +1,4 @@
-FROM node:lts-hydrogen
+FROM node:18
 
 RUN echo 'STARTING BACKEND DOCKERFILE'
 
@@ -16,7 +16,7 @@ COPY pnpm-lock.yaml ./
 RUN pnpm fetch
 
 # Add everything to the working directory
-ADD . ./
+COPY . ./
 
 # Install packages from virtual store
 RUN pnpm install -r --offline
@@ -24,8 +24,6 @@ RUN pnpm install -r --offline
 # Build backend
 RUN pnpm --filter backend db:gen
 RUN pnpm --filter backend build
-# RUN pnpm db:push
-
 
 RUN echo 'ENDING BACKEND DOCKERFILE'
 

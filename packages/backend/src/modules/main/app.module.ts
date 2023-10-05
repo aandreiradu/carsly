@@ -1,4 +1,4 @@
-import { CacheModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PrismaModule } from '@common/prisma/prisma.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
@@ -14,8 +14,7 @@ import { UserModule } from '@modules/user/user.module';
 import { RedisModule } from '@common/redis/redis.module';
 @Module({
   imports: [
-    CacheModule.register({ isGlobal: true }),
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, cache: true }),
     RedisModule,
     AuthModule,
     PrismaModule,

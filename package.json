@@ -11,7 +11,7 @@
     "dev:web": "pnpm --filter web dev",
     "dev:backend": "pnpm --filter backend start:dev",
     "dev:db:up": "pnpm --filter backend db:dev:up",
-    "dev": "concurrently -n 'WEB,BE' -c green.bold,blue.bold 'pnpm dev:web' 'pnpm dev:backend'",
+    "dev": "concurrently -n 'WEB,BE' -c green.bold,blue.bold 'pnpm dev:db:up' 'sleep 5' 'pnpm dev:web' 'pnpm dev:backend'",
     "compose": "docker compose -f ./docker/docker-compose.yaml up -d --build"
   },
   "keywords": [],
