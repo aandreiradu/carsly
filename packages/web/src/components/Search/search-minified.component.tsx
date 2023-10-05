@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowSquareIn, Info, Warning, XCircle } from 'phosphor-react';
-import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import Label from '../UI/Label/label.component';
 import Select from '../UI/Select/select.component';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +21,7 @@ import { ClipLoader } from 'react-spinners';
 import { saveSearch, type FetchModelsByBrand, type SearchAdRes } from '../../store/search/search.slice';
 import { getCachedSearchs } from '../../store/search/search.selector';
 import { useNavigate } from 'react-router-dom';
+import useGetCarsBrands from '../../hooks/useGetCarsBrands/useGetCarsBrands.hook';
 
 export type SearchMinifiedHandlers = {
   display: () => void;
@@ -51,8 +52,9 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
     const dispatch = useDispatch();
     const cachedModels = useSelector(selectModelsByBrandDataSource(searchMinifiedForm.getValues('brand')?.value ?? ''));
     const cachedSearchResults = useSelector(getCachedSearchs);
+    const { errorGetCarsBrands, getCarsBrands } = useGetCarsBrands();
 
-    if (error || errorSearchAd) {
+    if (error || errorSearchAd || errorGetCarsBrands) {
       if (topLevelNotificationRef) {
         topLevelNotificationRef.current?.display({
           icon: <Info className="w-14 h-8 text-red-600" />,
@@ -60,6 +62,10 @@ const SearchMinified = forwardRef<SearchMinifiedHandlers, SearchMinifiedProps>(
         });
       }
     }
+
+    useEffect(() => {
+      !carsBrands?.length && getCarsBrands();
+    }, []);
 
     const display = () => {
       setShowMinifiedSearch(true);
