@@ -43,7 +43,11 @@ export class CarService {
       return this.cachedCarsBrands;
     }
 
-    let carsBrands = await this.redisService.get<GetCarsBrands[]>('brands');
+    let carsBrands = [];
+
+    if (this.configService.get<boolean>('USE_REDIS')) {
+      await this.redisService.get<GetCarsBrands[]>('brands');
+    }
 
     if (!carsBrands?.length) {
       carsBrands = await this.prisma.carBrand.findMany({
@@ -58,13 +62,15 @@ export class CarService {
         },
       });
 
-      this.cachedCarsBrands = carsBrands;
-      await this.redisService.set('brands', carsBrands);
-
-      return carsBrands.map((d) => ({
+      this.cachedCarsBrands = carsBrands.map((d) => ({
         ...d,
         name: capitalizeAll(d.name),
       }));
+      if (this.configService.get<boolean>('USE_REDIS')) {
+        await this.redisService.set('brands', this.cachedCarsBrands);
+      }
+
+      return this.cachedCarsBrands;
     }
 
     this.cachedCarsBrands = carsBrands;
@@ -174,7 +180,9 @@ export class CarService {
           [brandName]: modelsMap,
         };
 
-        await this.redisService.set('models', modelsMap);
+        if (this.configService.get<boolean>('USE_REDIS')) {
+          await this.redisService.set('models', modelsMap);
+        }
       }
 
       return {
