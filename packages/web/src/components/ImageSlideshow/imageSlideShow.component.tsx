@@ -56,6 +56,14 @@ const ImageSlideShow = ({ imagesSource, classNames, isLoading = false }: ImageSl
     }
   };
 
+  const changeImageFromPreviewHandler = (path: string, index: number) => {
+    if (currentCarouselImage === path) {
+      return;
+    }
+    setCurrentCarouselImage(path);
+    setCarouselCurrentIndex(index + 1);
+  };
+
   if (isLoading) {
     return (
       <div className="h-[300px] w-full md:w-[75%]">
@@ -66,7 +74,7 @@ const ImageSlideShow = ({ imagesSource, classNames, isLoading = false }: ImageSl
 
   return (
     <div className={`${cn('flex flex-col relative ', classNames)}`}>
-      <div className="w-full bg-gray-100 flex items-center justify-center">
+      <div className="w-full bg-gray-100 flex items-center justify-center h-[250px] md:h-[450px]">
         {carouselImagesLen > 1 && (
           <div
             className={`w-10 h-10 lg:w-14 lg:h-14 absolute cursor-pointer top-[50%] -translate-y-[50%] md:top-[35%] md:-translate-y-[35%] left-0 bg-white rounded-md`}
@@ -81,7 +89,7 @@ const ImageSlideShow = ({ imagesSource, classNames, isLoading = false }: ImageSl
         )}
         <img
           id={`${new Date().toISOString()}`}
-          className="h-[250px] w-full md:h-[450px] md:w-[650px] bg-contain bg-no-repeat bg-center"
+          className="h-full w-full object-contain"
           src={currentCarouselImage ? `${import.meta.env.VITE_BACKEND_URL}/${currentCarouselImage}` : BackupImage}
         />
         {carouselImagesLen > 1 && (
@@ -103,8 +111,9 @@ const ImageSlideShow = ({ imagesSource, classNames, isLoading = false }: ImageSl
         <ul className="hidden md:flex mt-2 w-fullbg-green-400 items-center gap-3 overflow-y-auto">
           {carouselImages.map((img, index) => (
             <img
+              onClick={changeImageFromPreviewHandler.bind(this, img.path, index)}
               id={`${index}`}
-              className="h-32 overflow-hidden flex-shrink-0"
+              className="h-32 w-52 object-contain overflow-hidden flex-shrink-0 cursor-pointer"
               key={`${index}__`}
               src={img?.path ? `${import.meta.env.VITE_BACKEND_URL}/${img.path}` : BackupImage}
             />
