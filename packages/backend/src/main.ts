@@ -31,26 +31,21 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+
   app.enableShutdownHooks();
   app.useStaticAssets(join(__dirname, '..', 'uploads'));
 
   process.on('SIGINT', () => {
-    console.log('SIGINT received', __dirname);
     exec(
-      'docker compose -f ../../docker/docker-compose.yaml stop dev-db',
+      'docker compose -f ../../docker/docker-compose.yaml stop dev-db && brew services stop redis',
       (err) => {
-        if ('err') {
-          console.log('err', err);
+        if (err) {
+          console.log('error stopping proccesses', err);
           app.close().then(() => {
             console.error('Closing Nest application');
             process.exit(0);
           });
         }
-
-        app.close().then(() => {
-          console.log('NestJS application closed gracefully.');
-          process.exit(0);
-        });
       },
     );
   });

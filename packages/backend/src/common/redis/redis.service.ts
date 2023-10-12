@@ -16,7 +16,6 @@ export class RedisService {
 
   async get<T>(key: string): Promise<T | null> {
     const value = await this.redis.get(key);
-    console.log('value from redis', value);
     if (!value) return null;
 
     return JSON.parse(value);

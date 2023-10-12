@@ -45,8 +45,9 @@ export class CarService {
 
     let carsBrands = [];
 
-    if (this.configService.get<boolean>('USE_REDIS')) {
-      await this.redisService.get<GetCarsBrands[]>('brands');
+    const useRedisSysParam = +this.configService.get<number>('USE_REDIS');
+    if (!!useRedisSysParam) {
+      carsBrands = await this.redisService.get<GetCarsBrands[]>('brands');
     }
 
     if (!carsBrands?.length) {
@@ -66,18 +67,20 @@ export class CarService {
         ...d,
         name: capitalizeAll(d.name),
       }));
-      if (this.configService.get<boolean>('USE_REDIS')) {
+
+      if (!!useRedisSysParam) {
         await this.redisService.set('brands', this.cachedCarsBrands);
       }
 
       return this.cachedCarsBrands;
     }
 
-    this.cachedCarsBrands = carsBrands;
-    return carsBrands.map((d) => ({
+    this.cachedCarsBrands = carsBrands.map((d) => ({
       ...d,
       name: capitalizeAll(d.name),
     }));
+
+    return this.cachedCarsBrands;
   }
 
   async getBrandIdByName(name: string): Promise<string> {
@@ -180,7 +183,8 @@ export class CarService {
           [brandName]: modelsMap,
         };
 
-        if (this.configService.get<boolean>('USE_REDIS')) {
+        const useRedisSysParam = +this.configService.get<number>('USE_REDIS');
+        if (!!useRedisSysParam) {
           await this.redisService.set('models', modelsMap);
         }
       }
